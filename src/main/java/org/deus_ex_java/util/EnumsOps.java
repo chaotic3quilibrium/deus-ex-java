@@ -119,7 +119,7 @@ public final class EnumsOps<E extends Enum<E>> {
     //all preconditions have been validated, so assign the instance fields
     this.classE = classE;
     this.enumsValues = enumsValues;
-    this.orderedMapEnumValueByNameLowerCase = MapsOps.toMapOrderedUnmodifiable(
+    this.orderedMapEnumValueByNameLowerCase = MapsOps.toMapOrdered(
         enumsValues
             .stream()
             .map(enumValue ->
@@ -163,7 +163,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * the highly performant {@link EnumSet}.
    *
    * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable {@link Set} specifically wrapping with
-   * the highly performant {@link EnumSet}
+   *     the highly performant {@link EnumSet}
    */
   @NotNull
   public Set<E> toOrderedSet() {
@@ -175,11 +175,11 @@ public final class EnumsOps<E extends Enum<E>> {
    * is the {@link Enum#name()}, and the enum constant itself is the value.
    *
    * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable <i>ordered</i> {@link Map} where the key
-   * is the {@link Enum#name()}, and the enum constant itself is the value
+   *     is the {@link Enum#name()}, and the enum constant itself is the value
    */
   @NotNull
   public Map<String, E> toOrderedMapByName() {
-    return MapsOps.toMapOrderedUnmodifiable(
+    return MapsOps.toMapOrdered(
         stream(),
         (e) ->
             Optional.of(entry(e.name(), e)));
@@ -210,7 +210,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param search the name used to locate the enum value, case-insensitive
    * @return the case-insensitive search by name for the enum value, otherwise the first enum value in
-   * {@link EnumsOps#toList}
+   *     {@link EnumsOps#toList}
    */
   @NotNull
   public E valueOfOrDefaultToFirst(
@@ -241,7 +241,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param search the name used to locate the enum value, case-insensitive
    * @return an {@link Optional} wrapping the case-insensitive search by name for the enum, otherwise an empty
-   * {@link Optional}
+   *     {@link Optional}
    */
   @NotNull
   public Optional<E> valueOf(
@@ -257,7 +257,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}.
    *
    * @return a new {@code String} composed of copies of the {@code Enum name} for all the enum values joined together
-   * with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join() {
@@ -270,7 +270,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum name} for all the enum values joined together
-   * with a copy of the specified {@code separator}
+   *     with a copy of the specified {@code separator}
    */
   @NotNull
   public String join(@NotNull String separator) {
@@ -283,7 +283,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param eToString the function to transform an enum value into a String
    * @return a new {@code String} composed of copies of the {@code Enum} transformed by the {@code eToString} function,
-   * and joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     and joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join(@NotNull Function<E, String> eToString) {
@@ -297,7 +297,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param eToString the function to transform an enum value into a String
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum} transformed by the {@code eToString} function,
-   * and joined together with a copy of the specified {@code separator}
+   *     and joined together with a copy of the specified {@code separator}
    */
   @NotNull
   public String join(
@@ -313,7 +313,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param es the list of enum values to use
    * @return a new {@code String} composed of copies of the {@link Enum#name()} of each of the provided {@link Enum}s
-   * joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join(@NotNull Stream<E> es) {
@@ -327,7 +327,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param es        the list of enum values to use
    * @param eToString the function to transform an enum value into a String
    * @return a new {@code String} composed of copies of the provided {@code Enum}s transformed by the {@code eToString}
-   * function, and joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     function, and joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join(
@@ -344,7 +344,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param es        the list of enum values to use
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@link Enum#name()} of each of the provided {@link Enum}s
-   * joined together with a copy of the specified {@code separator}
+   *     joined together with a copy of the specified {@code separator}
    */
   @NotNull
   public String join(
@@ -362,7 +362,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param eToString the function to transform an enum value into a String
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the provided {@code Enum}s transformed by the {@code eToString}
-   * function, and joined together with a copy of the specified {@code separator}
+   *     function, and joined together with a copy of the specified {@code separator}
    */
   @NotNull
   public String join(

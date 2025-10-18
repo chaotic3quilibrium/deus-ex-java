@@ -167,7 +167,7 @@ public class EnumsOpsTests {
   @Test
   public void testToOrderedMapThroughOps() {
     var orderedMapExpected =
-        MapsOps.toMapOrderedUnmodifiable(
+        MapsOps.toMapOrdered(
             Arrays.stream(TrafficLightBased.values())
                 .map(trafficLightBased ->
                     Map.entry(

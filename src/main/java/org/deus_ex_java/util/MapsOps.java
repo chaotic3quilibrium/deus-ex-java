@@ -271,7 +271,7 @@ public class MapsOps {
           .forEach(index -> {
             var map = maps[index];
             if (map != null) {
-              var resolvedMap = toMapOrderedUnmodifiable(map.entrySet().stream());
+              var resolvedMap = toMapOrdered(map.entrySet().stream());
               if (!resolvedMap.isEmpty()) {
                 result.putAll(resolvedMap);
               }
@@ -299,10 +299,10 @@ public class MapsOps {
    *     the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMapUnmodifiable(
+  public static <T, K, V> Map<K, V> toMap(
       @NotNull Stream<Entry<K, V>> kAndVs
   ) {
-    return toMapUnmodifiable(kAndVs, Optional::of);
+    return toMap(kAndVs, Optional::of);
   }
 
   /**
@@ -322,7 +322,7 @@ public class MapsOps {
    *     {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMapUnmodifiable(
+  public static <T, K, V> Map<K, V> toMap(
       @NotNull Stream<T> ts,
       @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
@@ -358,10 +358,10 @@ public class MapsOps {
    *     then if the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMapOrderedUnmodifiable(
+  public static <T, K, V> Map<K, V> toMapOrdered(
       @NotNull Stream<Entry<K, V>> kAndVs
   ) {
-    return toMapOrderedUnmodifiable(kAndVs, Optional::of);
+    return toMapOrdered(kAndVs, Optional::of);
   }
 
   /**
@@ -381,7 +381,7 @@ public class MapsOps {
    *     value are {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMapOrderedUnmodifiable(
+  public static <T, K, V> Map<K, V> toMapOrdered(
       @NotNull Stream<T> ts,
       @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {

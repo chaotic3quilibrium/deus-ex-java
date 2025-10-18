@@ -139,7 +139,7 @@ public class SetsOps {
           .forEach(index -> {
             var set = sets[index];
             if (set != null) {
-              var resolvedSet = toSetOrderedUnmodifiable(set.stream());
+              var resolvedSet = toSetOrdered(set.stream());
               if (!resolvedSet.isEmpty()) {
                 result.addAll(resolvedSet);
               }
@@ -162,7 +162,7 @@ public class SetsOps {
    * @return an unmodifiable set with the null elements filtered out
    */
   @NotNull
-  public static <T> Set<T> toSetUnmodifiable(
+  public static <T> Set<T> toSet(
       @NotNull Stream<T> stream
   ) {
     return stream
@@ -179,7 +179,7 @@ public class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> set with the null elements filtered out
    */
   @NotNull
-  public static <T> Set<T> toSetOrderedUnmodifiable(
+  public static <T> Set<T> toSetOrdered(
       @NotNull Stream<T> stream
   ) {
     var set = stream

@@ -196,7 +196,7 @@ public class MapsOpsTests {
   }
 
   @Test
-  public void testToMapUnmodifiable() {
+  public void testToMap() {
     var mapA = new HashMap<Integer, String>();
     mapA.put(null, "xnull");
     mapA.put(1, "x1");
@@ -205,7 +205,7 @@ public class MapsOpsTests {
     @SuppressWarnings("SimplifyStreamApiCallChains")
     var entries = mapA.entrySet().stream().collect(Collectors.toList());
     entries.add(1, null);
-    var mapB = MapsOps.toMapUnmodifiable(entries.stream());
+    var mapB = MapsOps.toMap(entries.stream());
     assertEquals(Map.of(1, "x1", 2, "x2"), mapB);
     var list = new ArrayList<String>();
     list.add(null);
@@ -217,7 +217,7 @@ public class MapsOpsTests {
     list.add("x2");
     list.add("3");
     list.add("x3");
-    var mapC = MapsOps.toMapUnmodifiable(
+    var mapC = MapsOps.toMap(
         list.stream(),
         string -> {
           if ((string != null) && (string.length() > 1)) {
@@ -230,7 +230,7 @@ public class MapsOpsTests {
   }
 
   @Test
-  public void testToMapOrderedUnmodifiable() {
+  public void testToMapOrdered() {
     var mapA = new LinkedHashMap<Integer, String>();
     mapA.put(null, "xnull");
     mapA.put(1, "x1");
@@ -239,7 +239,7 @@ public class MapsOpsTests {
     @SuppressWarnings("SimplifyStreamApiCallChains")
     var entries = mapA.entrySet().stream().collect(Collectors.toList());
     entries.add(1, null);
-    var mapB = MapsOps.toMapOrderedUnmodifiable(entries.stream());
+    var mapB = MapsOps.toMapOrdered(entries.stream());
     assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2"), mapB);
     var list = new ArrayList<String>();
     list.add(null);
@@ -251,7 +251,7 @@ public class MapsOpsTests {
     list.add("x2");
     list.add("3");
     list.add("x3");
-    var mapC = MapsOps.toMapOrderedUnmodifiable(
+    var mapC = MapsOps.toMapOrdered(
         list.stream(),
         string -> {
           if ((string != null) && (string.length() > 1)) {
