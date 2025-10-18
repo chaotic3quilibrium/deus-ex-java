@@ -7,7 +7,28 @@
     <groupId>org.deus-ex-java</groupId>
     <artifactId>deus-ex-java</artifactId>
     <version>1.0-SNAPSHOT</version>
-
+    <name>deus-ex-java</name>
+    <description>A Java augmentation library to ease the incremental modernization of legacy Enterprise IT systems
+    </description>
+    <url>https://github.com/chaotic3quilibrium/deus-ex-java</url>
+    <licenses>
+        <license>
+            <name>GNU AFFERO GENERAL PUBLIC LICENSE Version 3</name>
+            <url>https://github.com/chaotic3quilibrium/deus-ex-java/blob/main/LICENSE.md</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>chaotic3quilibrium</id>
+            <name>Jim O'Flaherty</name>
+            <email>jim.oflaherty.jr@gmail.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/chaotic3quilibrium/deus-ex-java.git</connection>
+        <developerConnection>scm:git:ssh://github.com/chaotic3quilibrium/deus-ex-java.git</developerConnection>
+        <url>https://github.com/chaotic3quilibrium/deus-ex-java</url>
+    </scm>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
@@ -45,4 +66,58 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
