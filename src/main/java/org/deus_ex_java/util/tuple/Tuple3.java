@@ -4,7 +4,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-//TODO: x2 missing javadocs
+/**
+ * An implementor of {@link Tuple} consisting of three elements, which can be seen as a cartesian product across all of
+ * its elements.
+ *
+ * @param _1   the value contained in the first element
+ * @param _2   the value contained in the second element
+ * @param _3   the value contained in the third element
+ * @param <T1> the type of the value contained in the first element
+ * @param <T2> the type of the value contained in the second element
+ * @param <T3> the type of the value contained in the third element
+ */
 public record Tuple3<T1, T2, T3>(
     @NotNull T1 _1,
     @NotNull T2 _2,
@@ -20,9 +30,4 @@ public record Tuple3<T1, T2, T3>(
     return Stream.of(
         _1, _2, _3);
   }
-
-  //TODO: x7 add "withers"
-  // - map() defining functions for each field
-  // - map_N() defining a single function to type transform a specific single field
-  // - update_N() defining a single function to update the value of a specific single field
 }
