@@ -64,7 +64,7 @@ public class FunctionsOps {
    * @see VoidSupplier#of(Runnable) VoidSupplier.of(Runnable) for the inverted version of this method
    */
   @NotNull
-  static Runnable to(
+  public static Runnable to(
       @NotNull VoidSupplier voidSupplier
   ) {
     return voidSupplier::execute;
@@ -76,10 +76,11 @@ public class FunctionsOps {
    * @param supplierCheckedException the target function instance to wrap
    * @param <R>                      the type of the result of the function
    * @return a {@link Callable} wrapper around a {@link SupplierCheckedException} instance
-   * @see SupplierCheckedException#of(Callable) SupplierCheckedException.of(Callable) for the inverted version of this method
+   * @see SupplierCheckedException#of(Callable) SupplierCheckedException.of(Callable) for the inverted version of this
+   *     method
    */
   @NotNull
-  static <R> Callable<R> to(
+  public static <R> Callable<R> to(
       @NotNull SupplierCheckedException<? extends R> supplierCheckedException
   ) {
     return supplierCheckedException::get;
@@ -96,7 +97,7 @@ public class FunctionsOps {
    * @see Function2#of(BiFunction) Function2.of(BiFunction) for the inverted version of this method
    */
   @NotNull
-  static <A, B, R> BiFunction<A, B, R> to(
+  public static <A, B, R> BiFunction<A, B, R> to(
       @NotNull Function2<? super A, ? super B, ? extends R> function2
   ) {
     return function2::apply;
@@ -111,10 +112,11 @@ public class FunctionsOps {
    * @param <R>              the type of the result of the function
    * @param <EX>             the type of the checked {@link Exception} of the function
    * @return a {@link BiFunctionChecked} wrapper around a {@link Function2Checked} instance
-   * @see Function2Checked#of(BiFunctionChecked) Function2Checked.of(BiFunctionChecked) for the inverted version of this method
+   * @see Function2Checked#of(BiFunctionChecked) Function2Checked.of(BiFunctionChecked) for the inverted version of this
+   *     method
    */
   @NotNull
-  static <A, B, R, EX extends Exception> BiFunctionChecked<A, B, R, EX> to(
+  public static <A, B, R, EX extends Exception> BiFunctionChecked<A, B, R, EX> to(
       @NotNull Function2Checked<? super A, ? super B, ? extends R, ? extends EX> function2Checked
   ) {
     return function2Checked::apply;
@@ -128,10 +130,11 @@ public class FunctionsOps {
    * @param <B>                       the type of the second argument to the function
    * @param <R>                       the type of the result of the function
    * @return a {@link BiFunctionCheckedException} wrapper around a {@link Function2CheckedException} instance
-   * @see Function2CheckedException#of(BiFunctionCheckedException) Function2CheckedException.of(BiFunctionCheckedException) for the inverted version of this method
+   * @see Function2CheckedException#of(BiFunctionCheckedException)
+   *     Function2CheckedException.of(BiFunctionCheckedException) for the inverted version of this method
    */
   @NotNull
-  static <A, B, R> BiFunctionCheckedException<A, B, R> to(
+  public static <A, B, R> BiFunctionCheckedException<A, B, R> to(
       @NotNull Function2CheckedException<? super A, ? super B, ? extends R> function2CheckedException
   ) {
     return function2CheckedException::apply;
@@ -147,8 +150,8 @@ public class FunctionsOps {
    * @param <T>                         the type of the first parameter passed by the bi-consumer
    * @param <U>                         the type of the second parameter passed by the bi-consumer
    * @return a {@link BiConsumer} that wraps the checked exception lambda, {@code biConsumerCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T, U> BiConsumer<T, U> wrapCheckedException(
@@ -171,8 +174,8 @@ public class FunctionsOps {
    * @param <T>                         the type of the first parameter passed by the bi-consumer
    * @param <U>                         the type of the second parameter passed by the bi-consumer
    * @return a {@link Consumer} that wraps the checked exception lambda, {@code consumerCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T, U> BiConsumer<T, U> wrapCheckedException(
@@ -199,8 +202,8 @@ public class FunctionsOps {
    * @param <U>                             the type of the second parameter passed into the function
    * @param <R>                             the type of the result returned by the function
    * @return a {@link BiFunction} that wraps the checked exception lambda, {@code biFunctionCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T, U, R> BiFunction<T, U, R> wrapCheckedException(
@@ -224,8 +227,8 @@ public class FunctionsOps {
    * @param <U>                             the type of the second parameter passed into the function
    * @param <R>                             the type of the result returned by the function
    * @return a {@link BiFunction} that wraps the checked exception lambda, {@code biFunctionCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T, U, R> BiFunction<T, U, R> wrapCheckedException(
@@ -249,8 +252,8 @@ public class FunctionsOps {
    * @param <T>                             the type of the two parameters passed into and the result returned by the
    *                                        binary operator
    * @return a {@link BinaryOperator} that wraps the checked exception lambda, {@code binaryOperatorCheckedExceptionT},
-   * with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
-   * {@link Stream} operations
+   *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
+   *     {@link Stream} operations
    */
   @NotNull
   public static <T> BinaryOperator<T> wrapCheckedException(
@@ -273,8 +276,8 @@ public class FunctionsOps {
    * @param <T>                             the type of the two parameters passed into and the result returned by the
    *                                        binary operator
    * @return a {@link BinaryOperator} that wraps the checked exception lambda, {@code binaryOperatorCheckedExceptionT},
-   * with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
-   * the lambda within {@link Stream} operations
+   *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
+   *     the lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T> BinaryOperator<T> wrapCheckedException(
@@ -298,8 +301,8 @@ public class FunctionsOps {
    * @param <T>                          the type of the first parameter passed by the predicate
    * @param <U>                          the type of the second parameter passed by the predicate
    * @return a {@link BiPredicate} that wraps the checked exception lambda, {@code biPredicateCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T, U> BiPredicate<T, U> wrapCheckedException(
@@ -322,8 +325,8 @@ public class FunctionsOps {
    * @param <T>                          the type of the first parameter passed by the predicate
    * @param <U>                          the type of the second parameter passed by the predicate
    * @return a {@link BiPredicate} that wraps the checked exception lambda, {@code biPredicateCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T, U> BiPredicate<T, U> wrapCheckedException(
@@ -346,8 +349,8 @@ public class FunctionsOps {
    *                                  {@link RuntimeException}
    * @param <T>                       the type of the parameter passed by the consumer
    * @return a {@link Consumer} that wraps the checked exception lambda, {@code consumerCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T> Consumer<T> wrapCheckedException(
@@ -369,8 +372,8 @@ public class FunctionsOps {
    *                                  checked exception, if thrown
    * @param <T>                       the type of the parameter passed by the consumer
    * @return a {@link Consumer} that wraps the checked exception lambda, {@code consumerCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T> Consumer<T> wrapCheckedException(
@@ -396,8 +399,8 @@ public class FunctionsOps {
    * @param <T>                       the type of the parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function} that wraps the checked exception lambda, {@code functionCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T, R> Function<T, R> wrapCheckedException(
@@ -420,8 +423,8 @@ public class FunctionsOps {
    * @param <T>                       the type of the parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function} that wraps the checked exception lambda, {@code functionCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T, R> Function<T, R> wrapCheckedException(
@@ -447,8 +450,8 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function2} that wraps the checked exception lambda, {@code function2CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, R> Function2<A, B, R> wrapCheckedException(
@@ -472,8 +475,8 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function2} that wraps the checked exception lambda, {@code function2CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, R> Function2<A, B, R> wrapCheckedException(
@@ -499,8 +502,8 @@ public class FunctionsOps {
    * @param <C>                       the type of the third parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function3} that wraps the checked exception lambda, {@code function3CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, R> Function3<A, B, C, R> wrapCheckedException(
@@ -525,8 +528,8 @@ public class FunctionsOps {
    * @param <C>                       the type of the third parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function3} that wraps the checked exception lambda, {@code function3CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, R> Function3<A, B, C, R> wrapCheckedException(
@@ -553,8 +556,8 @@ public class FunctionsOps {
    * @param <D>                       the type of the fourth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function4} that wraps the checked exception lambda, {@code function4CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, R> Function4<A, B, C, D, R> wrapCheckedException(
@@ -580,8 +583,8 @@ public class FunctionsOps {
    * @param <D>                       the type of the fourth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function4} that wraps the checked exception lambda, {@code function4CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, R> Function4<A, B, C, D, R> wrapCheckedException(
@@ -609,8 +612,8 @@ public class FunctionsOps {
    * @param <E>                       the type of the fifth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, E, R> Function5<A, B, C, D, E, R> wrapCheckedException(
@@ -637,8 +640,8 @@ public class FunctionsOps {
    * @param <E>                       the type of the fifth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, R> Function5<A, B, C, D, E, R> wrapCheckedException(
@@ -667,8 +670,8 @@ public class FunctionsOps {
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, E, F, R> Function6<A, B, C, D, E, F, R> wrapCheckedException(
@@ -696,8 +699,8 @@ public class FunctionsOps {
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, R> Function6<A, B, C, D, E, F, R> wrapCheckedException(
@@ -727,8 +730,8 @@ public class FunctionsOps {
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function7} that wraps the checked exception lambda, {@code function7CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, E, F, G, R> Function7<A, B, C, D, E, F, G, R> wrapCheckedException(
@@ -757,8 +760,8 @@ public class FunctionsOps {
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function7} that wraps the checked exception lambda, {@code function7CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, R> Function7<A, B, C, D, E, F, G, R> wrapCheckedException(
@@ -789,8 +792,8 @@ public class FunctionsOps {
    * @param <H>                       the type of the eighth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function8} that wraps the checked exception lambda, {@code function8CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, E, F, G, H, R> Function8<A, B, C, D, E, F, G, H, R> wrapCheckedException(
@@ -820,8 +823,8 @@ public class FunctionsOps {
    * @param <H>                       the type of the eighth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function8} that wraps the checked exception lambda, {@code function8CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, R> Function8<A, B, C, D, E, F, G, H, R> wrapCheckedException(
@@ -853,8 +856,8 @@ public class FunctionsOps {
    * @param <I>                       the type of the ninth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function9} that wraps the checked exception lambda, {@code function9CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, E, F, G, H, I, R> Function9<A, B, C, D, E, F, G, H, I, R> wrapCheckedException(
@@ -885,8 +888,8 @@ public class FunctionsOps {
    * @param <I>                       the type of the ninth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function9} that wraps the checked exception lambda, {@code function9CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, I, R> Function9<A, B, C, D, E, F, G, H, I, R> wrapCheckedException(
@@ -919,8 +922,8 @@ public class FunctionsOps {
    * @param <J>                        the type of the tenth parameter passed into the function
    * @param <R>                        the type of the result returned by the function
    * @return a {@link Function10} that wraps the checked exception lambda, {@code function10CheckedException}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <A, B, C, D, E, F, G, H, I, J, R> Function10<A, B, C, D, E, F, G, H, I, J, R> wrapCheckedException(
@@ -952,8 +955,8 @@ public class FunctionsOps {
    * @param <J>                        the type of the tenth parameter passed into the function
    * @param <R>                        the type of the result returned by the function
    * @return a {@link Function10} that wraps the checked exception lambda, {@code function10CheckedException}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, I, J, R> Function10<A, B, C, D, E, F, G, H, I, J, R> wrapCheckedException(
@@ -976,8 +979,8 @@ public class FunctionsOps {
    *                                   {@link RuntimeException}
    * @param <T>                        the type of the parameter passed by the predicate
    * @return a {@link Predicate} that wraps the checked exception lambda, {@code predicateCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T> Predicate<T> wrapCheckedException(
@@ -999,8 +1002,8 @@ public class FunctionsOps {
    *                                   checked exception, if thrown
    * @param <T>                        the type of the parameter passed by the predicate
    * @return a {@link Predicate} that wraps the checked exception lambda, {@code predicateCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T> Predicate<T> wrapCheckedException(
@@ -1023,8 +1026,8 @@ public class FunctionsOps {
    *                                  {@link RuntimeException}
    * @param <T>                       the type of the result returned by the supplier
    * @return a {@link Supplier} that wraps the checked exception lambda, {@code supplierCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T> Supplier<T> wrapCheckedException(
@@ -1046,8 +1049,8 @@ public class FunctionsOps {
    *                                  checked exception, if thrown
    * @param <T>                       the type of the result returned by the supplier
    * @return a {@link Supplier} that wraps the checked exception lambda, {@code supplierCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T> Supplier<T> wrapCheckedException(
@@ -1069,8 +1072,8 @@ public class FunctionsOps {
    *                               {@link RuntimeException}
    * @param <T>                    the type of the parameter passed into, and returned by the unary operator
    * @return a {@link UnaryOperator} that wraps the checked exception lambda, {@code unaryCheckedExceptionT}, with a
-   * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static <T> UnaryOperator<T> wrapCheckedException(
@@ -1092,8 +1095,8 @@ public class FunctionsOps {
    *                                 checked exception, if thrown
    * @param <T>                      the type of the parameter passed into, and returned by the unary operator
    * @return a {@link UnaryOperator} that wraps the checked exception lambda, {@code unaryCheckedExceptionT}, with a
-   * {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException, T> UnaryOperator<T> wrapCheckedException(
@@ -1115,8 +1118,8 @@ public class FunctionsOps {
    * @param voidSupplierCheckedException the lambda which may throw a checked exception that needs to be wrapped with a
    *                                     {@link RuntimeException}
    * @return a {@link VoidSupplier} that wraps the checked exception lambda, {@code voidSupplierCheckedException}, with
-   * a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
-   * operations
+   *     a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
+   *     operations
    */
   @NotNull
   public static VoidSupplier wrapCheckedException(
@@ -1137,8 +1140,8 @@ public class FunctionsOps {
    * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @return a {@link VoidSupplier} that wraps the checked exception lambda, {@code voidSupplierCheckedException}, with
-   * a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
-   * lambda within {@link Stream} operations
+   *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
+   *     lambda within {@link Stream} operations
    */
   @NotNull
   public static <E extends RuntimeException> VoidSupplier wrapCheckedException(

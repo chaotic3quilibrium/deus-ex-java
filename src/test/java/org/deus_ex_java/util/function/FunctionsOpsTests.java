@@ -34,21 +34,21 @@ public class FunctionsOpsTests {
 
   @Test
   public void testRemainingUnimplemented() {
-    //TODO: x57 remaining tests
+    //TODO: x45 remaining tests
     //  - x2 CONSTANTS
-    //  - x4 to()
-    //  -x51 wrapCheckedException() pathways
+    //  - x5 to()
+    //    - Callable
+    //    - Runnable
+    //    - BiFunction
+    //    - BiFunctionChecked
+    //    - BiFunctionCheckedException
+    //  -x38 wrapCheckedException() pathways
     //    - BiConsumer*
     //    - BiFunction*
     //    - BinaryOperator*
     //    - BiPredicate*
-    //    - BooleanSupplier*
     //    - Consumer*
-    //    - DoubleBinaryOperator*
-    //    - DoubleConsumer*
-    //    - DoubleFunction*
-    //    - DoublePredicate*
-    //    - DoubleSupplier*
+    //    - Function*
     //    - Function2*
     //    - Function3*
     //    - Function4*
@@ -58,12 +58,11 @@ public class FunctionsOpsTests {
     //    - Function8*
     //    - Function9*
     //    - Function10*
-    //    - Function*
     //    - Predicate*
     //    - Supplier*
     //    - UnaryOperator*
     //    - VoidSupplier*
 
-    throw new MissingImplementationException("missing x8 remaining tests");
+    throw new MissingImplementationException("missing x45 remaining tests");
   }
 }
