@@ -62,11 +62,11 @@ public class ListsOpsTests {
   }
 
   @Test
-  public void testToListUnmodifiable() {
+  public void testToList() {
     var expectedList = List.of(1, 2, 3);
     var nullContainingList = Arrays.asList(null, 1, null, 2, null, 3, null);
     assertEquals(7, nullContainingList.size());
-    var actualList = ListsOps.toListUnmodifiable(nullContainingList.stream());
+    var actualList = ListsOps.toList(nullContainingList.stream());
     assertEquals(expectedList, actualList);
     assertTrue(CollectionsOps.isUnmodifiable(actualList));
   }

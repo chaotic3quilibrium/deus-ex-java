@@ -15,9 +15,9 @@ import static java.util.Map.Entry;
 import static java.util.Map.entry;
 
 /**
- * An {@link EnumAndIdsOps} is a thread-safe immutable non-{@code null} utility class that produces a system-wide singleton
- * for augmenting an {@link Enum}'s mutable {@code values()} array by wrapping it in an unmodifiable {@link List}, and
- * providing an associated ID for each enum value.
+ * An {@link EnumAndIdsOps} is a thread-safe immutable non-{@code null} utility class that produces a system-wide
+ * singleton for augmenting an {@link Enum}'s mutable {@code values()} array by wrapping it in an unmodifiable
+ * {@link List}, and providing an associated ID for each enum value.
  * <p>
  * A precondition for using the {@link EnumAndIdsOps} factory methods is:
  * <ul>
@@ -47,8 +47,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   private static volatile Memoizer<Class<?>, EnumAndIdsOps<?, ?>> ENUM_ID_OPS_BY_CLASS_E;
 
   /**
-   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@link Enum#ordinal()}
-   * for the associated {@code ID}.
+   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using
+   * {@link Enum#ordinal()} for the associated {@code ID}.
    * <p>
    * Rather than reproduce the implementation, a property is used to delegate to {@link EnumsOps} much of the basic
    * {@link Enum} behaviors. This implementation references and reuses the {@link EnumsOps} singleton to augment with
@@ -72,8 +72,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   /**
-   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@link Enum#ordinal()}
-   * plus an offset for the associated {@code ID}.
+   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using
+   * {@link Enum#ordinal()} plus an offset for the associated {@code ID}.
    * <p>
    * Rather than reproduce the implementation, a property is used to delegate to {@link EnumsOps} much of the basic
    * {@link Enum} behaviors. This implementation references and reuses the {@link EnumsOps} singleton to augment with
@@ -103,9 +103,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   /**
-   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to derive
-   * the associated {@code ID} from each {@link Enum} value, and using the {@link Object#toString()} method on the
-   * {@code ID} to derive the String search term for each {@code ID}.
+   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
+   * derive the associated {@code ID} from each {@link Enum} value, and using the {@link Object#toString()} method on
+   * the {@code ID} to derive the String search term for each {@code ID}.
    * <p>
    * A precondition for using the EnumsIdOps factory methods is:
    * <ul>
@@ -125,10 +125,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param classE the {@link Class} of the specific enum being augmented
    * @param fEToId a function to produce an {@code ID} value from an {@link Enum} value
    * @param <E>    the specific Enum's type
-   * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to derive
-   * the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String search
-   * term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an alternative
-   * String from an {@link Enum} value
+   * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
+   *     derive the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String
+   *     search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an
+   *     alternative String from an {@link Enum} value
    */
   @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
@@ -142,9 +142,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   /**
-   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to derive
-   * the associated {@code ID} from each {@link Enum} value, and using {@code fIdToString} to derive the String search
-   * term for each {@code ID}.
+   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
+   * derive the associated {@code ID} from each {@link Enum} value, and using {@code fIdToString} to derive the String
+   * search term for each {@code ID}.
    * <p>
    * A precondition for using the EnumsIdOps factory methods is:
    * <ul>
@@ -166,9 +166,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param fIdToString a function to produce a String value for an ID, assuming the returned values is different from
    *                    that returned by the .toString() method
    * @param <E>         the specific Enum's type
-   * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to derive
-   * the associated {@code ID} from each {@link Enum} value, and using {@code fIdToString} to derive the String
-   * search term for each {@code ID}
+   * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
+   *     derive the associated {@code ID} from each {@link Enum} value, and using {@code fIdToString} to derive the
+   *     String search term for each {@code ID}
    */
   @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
@@ -184,10 +184,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   /**
-   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to derive
-   * the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String search term
-   * for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an alternative String
-   * from an {@link Enum} value.
+   * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
+   * derive the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String
+   * search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an
+   * alternative String from an {@link Enum} value.
    * <p>
    * A precondition for using the EnumsIdOps factory methods is:
    * <ul>
@@ -210,10 +210,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *                      that returned by the .toString() method
    * @param fEToAltString a function to produce an alternative String value for an Enum value
    * @param <E>           the specific Enum's type
-   * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to derive
-   * the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String search
-   * term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an alternative
-   * String from an {@link Enum} value
+   * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
+   *     derive the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String
+   *     search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an
+   *     alternative String from an {@link Enum} value
    */
   @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
@@ -308,7 +308,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   ) {
     var enumOps = EnumsOps.from(classE);
     var enumsValues = enumOps.toList();
-    var orderedMapIdByEnumValue = MapsOps.toMapOrderedUnmodifiable(
+    var orderedMapIdByEnumValue = MapsOps.toMapOrdered(
         enumsValues.stream(),
         (e) ->
             Optional.of(entry(e, fEToId.apply(e))));
@@ -471,7 +471,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}.
    *
    * @return an unmodifiable <u><i>ordered</i></u> map of each {@link Enum}'s value and its associated {@code ID}, with
-   * the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}
+   *     the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}
    */
   @NotNull
   public Map<E, ID> getOrderedMapIdByEnumValue() {
@@ -494,7 +494,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}.
    *
    * @return an unmodifiable <u><i>ordered</i></u> map of each {@code ID} and it associated {@link Enum}'s value, with
-   * the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}
+   *     the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}
    */
   @NotNull
   public Map<ID, E> getOrderedMapEnumValueById() {
@@ -519,8 +519,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param nameOrIdOrAltToString the case-insensitive term with which the search is performed
    * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   * {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise an {@link Entry} containing
-   * the first {@link Enum} and its associated {@code ID}
+   *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise an {@link Entry} containing
+   *     the first {@link Enum} and its associated {@code ID}
    */
   @NotNull
   public Entry<E, ID> valueOfOrDefaultToFirst(
@@ -538,7 +538,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param nameOrIdOrAltToString the case-insensitive term with which the search is performed
    * @param orElseDefault         the entry to provide if the search returns nothing
    * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   * {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}
+   *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}
    */
   @NotNull
   public Entry<E, ID> valueOf(
@@ -555,7 +555,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param nameOrIdOrAltToString the case-insensitive term with which the search is performed
    * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   * {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@link Optional#empty}
+   *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@link Optional#empty}
    */
   @NotNull
   public Optional<Entry<E, ID>> valueOf(
@@ -583,8 +583,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * {@link EnumsOps#DEFAULT_SEPARATOR}.
    *
    * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as *
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the *
-   * {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the *
+   *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join() {
@@ -598,8 +598,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the specified
-   * {@code separator}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the specified
+   *     {@code separator}
    */
   @NotNull
   public String join(@NotNull String separator) {
@@ -613,8 +613,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param eAndIdToString the function to transform an enum value into a String
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the enum values, and joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code eAndIdToString} function for all the enum values, and joined together with a copy of the
+   *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join(
@@ -631,8 +631,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param eAndIdToString the function to transform an enum value into a String
    * @param separator      the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the enum values, and joined together with a copy of the specified
-   * {@code separator}
+   *     {@code eAndIdToString} function for all the enum values, and joined together with a copy of the specified
+   *     {@code separator}
    */
   @NotNull
   public String join(
@@ -649,8 +649,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param es the list of enum values to use
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
-   * the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
+   *     the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join(@NotNull Stream<E> es) {
@@ -665,8 +665,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param es             the list of enum values to use
    * @param eAndIdToString the function to transform an enum value into a String
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for each of the provided {@link Enum} values, and joined together with a copy
-   * of the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code eAndIdToString} function for each of the provided {@link Enum} values, and joined together with a copy
+   *     of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String join(
@@ -684,8 +684,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param es        the list of enum values to use
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
-   * the specified {@code separator}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
+   *     the specified {@code separator}
    */
   @NotNull
   public String join(
@@ -704,8 +704,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param eAndIdToString the function to transform an enum and its associated id value into a String
    * @param separator      the string used to separate the enum values
    * @return a new {@code String} composed of copies of the provided {@code Enum}s and their associated {@code ID}s
-   * transformed by the {@code eAndIdToString} function, and joined together with a copy of the specified
-   * {@code separator}
+   *     transformed by the {@code eAndIdToString} function, and joined together with a copy of the specified
+   *     {@code separator}
    */
   @NotNull
   public String join(
@@ -726,8 +726,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * {@link EnumsOps#DEFAULT_SEPARATOR}.
    *
    * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the
+   *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String joinOnIds() {
@@ -741,8 +741,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the specified
-   * {@code separator}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the specified
+   *     {@code separator}
    */
   @NotNull
   public String joinOnIds(@NotNull String separator) {
@@ -756,8 +756,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param eAndIdToString the function to transform an enum value into a String
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the id values, and joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code eAndIdToString} function for all the id values, and joined together with a copy of the
+   *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String joinOnIds(
@@ -774,8 +774,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param eAndIdToString the function to transform an enum value into a String
    * @param separator      the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the id values, and joined together with a copy of the specified
-   * {@code separator}
+   *     {@code eAndIdToString} function for all the id values, and joined together with a copy of the specified
+   *     {@code separator}
    */
   @NotNull
   public String joinOnIds(
@@ -792,8 +792,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @param ids the list of id values to use
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
-   * the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
+   *     the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String joinOnIds(@NotNull Stream<ID> ids) {
@@ -808,8 +808,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param ids            the list of id values to use
    * @param eAndIdToString the function to transform an enum value into a String
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
-   * the {@link EnumsOps#DEFAULT_SEPARATOR}
+   *     {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
+   *     the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
   @NotNull
   public String joinOnIds(
@@ -827,8 +827,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param ids       the list of id values to use
    * @param separator the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
-   * the specified {@code separator}
+   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
+   *     the specified {@code separator}
    */
   @NotNull
   public String joinOnIds(
@@ -847,8 +847,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param eAndIdToString the function to transform an enum and its associated id value into a String
    * @param separator      the string used to separate the enum values
    * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
-   * the specified {@code separator}
+   *     {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
+   *     the specified {@code separator}
    */
   @NotNull
   public String joinOnIds(

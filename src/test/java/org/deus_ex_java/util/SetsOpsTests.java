@@ -78,22 +78,22 @@ public class SetsOpsTests {
   }
 
   @Test
-  public void testToSetUnmodifiable() {
+  public void testToSet() {
     var expectedSet = Set.of(3, 2, 1);
     var nullContainingSet = Stream.of(null, 2, null, 1, null, 3, null).collect(Collectors.toSet());
     assertEquals(4, nullContainingSet.size());
-    var actualSet = SetsOps.toSetUnmodifiable(nullContainingSet.stream());
+    var actualSet = SetsOps.toSet(nullContainingSet.stream());
     assertEquals(expectedSet, actualSet);
     assertTrue(CollectionsOps.isUnmodifiable(actualSet));
   }
 
   @Test
-  public void testToSetOrderedUnmodifiable() {
+  public void testToSetOrdered() {
     var expectedSetOrdered = new LinkedHashSet<>(List.of(3, 2, 1));
     var nullContainingSetOrdered = new LinkedHashSet<>(Stream.of(null, 3, null, 2, null, 1, null).toList());
     assertEquals(4, nullContainingSetOrdered.size());
     assertNull(nullContainingSetOrdered.iterator().next());
-    var actualSetOrdered = SetsOps.toSetOrderedUnmodifiable(nullContainingSetOrdered.stream());
+    var actualSetOrdered = SetsOps.toSetOrdered(nullContainingSetOrdered.stream());
     assertEquals(expectedSetOrdered, actualSetOrdered);
     assertEquals(expectedSetOrdered.stream().toList(), actualSetOrdered.stream().toList());
     assertTrue(CollectionsOps.isUnmodifiable(actualSetOrdered));

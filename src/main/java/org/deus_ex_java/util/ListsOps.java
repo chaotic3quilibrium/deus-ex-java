@@ -103,7 +103,7 @@ public class ListsOps {
    * @return an unmodifiable list with the null elements filtered out
    */
   @NotNull
-  public static <T> List<T> toListUnmodifiable(
+  public static <T> List<T> toList(
       @NotNull Stream<T> stream
   ) {
     return stream

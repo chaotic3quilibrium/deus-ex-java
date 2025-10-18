@@ -125,8 +125,8 @@ public final class ParametersValidationException extends RuntimeException {
     super(
         formatMessage(
             message,
-            ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream())));
-    this.parametersValidationFailureMessages = ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream());
+            ListsOps.toList(parametersValidationFailureMessages.stream())));
+    this.parametersValidationFailureMessages = ListsOps.toList(parametersValidationFailureMessages.stream());
   }
 
   /**
@@ -143,7 +143,7 @@ public final class ParametersValidationException extends RuntimeException {
     this(
         DEFAULT_MESSAGE,
         cause,
-        ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream()));
+        ListsOps.toList(parametersValidationFailureMessages.stream()));
   }
 
   /**
@@ -181,9 +181,9 @@ public final class ParametersValidationException extends RuntimeException {
     super(
         formatMessage(
             message,
-            ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream())),
+            ListsOps.toList(parametersValidationFailureMessages.stream())),
         cause);
-    this.parametersValidationFailureMessages = ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream());
+    this.parametersValidationFailureMessages = ListsOps.toList(parametersValidationFailureMessages.stream());
   }
 
   /**
@@ -207,11 +207,11 @@ public final class ParametersValidationException extends RuntimeException {
     super(
         formatMessage(
             message,
-            ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream())),
+            ListsOps.toList(parametersValidationFailureMessages.stream())),
         cause,
         enableSuppression,
         writableStackTrace);
-    this.parametersValidationFailureMessages = ListsOps.toListUnmodifiable(parametersValidationFailureMessages.stream());
+    this.parametersValidationFailureMessages = ListsOps.toList(parametersValidationFailureMessages.stream());
     ;
   }
 
