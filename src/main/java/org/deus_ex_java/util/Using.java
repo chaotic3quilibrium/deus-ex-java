@@ -125,7 +125,7 @@ public class Using {
   ) {
     try (
         var a = fSupplierA.get();
-        var b = fSupplierB.get();
+        var b = fSupplierB.get()
     ) {
 
       return Either.right(fAAndBToT.apply(new Tuple2<>(a, b)));
@@ -208,7 +208,7 @@ public class Using {
   ) {
     try (
         var a = fSupplierA.get();
-        var b = fAToB.apply(a);
+        var b = fAToB.apply(a)
     ) {
 
       return Either.right(fTuple2ToT.apply(new Tuple2<>(a, b)));
@@ -294,7 +294,7 @@ public class Using {
     try (
         var a = fSupplierA.get();
         var b = fSupplierB.get();
-        var c = fSupplierC.get();
+        var c = fSupplierC.get()
     ) {
 
       return Either.right(fAAndBAndCToT.apply(new Tuple3<>(a, b, c)));
@@ -388,7 +388,7 @@ public class Using {
     try (
         var a = fSupplierA.get();
         var b = fAToB.apply(a);
-        var c = fAndBToC.apply(new Tuple2<>(a, b));
+        var c = fAndBToC.apply(new Tuple2<>(a, b))
     ) {
 
       return Either.right(fAAndBAndCToT.apply(new Tuple3<>(a, b, c)));
@@ -484,7 +484,7 @@ public class Using {
         var a = fSupplierA.get();
         var b = fSupplierB.get();
         var c = fSupplierC.get();
-        var d = fSupplierD.get();
+        var d = fSupplierD.get()
     ) {
 
       return Either.right(fAAndBAndCAndDToT.apply(new Tuple4<>(a, b, c, d)));
@@ -590,7 +590,7 @@ public class Using {
         var a = fSupplierA.get();
         var b = fAToB.apply(a);
         var c = fAndBToC.apply(new Tuple2<>(a, b));
-        var d = fAndBAndCToD.apply(new Tuple3<>(a, b, c));
+        var d = fAndBAndCToD.apply(new Tuple3<>(a, b, c))
     ) {
 
       return Either.right(fAAndBAndCAndDToT.apply(new Tuple4<>(a, b, c, d)));
@@ -698,7 +698,7 @@ public class Using {
         var b = fSupplierB.get();
         var c = fSupplierC.get();
         var d = fSupplierD.get();
-        var e = fSupplierE.get();
+        var e = fSupplierE.get()
     ) {
 
       return Either.right(fAAndBAndCAndDAndEToT.apply(new Tuple5<>(a, b, c, d, e)));
@@ -815,7 +815,7 @@ public class Using {
         var b = fAToB.apply(a);
         var c = fAndBToC.apply(new Tuple2<>(a, b));
         var d = fAndBAndCToD.apply(new Tuple3<>(a, b, c));
-        var e = fAndBAndCAndDToE.apply(new Tuple4<>(a, b, c, d));
+        var e = fAndBAndCAndDToE.apply(new Tuple4<>(a, b, c, d))
     ) {
 
       return Either.right(fAAndBAndCAndDAndEToT.apply(new Tuple5<>(a, b, c, d, e)));

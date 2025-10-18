@@ -67,7 +67,7 @@ public class UsingCheckedException {
   ) {
     try (
         var a = fceSupplierA.get();
-        var b = fceSupplierB.get();
+        var b = fceSupplierB.get()
     ) {
 
       return Either.right(fceAAndBToT.apply(new Tuple2<>(a, b)));
@@ -105,7 +105,7 @@ public class UsingCheckedException {
   ) {
     try (
         var a = fceSupplierA.get();
-        var b = fceAToB.apply(a);
+        var b = fceAToB.apply(a)
     ) {
 
       return Either.right(fceTuple2ToT.apply(new Tuple2<>(a, b)));
@@ -146,7 +146,7 @@ public class UsingCheckedException {
     try (
         var a = fceSupplierA.get();
         var b = fceSupplierB.get();
-        var c = fceSupplierC.get();
+        var c = fceSupplierC.get()
     ) {
 
       return Either.right(fceAAndBAndCToT.apply(new Tuple3<>(a, b, c)));
@@ -190,7 +190,7 @@ public class UsingCheckedException {
     try (
         var a = fceSupplierA.get();
         var b = fceAToB.apply(a);
-        var c = fceAndBToC.apply(new Tuple2<>(a, b));
+        var c = fceAndBToC.apply(new Tuple2<>(a, b))
     ) {
 
       return Either.right(fceAAndBAndCToT.apply(new Tuple3<>(a, b, c)));
@@ -236,7 +236,7 @@ public class UsingCheckedException {
         var a = fceSupplierA.get();
         var b = fceSupplierB.get();
         var c = fceSupplierC.get();
-        var d = fceSupplierD.get();
+        var d = fceSupplierD.get()
     ) {
 
       return Either.right(fceAAndBAndCAndDToT.apply(new Tuple4<>(a, b, c, d)));
@@ -286,7 +286,7 @@ public class UsingCheckedException {
         var a = fceSupplierA.get();
         var b = fceAToB.apply(a);
         var c = fceAndBToC.apply(new Tuple2<>(a, b));
-        var d = fceAndBAndCToD.apply(new Tuple3<>(a, b, c));
+        var d = fceAndBAndCToD.apply(new Tuple3<>(a, b, c))
     ) {
 
       return Either.right(fceAAndBAndCAndDToT.apply(new Tuple4<>(a, b, c, d)));
@@ -338,7 +338,7 @@ public class UsingCheckedException {
         var b = fceSupplierB.get();
         var c = fceSupplierC.get();
         var d = fceSupplierD.get();
-        var e = fceSupplierE.get();
+        var e = fceSupplierE.get()
     ) {
 
       return Either.right(fceAAndBAndCAndDAndEToT.apply(new Tuple5<>(a, b, c, d, e)));
@@ -394,7 +394,7 @@ public class UsingCheckedException {
         var b = fceAToB.apply(a);
         var c = fceAndBToC.apply(new Tuple2<>(a, b));
         var d = fceAndBAndCToD.apply(new Tuple3<>(a, b, c));
-        var e = fceAndBAndCAndDToE.apply(new Tuple4<>(a, b, c, d));
+        var e = fceAndBAndCAndDToE.apply(new Tuple4<>(a, b, c, d))
     ) {
 
       return Either.right(fceAAndBAndCAndDAndEToT.apply(new Tuple5<>(a, b, c, d, e)));
