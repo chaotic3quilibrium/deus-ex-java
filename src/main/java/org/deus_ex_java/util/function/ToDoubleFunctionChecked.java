@@ -1,0 +1,20 @@
+package org.deus_ex_java.util.function;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.ToDoubleFunction;
+
+/**
+ * Enables the providing of a {@link ToDoubleFunction} Lambda function which can throw a checked exception.
+ */
+@FunctionalInterface
+public interface ToDoubleFunctionChecked<T, E extends Exception> {
+
+  /**
+   * Applies this function to the given argument.
+   *
+   * @param value the function argument
+   * @return the function result
+   */
+  double applyAsDouble(@NotNull T value) throws E;
+}
