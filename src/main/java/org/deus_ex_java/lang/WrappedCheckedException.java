@@ -4,6 +4,7 @@ import org.deus_ex_java.util.function.FunctionsOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serial;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
@@ -33,7 +34,7 @@ public final class WrappedCheckedException extends RuntimeException {
       @NotNull String message,
       @NotNull Throwable cause
   ) {
-    super(message, cause);
+    super(message, Objects.requireNonNull(cause));
   }
 
   /**
@@ -48,7 +49,7 @@ public final class WrappedCheckedException extends RuntimeException {
   public WrappedCheckedException(
       @NotNull Throwable cause
   ) {
-    super(cause);
+    super(Objects.requireNonNull(cause));
   }
 
   /**
@@ -67,6 +68,6 @@ public final class WrappedCheckedException extends RuntimeException {
       boolean enableSuppression,
       boolean writableStackTrace
   ) {
-    super(message, cause, enableSuppression, writableStackTrace);
+    super(message, Objects.requireNonNull(cause), enableSuppression, writableStackTrace);
   }
 }

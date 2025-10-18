@@ -118,6 +118,27 @@
                     <autoPublish>true</autoPublish>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>se.eris</groupId>
+                <artifactId>notnull-instrumenter-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains</groupId>
+                        <artifactId>annotations</artifactId>
+                        <version>RELEASE</version>
+                        <optional>true</optional>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>instrument-annotations</id>
+                        <goals>
+                            <goal>instrument</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

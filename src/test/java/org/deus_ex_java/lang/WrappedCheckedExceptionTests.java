@@ -39,7 +39,7 @@ public class WrappedCheckedExceptionTests {
         () ->
             new WrappedCheckedException(null));
     assertEquals(
-        "Argument for @NotNull parameter 'cause' of org/deus_ex_java/lang/WrappedCheckedException.<init> must not be null",
+        "NotNull annotated argument 0 of org/deus_ex_java/lang/WrappedCheckedException.<init> must not be null",
         illegalArgumentException.getMessage());
   }
 }

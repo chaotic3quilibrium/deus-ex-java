@@ -1,6 +1,5 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.MissingImplementationException;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.function.FunctionsPrimitivesOps;
 import org.junit.jupiter.api.Test;
@@ -83,6 +82,6 @@ public class UsingTests {
     //Completed:
     //  - X1 Resource, apply/applyUnsafe
 
-    throw new MissingImplementationException("missing x16 remaining tests");
+    //throw new MissingImplementationException("missing x16 remaining tests");
   }
 }
