@@ -1,0 +1,26 @@
+- High level overview
+    - "Java is a blue collar language. It's not PhD thesis material, but a language for a job." - James Gosling
+    - Not a single line of this codebase was AI generated, including all tests
+    - Simplify Java code by relying on simple effective patterns that focus on composibility, as opposed to reusability)
+    - This is NOT an FP library - please use https://vavr.io for that
+- highly biased towards "prevent invalid states from being instantiatable"
+    - use a tuple or builder for moving through "partial" states prior to instantiation
+- highly biased towards reducing the use of null
+    - no other meaning for null is allowed other than a reference has not-yet-initialized
+    - is filtered out (typically as a flatMap) everywhere it is encountered
+    - it is considered a compile-time type hole, and is biased towards run-time errors
+    - use Optional or Either to compile-time handle alternatives
+- highly biased towards encapsulating checked exception
+    - biases to error-by-value (via an Either), as opposed to error-by-throw-exception
+    - all functionality is assumed to be RuntimeException; i.e. no checked exception signatures
+    - use Either.tryCatchChecked to conveniently wrap all checked exceptions
+- highly biased towards using expressions, as opposed to statements
+    - encapsulates iteration statements into Stream patterns
+    - encapsulates exception handling try/catch statements into the Either.tryCatch* patterns
+    - encapsulates resource handling with try statements into the Using.apply patterns
+    - encapsulates if statements into ADTs, Optional, Either, etc.
+- offers both types of "instantiation" factory
+    - unsafeFrom which throws an exception if preconditions fail
+    - from which returns an Either where the left contains the exception that would have been thrown when the
+      precondition fails
+    - 
