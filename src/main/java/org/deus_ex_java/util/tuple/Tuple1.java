@@ -4,7 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Stream;
 
-//TODO: x2 missing javadocs
+/**
+ * An implementor of {@link Tuple} consisting of one element.
+ *
+ * @param _1   the value contained in the first element
+ * @param <T1> the type of the value contained in the first element
+ */
 public record Tuple1<T1>(
     @NotNull T1 _1
 ) implements Tuple {
@@ -18,10 +23,5 @@ public record Tuple1<T1>(
     return Stream.of(
         _1);
   }
-
-  //TODO: x3 add "withers"
-  // - map() defining functions for each field
-  // - map_N() defining a single function to type transform a specific single field
-  // - update_N() defining a single function to update the value of a specific single field
 }
 
