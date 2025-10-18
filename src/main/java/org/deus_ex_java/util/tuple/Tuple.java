@@ -5,7 +5,18 @@ import java.util.stream.Stream;
 /**
  * The base interface of all tuples.
  */
-public interface Tuple {
+public sealed interface Tuple permits
+    Tuple1,
+    Tuple2,
+    Tuple3,
+    Tuple4,
+    Tuple5,
+    Tuple6,
+    Tuple7,
+    Tuple8,
+    Tuple9,
+    Tuple10 {
+
   /**
    * Arity of smallest tuple implementor.
    */
