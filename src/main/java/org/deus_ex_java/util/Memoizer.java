@@ -8,47 +8,26 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
- * Source URL: <a href="https://gist.github.com/chaotic3quilibrium/7535c231bb11bd9abc5712c982c46690">
- * https://gist.github.com/chaotic3quilibrium/7535c231bb11bd9abc5712c982c46690</a>
- * <p>
- * -
- * <p>
- * File: org.public_domain.java.utils.Memoizer.java
- * <p>
- * Version: v2023.12.18
- * <p>
- * -
- * <p>
  * A {@link Memoizer} is a thread-safe utility class that caches the resulting value of (expensively?) computing a
- * function taking a single argument.
- * <p>
- * By storing the result (the value) of a call to the defining function for a particular input value (the key), all
- * subsequent calls with the same input value (i.e. key) return the previously computed (cached) value as opposed to
- * recomputing the function. This can significantly improve the performance of computationally expensive functions,
- * especially those that are called repeatedly with the same inputs.
- * <p>
- * -
- * <p>
- * Memoization is particularly useful for a function with the following profile:
- * <p>
+ * function taking a single argument.<p> By storing the result (the value) of a call to the defining function for a
+ * particular input value (the key), all subsequent calls with the same input value (i.e. key) return the previously
+ * computed (cached) value as opposed to recomputing the function. This can significantly improve the performance of
+ * computationally expensive functions, especially those that are called repeatedly with the same inputs.<p> -<p>
+ * Memoization is particularly useful for a function with the following profile:<p>
  * <ul>
  * <li>Likely to be time-consuming to execute
  * <li>Likely to be repeatedly called with the same inputs
  * <li>Deterministic; i.e. always returns the same output for a given input
- * </ul>
- * <p>
- * -
- * <p>
+ * </ul><p>
+ * -<p>
  * <b>CAUTION:</b> Because this design eliminates multi-thread race conditions, and this
  * implementation allows a compute function to be defined within the {@link #from(Function, MethodOverride, InsertionOrder)}
  * factory method, as well as allowing a compute function to be
- * provided with the {@link #get(K, Function)} method, it is important to note that when a computed
+ * provided with the {@link #get(Object, Function)} method, it is important to note that when a computed
  * result (the value) is associated with the input parameter (the key), the association is made
- * permanent and immutable in a thread-safe manner.
- * <p>
- * -
- * <p>
- * Said another way, the {@link #get(K, Function)} method is unable to "update" an existing
+ * permanent and immutable in a thread-safe manner.<p>
+ * -<p>
+ * Said another way, the {@link #get(Object, Function)} method is unable to "update" an existing
  * association. Once an association is generated, it remains permanent and immutable.
  *
  * @param <K> type of the input value (the key) permanently associated with the computed, and subsequently cached,
@@ -60,10 +39,7 @@ public final class Memoizer<K, V> {
   /**
    * Creates a lazy {@link Supplier<T>} that delays the creating of an instance of {@code t} until the first time it is
    * requested. Upon request, the generated instance of {@code t} is, in a thread-safe way, cached and returned. And
-   * then for all future requests, the cached value of {@code t} is returned, as opposed to recomputing it.
-   * <p>
-   * -
-   * <p>
+   * then for all future requests, the cached value of {@code t} is returned, as opposed to recomputing it.<p> -<p>
    * <b>CAUTION:</b> If {@link Supplier#get()} throws an {@link Exception}, the exception is
    * captured, suppressed, and the returned instance of {@link Supplier<T>} is defined to short-circuit by having
    * {@link Supplier#get()} hardcoded to return <code>null</code>.
@@ -122,11 +98,8 @@ public final class Memoizer<K, V> {
 
   /**
    * Creates a {@link Memoizer} without a default {@code deriveVFromK} function and doesn't maintain insertion order of
-   * the keys.
-   * <p>
-   * -
-   * <p>
-   * <b>CAUTION:</b> This requires all calls be routed through the {@link #get(K, Function)}.
+   * the keys.<p> -<p>
+   * <b>CAUTION:</b> This requires all calls be routed through the {@link #get(Object, Function)}.
    *
    * @return an instance of {@link Memoizer} without a default {@code deriveVFromK} function and doesn't maintain
    *     insertion order of the keys
@@ -140,13 +113,13 @@ public final class Memoizer<K, V> {
 
   /**
    * Creates a {@link Memoizer} with a specified default {@code deriveVFromK} function, disallows the function to be
-   * overridden by the {@link #get(K, Function)} method, and doesn't maintain insertion order of the keys.
+   * overridden by the {@link #get(Object, Function)} method, and doesn't maintain insertion order of the keys.
    *
    * @param defaultDeriveVFromK function to use to derive {@link V} from {@link K}, if the association is not already
    *                            cached
    * @return an instance of {@link Memoizer} with a specified default {@code deriveVFromK} function, disallows the
-   *     function to be overridden by the {@link #get(K, Function)} method, and doesn't maintain insertion order of the
-   *     keys
+   *     function to be overridden by the {@link #get(Object, Function)} method, and doesn't maintain insertion order of
+   *     the keys
    */
   @NotNull
   public static <K, V> Memoizer<K, V> from(
@@ -160,7 +133,7 @@ public final class Memoizer<K, V> {
 
   /**
    * Creates a new {@link Memoizer} with a specified default {@code deriveVFromK} function, optionally allows the
-   * function to be overridden by the {@link #get(K, Function)} method, and doesn't maintain insertion order of the
+   * function to be overridden by the {@link #get(Object, Function)} method, and doesn't maintain insertion order of the
    * keys.
    *
    * @param defaultDeriveVFromK function to use to derive {@link V} from {@link K}, if the association is not already
@@ -169,8 +142,8 @@ public final class Memoizer<K, V> {
    *                            be called, otherwise the {@link #get(Object, Function)} method will throw an
    *                            {@link UnsupportedOperationException}
    * @return an instance of {@link Memoizer} with a specified default {@code deriveVFromK} function, optionally allows
-   *     the function to be overridden by the {@link #get(K, Function)} method, and doesn't maintain insertion order of
-   *     the keys
+   *     the function to be overridden by the {@link #get(Object, Function)} method, and doesn't maintain insertion
+   *     order of the keys
    */
   @NotNull
   public static <K, V> Memoizer<K, V> from(
@@ -184,11 +157,8 @@ public final class Memoizer<K, V> {
 
   /**
    * Creates a {@link Memoizer} without a default {@code deriveVFromK} function, and optionally maintain insertion order
-   * of the keys.
-   * <p>
-   * -
-   * <p>
-   * <b>CAUTION:</b> This requires all calls be routed through the {@link #get(K, Function)}.
+   * of the keys.<p> -<p>
+   * <b>CAUTION:</b> This requires all calls be routed through the {@link #get(Object, Function)}.
    *
    * @param insertionOrder when {@link Memoizer.InsertionOrder#RETAIN}, retains the insertion order of the keys
    * @return an instance of {@link Memoizer} without a default {@code deriveVFromK} function, and optionally maintain
@@ -205,8 +175,8 @@ public final class Memoizer<K, V> {
 
   /**
    * Creates a {@link Memoizer} with a specified default {@code deriveVFromK} function, optionally allowing this default
-   * function to be overridden by the {@link #get(K, Function)} method, and optionally maintaining the insertion order
-   * of the keys.
+   * function to be overridden by the {@link #get(Object, Function)} method, and optionally maintaining the insertion
+   * order of the keys.
    *
    * @param defaultDeriveVFromK function to use to derive V from K, if the association is not already cached
    * @param methodOverride      when {@link Memoizer.MethodOverride#ALLOWED}, enables {@link #get(Object, Function)} to
@@ -214,8 +184,8 @@ public final class Memoizer<K, V> {
    *                            {@link UnsupportedOperationException}
    * @param insertionOrder      when {@link Memoizer.InsertionOrder#RETAIN}, retains the insertion order of the keys
    * @return an instance of {@link Memoizer} with a specified default {@code deriveVFromK} function, optionally allowing
-   *     this default function to be overridden by the {@link #get(K, Function)} method, and optionally maintaining the
-   *     insertion order of the keys.
+   *     this default function to be overridden by the {@link #get(Object, Function)} method, and optionally maintaining
+   *     the insertion order of the keys.
    */
   @NotNull
   public static <K, V> Memoizer<K, V> from(
@@ -241,11 +211,11 @@ public final class Memoizer<K, V> {
   }
 
   /**
-   * Returns whether the {@link #get(K, Function)} method is allowed to provide an {@code overrideDeriveVFromK}
-   * function. If {@link Memoizer.MethodOverride#INHIBITED}, the {@link #get(K, Function)} method call will throw an
-   * {@link UnsupportedOperationException}.
+   * Returns whether the {@link #get(Object, Function)} method is allowed to provide an {@code overrideDeriveVFromK}
+   * function. If {@link Memoizer.MethodOverride#INHIBITED}, the {@link #get(Object, Function)} method call will throw
+   * an {@link UnsupportedOperationException}.
    *
-   * @return if {@code true}, indicates the {@link #get(K, Function)} method is allowed to provide an
+   * @return if {@code true}, indicates the {@link #get(Object, Function)} method is allowed to provide an
    *     {@code overrideDeriveVFromK} function, otherwise the same method call will throw an
    *     {@link UnsupportedOperationException}
    */
@@ -324,21 +294,14 @@ public final class Memoizer<K, V> {
 
   /**
    * Retrieves the cached value for the specified key, first computing the value using the provided
-   * {@code overrideDeriveVFromK} function if this is the first request for this input value.
-   * <p>
-   * -
-   * <p>
+   * {@code overrideDeriveVFromK} function if this is the first request for this input value.<p> -<p>
    * <b>CAUTION:</b> Because this design eliminates multi-thread race conditions, and this
    * implementation allows a compute function to be defined within the
    * {@link #from(Function, Memoizer.MethodOverride, Memoizer.InsertionOrder)} factory method, as well as allowing a
    * compute function to be provided with this method, it is important to note that when a computed result (the value)
    * is associated with the input parameter (the key), the association is made permanent and immutable in a thread-safe
-   * manner.
-   * <p>
-   * -
-   * <p>
-   * Said another way, this method is unable to "update" an existing association. Once an association has been
-   * generated, it remains permanent and immutable.
+   * manner.<p> -<p> Said another way, this method is unable to "update" an existing association. Once an association
+   * has been generated, it remains permanent and immutable.
    *
    * @param k key to use to retrieve the permanently associated computed value
    * @return cached (computed) value for the specified key
