@@ -8,7 +8,7 @@ import java.util.function.ToIntFunction;
  * Enables the providing of a {@link ToIntFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface ToIntFunctionChecked<T, E extends Exception> {
+public interface ToIntFunctionChecked<T, EX extends Exception> {
 
   /**
    * Applies this function to the given argument.
@@ -16,5 +16,5 @@ public interface ToIntFunctionChecked<T, E extends Exception> {
    * @param value the function argument
    * @return the function result
    */
-  int applyAsInt(@NotNull T value) throws E;
+  int applyAsInt(@NotNull T value) throws EX;
 }

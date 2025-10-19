@@ -8,7 +8,7 @@ import java.util.function.ObjDoubleConsumer;
  * Enables the providing of a {@link ObjDoubleConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface ObjDoubleConsumerChecked<T, E extends Exception> {
+public interface ObjDoubleConsumerChecked<T, EX extends Exception> {
 
   /**
    * Performs this operation on the given arguments.
@@ -16,5 +16,5 @@ public interface ObjDoubleConsumerChecked<T, E extends Exception> {
    * @param t     the first input argument
    * @param value the second input argument
    */
-  void accept(@NotNull T t, double value) throws E;
+  void accept(@NotNull T t, double value) throws EX;
 }

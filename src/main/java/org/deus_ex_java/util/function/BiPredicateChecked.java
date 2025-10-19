@@ -7,7 +7,7 @@ import java.util.function.BiPredicate;
  * Enables the providing of a {@link BiPredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
-public interface BiPredicateChecked<T, U, E extends Exception> {
+public interface BiPredicateChecked<T, U, EX extends Exception> {
 
   /**
    * Evaluates this predicate on the given arguments.
@@ -16,7 +16,7 @@ public interface BiPredicateChecked<T, U, E extends Exception> {
    * @param u the second input argument
    * @return {@code true} if the input arguments match the predicate, otherwise {@code false}
    */
-  boolean test(T t, U u) throws E;
+  boolean test(T t, U u) throws EX;
 
   /**
    * Returns a composed predicate that represents a short-circuiting logical AND of this predicate and another.  When
@@ -32,7 +32,7 @@ public interface BiPredicateChecked<T, U, E extends Exception> {
    *     {@code other} predicate
    * @throws NullPointerException if other is null
    */
-  default BiPredicateChecked<T, U, E> and(BiPredicateChecked<? super T, ? super U, ? extends E> other) {
+  default BiPredicateChecked<T, U, EX> and(BiPredicateChecked<? super T, ? super U, ? extends EX> other) {
     Objects.requireNonNull(other);
     return (T t, U u) -> test(t, u) && other.test(t, u);
   }
@@ -42,7 +42,7 @@ public interface BiPredicateChecked<T, U, E extends Exception> {
    *
    * @return a predicate that represents the logical negation of this predicate
    */
-  default BiPredicateChecked<T, U, E> negate() {
+  default BiPredicateChecked<T, U, EX> negate() {
     return (T t, U u) -> !test(t, u);
   }
 
@@ -60,7 +60,7 @@ public interface BiPredicateChecked<T, U, E extends Exception> {
    *     {@code other} predicate
    * @throws NullPointerException if other is null
    */
-  default BiPredicateChecked<T, U, E> or(BiPredicateChecked<? super T, ? super U, ? extends E> other) {
+  default BiPredicateChecked<T, U, EX> or(BiPredicateChecked<? super T, ? super U, ? extends EX> other) {
     Objects.requireNonNull(other);
     return (T t, U u) -> test(t, u) || other.test(t, u);
   }

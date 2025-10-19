@@ -8,7 +8,7 @@ import java.util.function.ToDoubleBiFunction;
  * Enables the providing of a {@link ToDoubleBiFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface ToDoubleBiFunctionChecked<T, U, E extends Exception> {
+public interface ToDoubleBiFunctionChecked<T, U, EX extends Exception> {
 
   /**
    * Applies this function to the given arguments.
@@ -17,5 +17,5 @@ public interface ToDoubleBiFunctionChecked<T, U, E extends Exception> {
    * @param u the second function argument
    * @return the function result
    */
-  double applyAsDouble(@NotNull T t, @NotNull U u) throws E;
+  double applyAsDouble(@NotNull T t, @NotNull U u) throws EX;
 }
