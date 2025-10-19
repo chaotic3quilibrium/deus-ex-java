@@ -8,14 +8,14 @@ import java.util.function.IntConsumer;
  * Enables the providing of a {@link IntConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface IntConsumerChecked<E extends Exception> {
+public interface IntConsumerChecked<EX extends Exception> {
 
   /**
    * Performs this operation on the given argument.
    *
    * @param value the input argument
    */
-  void accept(int value) throws E;
+  void accept(int value) throws EX;
 
   /**
    * Returns a composed {@code IntConsumer} that performs, in sequence, this operation followed by the {@code after}
@@ -27,8 +27,8 @@ public interface IntConsumerChecked<E extends Exception> {
    *     operation
    */
   @NotNull
-  default IntConsumerChecked<E> andThen(
-      @NotNull IntConsumerChecked<? extends E> after
+  default IntConsumerChecked<EX> andThen(
+      @NotNull IntConsumerChecked<? extends EX> after
   ) {
     return (int t) -> {
       accept(t);

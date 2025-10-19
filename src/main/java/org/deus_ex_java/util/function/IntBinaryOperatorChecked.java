@@ -6,7 +6,7 @@ import java.util.function.IntBinaryOperator;
  * Enables the providing of a {@link IntBinaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface IntBinaryOperatorChecked<E extends Exception> {
+public interface IntBinaryOperatorChecked<EX extends Exception> {
   /**
    * Applies this operator to the given operands.
    *
@@ -14,5 +14,5 @@ public interface IntBinaryOperatorChecked<E extends Exception> {
    * @param right the second operand
    * @return the operator result
    */
-  int applyAsInt(int left, int right) throws E;
+  int applyAsInt(int left, int right) throws EX;
 }

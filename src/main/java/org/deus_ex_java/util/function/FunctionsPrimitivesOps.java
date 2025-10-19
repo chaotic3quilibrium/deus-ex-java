@@ -49,16 +49,16 @@ public class FunctionsPrimitivesOps {
    *                                        a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper        the supplier of the RuntimeException descendant instance within which to
    *                                        wrap the checked exception, if thrown
-   * @param <E>                             the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                            the type of the RuntimeException descendant instance within which to wrap
    *                                        the checked exception, if thrown
    * @return a {@link BooleanSupplier} that wraps the checked exception lambda, {@code booleanSupplierCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> BooleanSupplier wrapCheckedException(
+  public static <EX extends RuntimeException> BooleanSupplier wrapCheckedException(
       @NotNull BooleanSupplierCheckedException booleanSupplierCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
         Either.tryCatchChecked(booleanSupplierCheckedException::getAsBoolean)
@@ -93,16 +93,16 @@ public class FunctionsPrimitivesOps {
    *                                             with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper             the supplier of the RuntimeException descendant instance within which
    *                                             to wrap the checked exception, if thrown
-   * @param <E>                                  the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                 the type of the RuntimeException descendant instance within which to
    *                                             wrap the checked exception, if thrown
    * @return a {@link DoubleBinaryOperator} that wraps the checked exception lambda,
    *     {@code doubleBinaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoubleBinaryOperator wrapCheckedException(
+  public static <EX extends RuntimeException> DoubleBinaryOperator wrapCheckedException(
       @NotNull DoubleBinaryOperatorCheckedException doubleBinaryOperatorCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
         Either.tryCatchChecked(() ->
@@ -138,16 +138,16 @@ public class FunctionsPrimitivesOps {
    *                                       a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper       the supplier of the RuntimeException descendant instance within which to wrap
    *                                       the checked exception, if thrown
-   * @param <E>                            the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                           the type of the RuntimeException descendant instance within which to wrap the
    *                                       checked exception, if thrown
    * @return a {@link DoubleConsumer} that wraps the checked exception lambda, {@code doubleConsumerCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoubleConsumer wrapCheckedException(
+  public static <EX extends RuntimeException> DoubleConsumer wrapCheckedException(
       @NotNull DoubleConsumerCheckedException doubleConsumerCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) -> {
       try {
@@ -186,7 +186,7 @@ public class FunctionsPrimitivesOps {
    *                                       a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper       the supplier of the RuntimeException descendant instance within which to wrap
    *                                       the checked exception, if thrown
-   * @param <E>                            the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                           the type of the RuntimeException descendant instance within which to wrap the
    *                                       checked exception, if thrown
    * @param <R>                            the type of the result returned by the function
    * @return a {@link DoubleFunction} that wraps the checked exception lambda, {@code doubleFunctionCheckedException},
@@ -194,9 +194,9 @@ public class FunctionsPrimitivesOps {
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, R> DoubleFunction<R> wrapCheckedException(
+  public static <EX extends RuntimeException, R> DoubleFunction<R> wrapCheckedException(
       @NotNull DoubleFunctionCheckedException<R> doubleFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -232,16 +232,16 @@ public class FunctionsPrimitivesOps {
    *                                        a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper        the supplier of the RuntimeException descendant instance within which to
    *                                        wrap the checked exception, if thrown
-   * @param <E>                             the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                            the type of the RuntimeException descendant instance within which to wrap
    *                                        the checked exception, if thrown
    * @return a {@link DoublePredicate} that wraps the checked exception lambda, {@code doublePredicateCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoublePredicate wrapCheckedException(
+  public static <EX extends RuntimeException> DoublePredicate wrapCheckedException(
       @NotNull DoublePredicateCheckedException doublePredicateCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -277,16 +277,16 @@ public class FunctionsPrimitivesOps {
    *                                       a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper       the supplier of the RuntimeException descendant instance within which to wrap
    *                                       the checked exception, if thrown
-   * @param <E>                            the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                           the type of the RuntimeException descendant instance within which to wrap the
    *                                       checked exception, if thrown
    * @return a {@link DoubleSupplier} that wraps the checked exception lambda, {@code doubleSupplierCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoubleSupplier wrapCheckedException(
+  public static <EX extends RuntimeException> DoubleSupplier wrapCheckedException(
       @NotNull DoubleSupplierCheckedException doubleSupplierCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
         Either.tryCatchChecked(doubleSupplierCheckedException::getAsDouble)
@@ -321,16 +321,16 @@ public class FunctionsPrimitivesOps {
    *                                            with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper            the supplier of the RuntimeException descendant instance within which to
    *                                            wrap the checked exception, if thrown
-   * @param <E>                                 the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                the type of the RuntimeException descendant instance within which to
    *                                            wrap the checked exception, if thrown
    * @return a {@link DoubleToIntFunction} that wraps the checked exception lambda,
    *     {@code doubleToIntFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoubleToIntFunction wrapCheckedException(
+  public static <EX extends RuntimeException> DoubleToIntFunction wrapCheckedException(
       @NotNull DoubleToIntFunctionCheckedException doubleToIntFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -366,16 +366,16 @@ public class FunctionsPrimitivesOps {
    *                                             with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper             the supplier of the RuntimeException descendant instance within which
    *                                             to wrap the checked exception, if thrown
-   * @param <E>                                  the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                 the type of the RuntimeException descendant instance within which to
    *                                             wrap the checked exception, if thrown
    * @return a {@link DoubleToLongFunction} that wraps the checked exception lambda,
    *     {@code doubleToLongFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoubleToLongFunction wrapCheckedException(
+  public static <EX extends RuntimeException> DoubleToLongFunction wrapCheckedException(
       @NotNull DoubleToLongFunctionCheckedException doubleToLongFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -411,16 +411,16 @@ public class FunctionsPrimitivesOps {
    *                                            with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper            the supplier of the RuntimeException descendant instance within which to
    *                                            wrap the checked exception, if thrown
-   * @param <E>                                 the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                the type of the RuntimeException descendant instance within which to
    *                                            wrap the checked exception, if thrown
    * @return a {@link DoubleUnaryOperator} that wraps the checked exception lambda,
    *     {@code doubleUnaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> DoubleUnaryOperator wrapCheckedException(
+  public static <EX extends RuntimeException> DoubleUnaryOperator wrapCheckedException(
       @NotNull DoubleUnaryOperatorCheckedException doubleUnaryOperatorCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -456,16 +456,16 @@ public class FunctionsPrimitivesOps {
    *                                          with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper          the supplier of the RuntimeException descendant instance within which to
    *                                          wrap the checked exception, if thrown
-   * @param <E>                               the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                              the type of the RuntimeException descendant instance within which to wrap
    *                                          the checked exception, if thrown
    * @return a {@link IntBinaryOperator} that wraps the checked exception lambda,
    *     {@code intBinaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntBinaryOperator wrapCheckedException(
+  public static <EX extends RuntimeException> IntBinaryOperator wrapCheckedException(
       @NotNull IntBinaryOperatorCheckedException intBinaryOperatorCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
         Either.tryCatchChecked(() ->
@@ -501,16 +501,16 @@ public class FunctionsPrimitivesOps {
    *                                    {@link RuntimeException}
    * @param fRuntimeExceptionWrapper    the supplier of the RuntimeException descendant instance within which to wrap
    *                                    the checked exception, if thrown
-   * @param <E>                         the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                        the type of the RuntimeException descendant instance within which to wrap the
    *                                    checked exception, if thrown
    * @return a {@link IntConsumer} that wraps the checked exception lambda, {@code intConsumerCheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntConsumer wrapCheckedException(
+  public static <EX extends RuntimeException> IntConsumer wrapCheckedException(
       @NotNull IntConsumerCheckedException intConsumerCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) -> {
       try {
@@ -549,7 +549,7 @@ public class FunctionsPrimitivesOps {
    *                                    {@link RuntimeException}
    * @param fRuntimeExceptionWrapper    the supplier of the RuntimeException descendant instance within which to wrap
    *                                    the checked exception, if thrown
-   * @param <E>                         the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                        the type of the RuntimeException descendant instance within which to wrap the
    *                                    checked exception, if thrown
    * @param <R>                         the type of the result returned by the function
    * @return a {@link IntFunction} that wraps the checked exception lambda, {@code intFunctionCheckedException}, with a
@@ -557,9 +557,9 @@ public class FunctionsPrimitivesOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, R> IntFunction<R> wrapCheckedException(
+  public static <EX extends RuntimeException, R> IntFunction<R> wrapCheckedException(
       @NotNull IntFunctionCheckedException<R> intFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -595,16 +595,16 @@ public class FunctionsPrimitivesOps {
    *                                     {@link RuntimeException}
    * @param fRuntimeExceptionWrapper     the supplier of the RuntimeException descendant instance within which to wrap
    *                                     the checked exception, if thrown
-   * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                         the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @return a {@link IntPredicate} that wraps the checked exception lambda, {@code intPredicateCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntPredicate wrapCheckedException(
+  public static <EX extends RuntimeException> IntPredicate wrapCheckedException(
       @NotNull IntPredicateCheckedException intPredicateCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -640,16 +640,16 @@ public class FunctionsPrimitivesOps {
    *                                    {@link RuntimeException}
    * @param fRuntimeExceptionWrapper    the supplier of the RuntimeException descendant instance within which to wrap
    *                                    the checked exception, if thrown
-   * @param <E>                         the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                        the type of the RuntimeException descendant instance within which to wrap the
    *                                    checked exception, if thrown
    * @return a {@link IntSupplier} that wraps the checked exception lambda, {@code intSupplierCheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntSupplier wrapCheckedException(
+  public static <EX extends RuntimeException> IntSupplier wrapCheckedException(
       @NotNull IntSupplierCheckedException intSupplierCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
         Either.tryCatchChecked(intSupplierCheckedException::getAsInt)
@@ -684,16 +684,16 @@ public class FunctionsPrimitivesOps {
    *                                            with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper            the supplier of the RuntimeException descendant instance within which to
    *                                            wrap the checked exception, if thrown
-   * @param <E>                                 the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                the type of the RuntimeException descendant instance within which to
    *                                            wrap the checked exception, if thrown
    * @return a {@link IntToDoubleFunction} that wraps the checked exception lambda,
    *     {@code intToDoubleFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntToDoubleFunction wrapCheckedException(
+  public static <EX extends RuntimeException> IntToDoubleFunction wrapCheckedException(
       @NotNull IntToDoubleFunctionCheckedException intToDoubleFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -729,16 +729,16 @@ public class FunctionsPrimitivesOps {
    *                                          with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper          the supplier of the RuntimeException descendant instance within which to
    *                                          wrap the checked exception, if thrown
-   * @param <E>                               the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                              the type of the RuntimeException descendant instance within which to wrap
    *                                          the checked exception, if thrown
    * @return a {@link IntToLongFunction} that wraps the checked exception lambda,
    *     {@code intToLongFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntToLongFunction wrapCheckedException(
+  public static <EX extends RuntimeException> IntToLongFunction wrapCheckedException(
       @NotNull IntToLongFunctionCheckedException intToLongFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -774,16 +774,16 @@ public class FunctionsPrimitivesOps {
    *                                         with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper         the supplier of the RuntimeException descendant instance within which to
    *                                         wrap the checked exception, if thrown
-   * @param <E>                              the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                             the type of the RuntimeException descendant instance within which to wrap
    *                                         the checked exception, if thrown
    * @return a {@link IntUnaryOperator} that wraps the checked exception lambda,
    *     {@code intUnaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> IntUnaryOperator wrapCheckedException(
+  public static <EX extends RuntimeException> IntUnaryOperator wrapCheckedException(
       @NotNull IntUnaryOperatorCheckedException intUnaryOperatorCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -819,16 +819,16 @@ public class FunctionsPrimitivesOps {
    *                                           with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper           the supplier of the RuntimeException descendant instance within which to
    *                                           wrap the checked exception, if thrown
-   * @param <E>                                the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                               the type of the RuntimeException descendant instance within which to wrap
    *                                           the checked exception, if thrown
    * @return a {@link LongBinaryOperator} that wraps the checked exception lambda,
    *     {@code longBinaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongBinaryOperator wrapCheckedException(
+  public static <EX extends RuntimeException> LongBinaryOperator wrapCheckedException(
       @NotNull LongBinaryOperatorCheckedException longBinaryOperatorCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
         Either.tryCatchChecked(() ->
@@ -864,16 +864,16 @@ public class FunctionsPrimitivesOps {
    *                                     {@link RuntimeException}
    * @param fRuntimeExceptionWrapper     the supplier of the RuntimeException descendant instance within which to wrap
    *                                     the checked exception, if thrown
-   * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                         the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @return a {@link LongConsumer} that wraps the checked exception lambda, {@code longConsumerCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongConsumer wrapCheckedException(
+  public static <EX extends RuntimeException> LongConsumer wrapCheckedException(
       @NotNull LongConsumerCheckedException longConsumerCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) -> {
       try {
@@ -912,7 +912,7 @@ public class FunctionsPrimitivesOps {
    *                                     {@link RuntimeException}
    * @param fRuntimeExceptionWrapper     the supplier of the RuntimeException descendant instance within which to wrap
    *                                     the checked exception, if thrown
-   * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                         the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @param <R>                          the type of the result returned by the function
    * @return a {@link LongFunction} that wraps the checked exception lambda, {@code longFunctionCheckedException}, with
@@ -920,9 +920,9 @@ public class FunctionsPrimitivesOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, R> LongFunction<R> wrapCheckedException(
+  public static <EX extends RuntimeException, R> LongFunction<R> wrapCheckedException(
       @NotNull LongFunctionCheckedException<R> longFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -958,16 +958,16 @@ public class FunctionsPrimitivesOps {
    *                                      {@link RuntimeException}
    * @param fRuntimeExceptionWrapper      the supplier of the RuntimeException descendant instance within which to wrap
    *                                      the checked exception, if thrown
-   * @param <E>                           the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                          the type of the RuntimeException descendant instance within which to wrap the
    *                                      checked exception, if thrown
    * @return a {@link LongPredicate} that wraps the checked exception lambda, {@code longPredicateCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongPredicate wrapCheckedException(
+  public static <EX extends RuntimeException> LongPredicate wrapCheckedException(
       @NotNull LongPredicateCheckedException longPredicateCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1003,16 +1003,16 @@ public class FunctionsPrimitivesOps {
    *                                     {@link RuntimeException}
    * @param fRuntimeExceptionWrapper     the supplier of the RuntimeException descendant instance within which to wrap
    *                                     the checked exception, if thrown
-   * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                         the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @return a {@link LongSupplier} that wraps the checked exception lambda, {@code longSupplierCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongSupplier wrapCheckedException(
+  public static <EX extends RuntimeException> LongSupplier wrapCheckedException(
       @NotNull LongSupplierCheckedException longSupplierCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
         Either.tryCatchChecked(longSupplierCheckedException::getAsLong)
@@ -1047,16 +1047,16 @@ public class FunctionsPrimitivesOps {
    *                                             with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper             the supplier of the RuntimeException descendant instance within which
    *                                             to wrap the checked exception, if thrown
-   * @param <E>                                  the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                 the type of the RuntimeException descendant instance within which to
    *                                             wrap the checked exception, if thrown
    * @return a {@link LongToDoubleFunction} that wraps the checked exception lambda,
    *     {@code longToDoubleFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongToDoubleFunction wrapCheckedException(
+  public static <EX extends RuntimeException> LongToDoubleFunction wrapCheckedException(
       @NotNull LongToDoubleFunctionCheckedException longToDoubleFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1092,16 +1092,16 @@ public class FunctionsPrimitivesOps {
    *                                          with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper          the supplier of the RuntimeException descendant instance within which to
    *                                          wrap the checked exception, if thrown
-   * @param <E>                               the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                              the type of the RuntimeException descendant instance within which to wrap
    *                                          the checked exception, if thrown
    * @return a {@link LongToIntFunction} that wraps the checked exception lambda,
    *     {@code longToIntFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongToIntFunction wrapCheckedException(
+  public static <EX extends RuntimeException> LongToIntFunction wrapCheckedException(
       @NotNull LongToIntFunctionCheckedException longToIntFunctionCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1137,16 +1137,16 @@ public class FunctionsPrimitivesOps {
    *                                          with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper          the supplier of the RuntimeException descendant instance within which to
    *                                          wrap the checked exception, if thrown
-   * @param <E>                               the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                              the type of the RuntimeException descendant instance within which to wrap
    *                                          the checked exception, if thrown
    * @return a {@link LongUnaryOperator} that wraps the checked exception lambda,
    *     {@code longUnaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> LongUnaryOperator wrapCheckedException(
+  public static <EX extends RuntimeException> LongUnaryOperator wrapCheckedException(
       @NotNull LongUnaryOperatorCheckedException longUnaryOperatorCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1183,7 +1183,7 @@ public class FunctionsPrimitivesOps {
    *                                           with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper           the supplier of the RuntimeException descendant instance within which to
    *                                           wrap the checked exception, if thrown
-   * @param <E>                                the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                               the type of the RuntimeException descendant instance within which to wrap
    *                                           the checked exception, if thrown
    * @param <T>                                the type of the parameter passed by the objDoubleConsumer
    * @return a {@link ObjDoubleConsumer} that wraps the checked exception lambda,
@@ -1191,9 +1191,9 @@ public class FunctionsPrimitivesOps {
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> ObjDoubleConsumer<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> ObjDoubleConsumer<T> wrapCheckedException(
       @NotNull ObjDoubleConsumerCheckedException<T> objDoubleConsumerCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, value) -> {
       try {
@@ -1232,7 +1232,7 @@ public class FunctionsPrimitivesOps {
    *                                        a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper        the supplier of the RuntimeException descendant instance within which to
    *                                        wrap the checked exception, if thrown
-   * @param <E>                             the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                            the type of the RuntimeException descendant instance within which to wrap
    *                                        the checked exception, if thrown
    * @param <T>                             the type of the parameter passed by the objIntConsumer
    * @return a {@link ObjIntConsumer} that wraps the checked exception lambda, {@code objIntConsumerCheckedExceptionT},
@@ -1240,9 +1240,9 @@ public class FunctionsPrimitivesOps {
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> ObjIntConsumer<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> ObjIntConsumer<T> wrapCheckedException(
       @NotNull ObjIntConsumerCheckedException<T> objIntConsumerCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, value) -> {
       try {
@@ -1281,7 +1281,7 @@ public class FunctionsPrimitivesOps {
    *                                         with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper         the supplier of the RuntimeException descendant instance within which to
    *                                         wrap the checked exception, if thrown
-   * @param <E>                              the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                             the type of the RuntimeException descendant instance within which to wrap
    *                                         the checked exception, if thrown
    * @param <T>                              the type of the parameter passed by the objLongConsumer
    * @return a {@link ObjLongConsumer} that wraps the checked exception lambda,
@@ -1289,9 +1289,9 @@ public class FunctionsPrimitivesOps {
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> ObjLongConsumer<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> ObjLongConsumer<T> wrapCheckedException(
       @NotNull ObjLongConsumerCheckedException<T> objLongConsumerCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, value) -> {
       try {
@@ -1331,7 +1331,7 @@ public class FunctionsPrimitivesOps {
    *                                                wrapped with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper                the supplier of the RuntimeException descendant instance within
    *                                                which to wrap the checked exception, if thrown
-   * @param <E>                                     the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                    the type of the RuntimeException descendant instance within which to
    *                                                wrap the checked exception, if thrown
    * @param <T>                                     the type of the first parameter passed into the function
    * @param <U>                                     the type of the second parameter passed into the function
@@ -1340,9 +1340,9 @@ public class FunctionsPrimitivesOps {
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, U> ToDoubleBiFunction<T, U> wrapCheckedException(
+  public static <EX extends RuntimeException, T, U> ToDoubleBiFunction<T, U> wrapCheckedException(
       @NotNull ToDoubleBiFunctionCheckedException<T, U> toDoubleBiFunctionCheckedExceptionTAndU,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         Either.tryCatchChecked(() ->
@@ -1380,7 +1380,7 @@ public class FunctionsPrimitivesOps {
    *                                             with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper             the supplier of the RuntimeException descendant instance within which
    *                                             to wrap the checked exception, if thrown
-   * @param <E>                                  the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                 the type of the RuntimeException descendant instance within which to
    *                                             wrap the checked exception, if thrown
    * @param <T>                                  the type of the first parameter passed into the function
    * @param <U>                                  the type of the second parameter passed into the function
@@ -1389,9 +1389,9 @@ public class FunctionsPrimitivesOps {
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, U> ToIntBiFunction<T, U> wrapCheckedException(
+  public static <EX extends RuntimeException, T, U> ToIntBiFunction<T, U> wrapCheckedException(
       @NotNull ToIntBiFunctionCheckedException<T, U> toIntBiFunctionCheckedExceptionTAndU,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         Either.tryCatchChecked(() ->
@@ -1429,7 +1429,7 @@ public class FunctionsPrimitivesOps {
    *                                              wrapped with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper              the supplier of the RuntimeException descendant instance within which
    *                                              to wrap the checked exception, if thrown
-   * @param <E>                                   the type of the RuntimeException descendant instance within which to
+   * @param <EX>                                  the type of the RuntimeException descendant instance within which to
    *                                              wrap the checked exception, if thrown
    * @param <T>                                   the type of the first parameter passed into the function
    * @param <U>                                   the type of the second parameter passed into the function
@@ -1438,9 +1438,9 @@ public class FunctionsPrimitivesOps {
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, U> ToLongBiFunction<T, U> wrapCheckedException(
+  public static <EX extends RuntimeException, T, U> ToLongBiFunction<T, U> wrapCheckedException(
       @NotNull ToLongBiFunctionCheckedException<T, U> toLongBiFunctionCheckedExceptionTAndU,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         Either.tryCatchChecked(() ->
@@ -1477,7 +1477,7 @@ public class FunctionsPrimitivesOps {
    *                                          with a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper          the supplier of the RuntimeException descendant instance within which to
    *                                          wrap the checked exception, if thrown
-   * @param <E>                               the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                              the type of the RuntimeException descendant instance within which to wrap
    *                                          the checked exception, if thrown
    * @param <T>                               the type of the parameter passed into the toDoubleFunction
    * @return a {@link ToDoubleFunction} that wraps the checked exception lambda,
@@ -1485,9 +1485,9 @@ public class FunctionsPrimitivesOps {
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> ToDoubleFunction<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> ToDoubleFunction<T> wrapCheckedException(
       @NotNull ToDoubleFunctionCheckedException<T> toDoubleFunctionCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1524,7 +1524,7 @@ public class FunctionsPrimitivesOps {
    *                                       a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper       the supplier of the RuntimeException descendant instance within which to wrap
    *                                       the checked exception, if thrown
-   * @param <E>                            the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                           the type of the RuntimeException descendant instance within which to wrap the
    *                                       checked exception, if thrown
    * @param <T>                            the type of the parameter passed into the toIntFunction
    * @return a {@link ToIntFunction} that wraps the checked exception lambda, {@code toIntFunctionCheckedExceptionT},
@@ -1532,9 +1532,9 @@ public class FunctionsPrimitivesOps {
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> ToIntFunction<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> ToIntFunction<T> wrapCheckedException(
       @NotNull ToIntFunctionCheckedException<T> toIntFunctionCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1571,7 +1571,7 @@ public class FunctionsPrimitivesOps {
    *                                        a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper        the supplier of the RuntimeException descendant instance within which to
    *                                        wrap the checked exception, if thrown
-   * @param <E>                             the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                            the type of the RuntimeException descendant instance within which to wrap
    *                                        the checked exception, if thrown
    * @param <T>                             the type of the parameter passed into the toLongFunction
    * @return a {@link ToLongFunction} that wraps the checked exception lambda, {@code toLongFunctionCheckedExceptionT},
@@ -1579,9 +1579,9 @@ public class FunctionsPrimitivesOps {
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> ToLongFunction<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> ToLongFunction<T> wrapCheckedException(
       @NotNull ToLongFunctionCheckedException<T> toLongFunctionCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->

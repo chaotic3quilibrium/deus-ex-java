@@ -6,7 +6,7 @@ import java.util.function.DoubleToLongFunction;
  * Enables the providing of a {@link DoubleToLongFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface DoubleToLongFunctionChecked<E extends Exception> {
+public interface DoubleToLongFunctionChecked<EX extends Exception> {
 
   /**
    * Applies this function to the given argument.
@@ -14,5 +14,5 @@ public interface DoubleToLongFunctionChecked<E extends Exception> {
    * @param value the function argument
    * @return the function result
    */
-  long applyAsLong(double value) throws E;
+  long applyAsLong(double value) throws EX;
 }

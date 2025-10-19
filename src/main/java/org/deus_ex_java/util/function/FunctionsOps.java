@@ -169,7 +169,7 @@ public class FunctionsOps {
    *                                    {@link RuntimeException}
    * @param fRuntimeExceptionWrapper    the supplier of the RuntimeException descendant instance within which to wrap
    *                                    the checked exception, if thrown
-   * @param <E>                         the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                        the type of the RuntimeException descendant instance within which to wrap the
    *                                    checked exception, if thrown
    * @param <T>                         the type of the first parameter passed by the bi-consumer
    * @param <U>                         the type of the second parameter passed by the bi-consumer
@@ -178,9 +178,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, U> BiConsumer<T, U> wrapCheckedException(
+  public static <EX extends RuntimeException, T, U> BiConsumer<T, U> wrapCheckedException(
       @NotNull BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) -> {
       try {
@@ -221,7 +221,7 @@ public class FunctionsOps {
    *                                        a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper        the supplier of the RuntimeException descendant instance within which to
    *                                        wrap the checked exception, if thrown
-   * @param <E>                             the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                            the type of the RuntimeException descendant instance within which to wrap
    *                                        the checked exception, if thrown
    * @param <T>                             the type of the first parameter passed into the function
    * @param <U>                             the type of the second parameter passed into the function
@@ -231,9 +231,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, U, R> BiFunction<T, U, R> wrapCheckedException(
+  public static <EX extends RuntimeException, T, U, R> BiFunction<T, U, R> wrapCheckedException(
       @NotNull BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         Either.tryCatchChecked(() ->
@@ -271,7 +271,7 @@ public class FunctionsOps {
    *                                        a {@link RuntimeException}
    * @param fRuntimeExceptionWrapper        the supplier of the RuntimeException descendant instance within which to
    *                                        wrap the checked exception, if thrown
-   * @param <E>                             the type of the RuntimeException descendant instance within which to wrap
+   * @param <EX>                            the type of the RuntimeException descendant instance within which to wrap
    *                                        the checked exception, if thrown
    * @param <T>                             the type of the two parameters passed into and the result returned by the
    *                                        binary operator
@@ -280,9 +280,9 @@ public class FunctionsOps {
    *     the lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> BinaryOperator<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> BinaryOperator<T> wrapCheckedException(
       @NotNull BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t1, t2) ->
         Either.tryCatchChecked(() ->
@@ -320,7 +320,7 @@ public class FunctionsOps {
    *                                     {@link RuntimeException}
    * @param fRuntimeExceptionWrapper     the supplier of the RuntimeException descendant instance within which to wrap
    *                                     the checked exception, if thrown
-   * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                         the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @param <T>                          the type of the first parameter passed by the predicate
    * @param <U>                          the type of the second parameter passed by the predicate
@@ -329,9 +329,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, U> BiPredicate<T, U> wrapCheckedException(
+  public static <EX extends RuntimeException, T, U> BiPredicate<T, U> wrapCheckedException(
       @NotNull BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         Either.tryCatchChecked(() ->
@@ -368,7 +368,7 @@ public class FunctionsOps {
    *                                  {@link RuntimeException}
    * @param fRuntimeExceptionWrapper  the supplier of the RuntimeException descendant instance within which to wrap the
    *                                  checked exception, if thrown
-   * @param <E>                       the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                      the type of the RuntimeException descendant instance within which to wrap the
    *                                  checked exception, if thrown
    * @param <T>                       the type of the parameter passed by the consumer
    * @return a {@link Consumer} that wraps the checked exception lambda, {@code consumerCheckedExceptionT}, with a
@@ -376,9 +376,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> Consumer<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> Consumer<T> wrapCheckedException(
       @NotNull ConsumerCheckedException<T> consumerCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) -> {
       try {
@@ -418,7 +418,7 @@ public class FunctionsOps {
    *                                  {@link RuntimeException}
    * @param fRuntimeExceptionWrapper  the supplier of the RuntimeException descendant instance within which to wrap the
    *                                  checked exception, if thrown
-   * @param <E>                       the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                      the type of the RuntimeException descendant instance within which to wrap the
    *                                  checked exception, if thrown
    * @param <T>                       the type of the parameter passed into the function
    * @param <R>                       the type of the result returned by the function
@@ -427,9 +427,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T, R> Function<T, R> wrapCheckedException(
+  public static <EX extends RuntimeException, T, R> Function<T, R> wrapCheckedException(
       @NotNull FunctionCheckedException<T, R> functionCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -609,7 +609,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
@@ -637,7 +637,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
@@ -666,7 +666,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
@@ -695,7 +695,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
@@ -725,7 +725,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <R>                       the type of the result returned by the function
@@ -755,7 +755,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <R>                       the type of the result returned by the function
@@ -786,7 +786,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -817,7 +817,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -849,7 +849,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -881,7 +881,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <E>                       the type of the fifth parameter passed into the function
+   * @param <EX>                      the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -914,7 +914,7 @@ public class FunctionsOps {
    * @param <B>                        the type of the second parameter passed into the function
    * @param <C>                        the type of the third parameter passed into the function
    * @param <D>                        the type of the fourth parameter passed into the function
-   * @param <E>                        the type of the fifth parameter passed into the function
+   * @param <EX>                       the type of the fifth parameter passed into the function
    * @param <F>                        the type of the sixth parameter passed into the function
    * @param <G>                        the type of the seventh parameter passed into the function
    * @param <H>                        the type of the eighth parameter passed into the function
@@ -947,7 +947,7 @@ public class FunctionsOps {
    * @param <B>                        the type of the second parameter passed into the function
    * @param <C>                        the type of the third parameter passed into the function
    * @param <D>                        the type of the fourth parameter passed into the function
-   * @param <E>                        the type of the fifth parameter passed into the function
+   * @param <EX>                       the type of the fifth parameter passed into the function
    * @param <F>                        the type of the sixth parameter passed into the function
    * @param <G>                        the type of the seventh parameter passed into the function
    * @param <H>                        the type of the eighth parameter passed into the function
@@ -998,7 +998,7 @@ public class FunctionsOps {
    *                                   {@link RuntimeException}
    * @param fRuntimeExceptionWrapper   the supplier of the RuntimeException descendant instance within which to wrap the
    *                                   checked exception, if thrown
-   * @param <E>                        the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                       the type of the RuntimeException descendant instance within which to wrap the
    *                                   checked exception, if thrown
    * @param <T>                        the type of the parameter passed by the predicate
    * @return a {@link Predicate} that wraps the checked exception lambda, {@code predicateCheckedExceptionT}, with a
@@ -1006,9 +1006,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> Predicate<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> Predicate<T> wrapCheckedException(
       @NotNull PredicateCheckedException<T> predicateCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1045,7 +1045,7 @@ public class FunctionsOps {
    *                                  {@link RuntimeException}
    * @param fRuntimeExceptionWrapper  the supplier of the RuntimeException descendant instance within which to wrap the
    *                                  checked exception, if thrown
-   * @param <E>                       the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                      the type of the RuntimeException descendant instance within which to wrap the
    *                                  checked exception, if thrown
    * @param <T>                       the type of the result returned by the supplier
    * @return a {@link Supplier} that wraps the checked exception lambda, {@code supplierCheckedExceptionT}, with a
@@ -1053,9 +1053,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> Supplier<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> Supplier<T> wrapCheckedException(
       @NotNull SupplierCheckedException<T> supplierCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
         Either.tryCatchChecked(supplierCheckedExceptionT)
@@ -1091,7 +1091,7 @@ public class FunctionsOps {
    *                                 {@link RuntimeException}
    * @param fRuntimeExceptionWrapper the supplier of the RuntimeException descendant instance within which to wrap the
    *                                 checked exception, if thrown
-   * @param <E>                      the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                     the type of the RuntimeException descendant instance within which to wrap the
    *                                 checked exception, if thrown
    * @param <T>                      the type of the parameter passed into, and returned by the unary operator
    * @return a {@link UnaryOperator} that wraps the checked exception lambda, {@code unaryCheckedExceptionT}, with a
@@ -1099,9 +1099,9 @@ public class FunctionsOps {
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException, T> UnaryOperator<T> wrapCheckedException(
+  public static <EX extends RuntimeException, T> UnaryOperator<T> wrapCheckedException(
       @NotNull UnaryOperatorCheckedException<T> unaryCheckedExceptionT,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         Either.tryCatchChecked(() ->
@@ -1137,16 +1137,16 @@ public class FunctionsOps {
    *                                     {@link RuntimeException}
    * @param fRuntimeExceptionWrapper     the supplier of the RuntimeException descendant instance within which to wrap
    *                                     the checked exception, if thrown
-   * @param <E>                          the type of the RuntimeException descendant instance within which to wrap the
+   * @param <EX>                         the type of the RuntimeException descendant instance within which to wrap the
    *                                     checked exception, if thrown
    * @return a {@link VoidSupplier} that wraps the checked exception lambda, {@code voidSupplierCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
   @NotNull
-  public static <E extends RuntimeException> VoidSupplier wrapCheckedException(
+  public static <EX extends RuntimeException> VoidSupplier wrapCheckedException(
       @NotNull VoidSupplierCheckedException voidSupplierCheckedException,
-      @NotNull Function<Exception, E> fRuntimeExceptionWrapper
+      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () -> {
       try {

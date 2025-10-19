@@ -8,7 +8,7 @@ import java.util.function.LongUnaryOperator;
  * Enables the providing of a {@link LongUnaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface LongUnaryOperatorChecked<E extends Exception> {
+public interface LongUnaryOperatorChecked<EX extends Exception> {
 
   /**
    * Applies this operator to the given operand.
@@ -16,7 +16,7 @@ public interface LongUnaryOperatorChecked<E extends Exception> {
    * @param operand the operand
    * @return the operator result
    */
-  long applyAsLong(long operand) throws E;
+  long applyAsLong(long operand) throws EX;
 
   /**
    * Returns a composed operator that first applies the {@code before} operator to its input, and then applies this
@@ -28,8 +28,8 @@ public interface LongUnaryOperatorChecked<E extends Exception> {
    * @see #andThen(LongUnaryOperatorChecked)
    */
   @NotNull
-  default LongUnaryOperatorChecked<E> compose(
-      @NotNull LongUnaryOperatorChecked<? extends E> before
+  default LongUnaryOperatorChecked<EX> compose(
+      @NotNull LongUnaryOperatorChecked<? extends EX> before
   ) {
     return (long v) ->
         applyAsLong(before.applyAsLong(v));
@@ -45,8 +45,8 @@ public interface LongUnaryOperatorChecked<E extends Exception> {
    * @see #compose(LongUnaryOperatorChecked)
    */
   @NotNull
-  default LongUnaryOperatorChecked<E> andThen(
-      @NotNull LongUnaryOperatorChecked<? extends E> after
+  default LongUnaryOperatorChecked<EX> andThen(
+      @NotNull LongUnaryOperatorChecked<? extends EX> after
   ) {
     return (long t) ->
         after.applyAsLong(applyAsLong(t));
@@ -57,7 +57,7 @@ public interface LongUnaryOperatorChecked<E extends Exception> {
    *
    * @return a unary operator that always returns its input argument
    */
-  static <E extends Exception> LongUnaryOperatorChecked<E> identity() {
+  static <EX extends Exception> LongUnaryOperatorChecked<EX> identity() {
     return t ->
         t;
   }

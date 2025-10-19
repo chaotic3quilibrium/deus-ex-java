@@ -6,7 +6,7 @@ import java.util.function.LongToIntFunction;
  * Enables the providing of a {@link LongToIntFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface LongToIntFunctionChecked<E extends Exception> {
+public interface LongToIntFunctionChecked<EX extends Exception> {
 
   /**
    * Applies this function to the given argument.
@@ -14,5 +14,5 @@ public interface LongToIntFunctionChecked<E extends Exception> {
    * @param value the function argument
    * @return the function result
    */
-  int applyAsInt(long value) throws E;
+  int applyAsInt(long value) throws EX;
 }

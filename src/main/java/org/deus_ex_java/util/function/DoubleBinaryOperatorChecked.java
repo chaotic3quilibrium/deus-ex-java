@@ -6,7 +6,7 @@ import java.util.function.DoubleBinaryOperator;
  * Enables the providing of a {@link DoubleBinaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface DoubleBinaryOperatorChecked<E extends Exception> {
+public interface DoubleBinaryOperatorChecked<EX extends Exception> {
   /**
    * Applies this operator to the given operands.
    *
@@ -14,5 +14,5 @@ public interface DoubleBinaryOperatorChecked<E extends Exception> {
    * @param right the second operand
    * @return the operator result
    */
-  double applyAsDouble(double left, double right) throws E;
+  double applyAsDouble(double left, double right) throws EX;
 }

@@ -7,7 +7,7 @@ import java.util.function.DoublePredicate;
  * Enables the providing of a {@link DoublePredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
-public interface DoublePredicateChecked<E extends Exception> {
+public interface DoublePredicateChecked<EX extends Exception> {
 
   /**
    * Evaluates this predicate on the given argument.
@@ -15,7 +15,7 @@ public interface DoublePredicateChecked<E extends Exception> {
    * @param value the input argument
    * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
    */
-  boolean test(double value) throws E;
+  boolean test(double value) throws EX;
 
   /**
    * Returns a composed predicate that represents a short-circuiting logical AND of this predicate and another.  When
@@ -31,7 +31,7 @@ public interface DoublePredicateChecked<E extends Exception> {
    *     {@code other} predicate
    * @throws NullPointerException if other is null
    */
-  default DoublePredicateChecked<E> and(DoublePredicateChecked<? extends E> other) {
+  default DoublePredicateChecked<EX> and(DoublePredicateChecked<? extends EX> other) {
     Objects.requireNonNull(other);
     return (value) -> test(value) && other.test(value);
   }
@@ -41,7 +41,7 @@ public interface DoublePredicateChecked<E extends Exception> {
    *
    * @return a predicate that represents the logical negation of this predicate
    */
-  default DoublePredicateChecked<E> negate() {
+  default DoublePredicateChecked<EX> negate() {
     return (value) ->
         !test(value);
   }
@@ -60,7 +60,7 @@ public interface DoublePredicateChecked<E extends Exception> {
    *     {@code other} predicate
    * @throws NullPointerException if other is null
    */
-  default DoublePredicateChecked<E> or(DoublePredicateChecked<? extends E> other) {
+  default DoublePredicateChecked<EX> or(DoublePredicateChecked<? extends EX> other) {
     Objects.requireNonNull(other);
 
     return (value) ->

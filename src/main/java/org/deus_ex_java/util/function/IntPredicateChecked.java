@@ -8,7 +8,7 @@ import java.util.function.IntPredicate;
  * Enables the providing of a {@link IntPredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
-public interface IntPredicateChecked<E extends Exception> {
+public interface IntPredicateChecked<EX extends Exception> {
 
   /**
    * Evaluates this predicate on the given argument.
@@ -16,7 +16,7 @@ public interface IntPredicateChecked<E extends Exception> {
    * @param value the input argument
    * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
    */
-  boolean test(int value) throws E;
+  boolean test(int value) throws EX;
 
   /**
    * Returns a composed predicate that represents a short-circuiting logical AND of this predicate and another.  When
@@ -33,7 +33,7 @@ public interface IntPredicateChecked<E extends Exception> {
    * @throws NullPointerException if other is null
    */
   @NotNull
-  default IntPredicateChecked<E> and(IntPredicateChecked<? extends E> other) {
+  default IntPredicateChecked<EX> and(IntPredicateChecked<? extends EX> other) {
     return (value) ->
         test(value) && other.test(value);
   }
@@ -43,7 +43,7 @@ public interface IntPredicateChecked<E extends Exception> {
    *
    * @return a predicate that represents the logical negation of this predicate
    */
-  default IntPredicateChecked<E> negate() {
+  default IntPredicateChecked<EX> negate() {
     return (value) ->
         !test(value);
   }
@@ -62,7 +62,7 @@ public interface IntPredicateChecked<E extends Exception> {
    *     {@code other} predicate
    */
   @NotNull
-  default IntPredicateChecked<E> or(IntPredicateChecked<? extends E> other) {
+  default IntPredicateChecked<EX> or(IntPredicateChecked<? extends EX> other) {
     return (value) ->
         test(value) || other.test(value);
   }
