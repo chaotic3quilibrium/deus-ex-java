@@ -609,7 +609,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
@@ -637,7 +637,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
@@ -666,7 +666,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
@@ -695,7 +695,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <R>                       the type of the result returned by the function
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
@@ -725,7 +725,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <R>                       the type of the result returned by the function
@@ -755,7 +755,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <R>                       the type of the result returned by the function
@@ -786,7 +786,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -817,7 +817,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -849,7 +849,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -881,7 +881,7 @@ public class FunctionsOps {
    * @param <B>                       the type of the second parameter passed into the function
    * @param <C>                       the type of the third parameter passed into the function
    * @param <D>                       the type of the fourth parameter passed into the function
-   * @param <EX>                      the type of the fifth parameter passed into the function
+   * @param <E>                       the type of the fifth parameter passed into the function
    * @param <F>                       the type of the sixth parameter passed into the function
    * @param <G>                       the type of the seventh parameter passed into the function
    * @param <H>                       the type of the eighth parameter passed into the function
@@ -914,7 +914,7 @@ public class FunctionsOps {
    * @param <B>                        the type of the second parameter passed into the function
    * @param <C>                        the type of the third parameter passed into the function
    * @param <D>                        the type of the fourth parameter passed into the function
-   * @param <EX>                       the type of the fifth parameter passed into the function
+   * @param <E>                        the type of the fifth parameter passed into the function
    * @param <F>                        the type of the sixth parameter passed into the function
    * @param <G>                        the type of the seventh parameter passed into the function
    * @param <H>                        the type of the eighth parameter passed into the function
@@ -947,7 +947,7 @@ public class FunctionsOps {
    * @param <B>                        the type of the second parameter passed into the function
    * @param <C>                        the type of the third parameter passed into the function
    * @param <D>                        the type of the fourth parameter passed into the function
-   * @param <EX>                       the type of the fifth parameter passed into the function
+   * @param <E>                        the type of the fifth parameter passed into the function
    * @param <F>                        the type of the sixth parameter passed into the function
    * @param <G>                        the type of the seventh parameter passed into the function
    * @param <H>                        the type of the eighth parameter passed into the function
