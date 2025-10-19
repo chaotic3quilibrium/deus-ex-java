@@ -8,7 +8,7 @@ import java.util.function.LongFunction;
  * Enables the providing of a {@link LongFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface LongFunctionChecked<R, E extends Exception> {
+public interface LongFunctionChecked<R, EX extends Exception> {
 
   /**
    * Applies this function to the given argument.
@@ -17,5 +17,5 @@ public interface LongFunctionChecked<R, E extends Exception> {
    * @return the function result
    */
   @NotNull
-  R apply(long value) throws E;
+  R apply(long value) throws EX;
 }
