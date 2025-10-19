@@ -8,14 +8,14 @@ import java.util.function.LongConsumer;
  * Enables the providing of a {@link LongConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface LongConsumerChecked<E extends Exception> {
+public interface LongConsumerChecked<EX extends Exception> {
 
   /**
    * Performs this operation on the given argument.
    *
    * @param value the input argument
    */
-  void accept(long value) throws E;
+  void accept(long value) throws EX;
 
   /**
    * Returns a composed {@code LongConsumer} that performs, in sequence, this operation followed by the {@code after}
@@ -27,8 +27,8 @@ public interface LongConsumerChecked<E extends Exception> {
    *     operation
    */
   @NotNull
-  default LongConsumerChecked<E> andThen(
-      @NotNull LongConsumerChecked<? extends E> after
+  default LongConsumerChecked<EX> andThen(
+      @NotNull LongConsumerChecked<? extends EX> after
   ) {
     return (long t) -> {
       accept(t);

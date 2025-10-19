@@ -6,12 +6,12 @@ import java.util.function.LongSupplier;
  * Enables the providing of a {@link LongSupplier} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface LongSupplierChecked<E extends Exception> {
+public interface LongSupplierChecked<EX extends Exception> {
 
   /**
    * Gets a result.
    *
    * @return a result
    */
-  long getAsLong() throws E;
+  long getAsLong() throws EX;
 }

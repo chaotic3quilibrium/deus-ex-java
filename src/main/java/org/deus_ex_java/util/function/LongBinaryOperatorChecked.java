@@ -6,7 +6,7 @@ import java.util.function.LongBinaryOperator;
  * Enables the providing of a {@link LongBinaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface LongBinaryOperatorChecked<E extends Exception> {
+public interface LongBinaryOperatorChecked<EX extends Exception> {
 
   /**
    * Applies this operator to the given operands.
@@ -15,5 +15,5 @@ public interface LongBinaryOperatorChecked<E extends Exception> {
    * @param right the second operand
    * @return the operator result
    */
-  long applyAsLong(long left, long right) throws E;
+  long applyAsLong(long left, long right) throws EX;
 }

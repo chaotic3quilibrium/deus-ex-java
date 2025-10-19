@@ -8,14 +8,14 @@ import java.util.function.DoubleUnaryOperator;
  * Enables the providing of a {@link DoubleUnaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface DoubleUnaryOperatorChecked<E extends Exception> {
+public interface DoubleUnaryOperatorChecked<EX extends Exception> {
   /**
    * Applies this operator to the given operand.
    *
    * @param operand the operand
    * @return the operator result
    */
-  double applyAsDouble(double operand) throws E;
+  double applyAsDouble(double operand) throws EX;
 
   /**
    * Returns a composed operator that first applies the {@code before} operator to its input, and then applies this
@@ -27,8 +27,8 @@ public interface DoubleUnaryOperatorChecked<E extends Exception> {
    * @see #andThen(DoubleUnaryOperatorChecked)
    */
   @NotNull
-  default DoubleUnaryOperatorChecked<E> compose(
-      @NotNull DoubleUnaryOperatorChecked<? extends E> before
+  default DoubleUnaryOperatorChecked<EX> compose(
+      @NotNull DoubleUnaryOperatorChecked<? extends EX> before
   ) {
     return (double v) ->
         applyAsDouble(before.applyAsDouble(v));
@@ -44,8 +44,8 @@ public interface DoubleUnaryOperatorChecked<E extends Exception> {
    * @see #compose(DoubleUnaryOperatorChecked)
    */
   @NotNull
-  default DoubleUnaryOperatorChecked<E> andThen(
-      @NotNull DoubleUnaryOperatorChecked<? extends E> after
+  default DoubleUnaryOperatorChecked<EX> andThen(
+      @NotNull DoubleUnaryOperatorChecked<? extends EX> after
   ) {
     return (double t) ->
         after.applyAsDouble(applyAsDouble(t));
@@ -57,7 +57,7 @@ public interface DoubleUnaryOperatorChecked<E extends Exception> {
    * @return a unary operator that always returns its input argument
    */
   @NotNull
-  static <E extends Exception> DoubleUnaryOperatorChecked<E> identity() {
+  static <EX extends Exception> DoubleUnaryOperatorChecked<EX> identity() {
     return t ->
         t;
   }

@@ -6,12 +6,12 @@ import java.util.function.IntSupplier;
  * Enables the providing of a {@link IntSupplier} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface IntSupplierChecked<E extends Exception> {
+public interface IntSupplierChecked<EX extends Exception> {
 
   /**
    * Gets a result.
    *
    * @return a result
    */
-  int getAsInt() throws E;
+  int getAsInt() throws EX;
 }

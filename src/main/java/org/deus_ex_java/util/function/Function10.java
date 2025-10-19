@@ -10,17 +10,17 @@ import java.util.function.Function;
  * <p>
  * This is the ten-arity specialization of {@link Function}.
  *
- * @param <A> the type of the first argument to the function
- * @param <B> the type of the second argument to the function
- * @param <C> the type of the third argument to the function
- * @param <D> the type of the fourth argument to the function
- * @param <E> the type of the fifth argument to the function
- * @param <F> the type of the sixth argument to the function
- * @param <G> the type of the seventh argument to the function
- * @param <H> the type of the eighth argument to the function
- * @param <I> the type of the ninth argument to the function
- * @param <J> the type of the tenth argument to the function
- * @param <R> the type of the result of the function
+ * @param <A>  the type of the first argument to the function
+ * @param <B>  the type of the second argument to the function
+ * @param <C>  the type of the third argument to the function
+ * @param <D>  the type of the fourth argument to the function
+ * @param <EX> the type of the fifth argument to the function
+ * @param <F>  the type of the sixth argument to the function
+ * @param <G>  the type of the seventh argument to the function
+ * @param <H>  the type of the eighth argument to the function
+ * @param <I>  the type of the ninth argument to the function
+ * @param <J>  the type of the tenth argument to the function
+ * @param <R>  the type of the result of the function
  */
 @FunctionalInterface
 public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {

@@ -6,7 +6,7 @@ import java.util.function.DoubleToIntFunction;
  * Enables the providing of a {@link DoubleToIntFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface DoubleToIntFunctionChecked<E extends Exception> {
+public interface DoubleToIntFunctionChecked<EX extends Exception> {
 
   /**
    * Applies this function to the given argument.
@@ -14,5 +14,5 @@ public interface DoubleToIntFunctionChecked<E extends Exception> {
    * @param value the function argument
    * @return the function result
    */
-  int applyAsInt(double value) throws E;
+  int applyAsInt(double value) throws EX;
 }

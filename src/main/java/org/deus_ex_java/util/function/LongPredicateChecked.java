@@ -8,7 +8,7 @@ import java.util.function.LongPredicate;
  * Enables the providing of a {@link LongPredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
-public interface LongPredicateChecked<E extends Exception> {
+public interface LongPredicateChecked<EX extends Exception> {
 
   /**
    * Evaluates this predicate on the given argument.
@@ -16,7 +16,7 @@ public interface LongPredicateChecked<E extends Exception> {
    * @param value the input argument
    * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
    */
-  boolean test(long value) throws E;
+  boolean test(long value) throws EX;
 
   /**
    * Returns a composed predicate that represents a short-circuiting logical AND of this predicate and another.  When
@@ -32,8 +32,8 @@ public interface LongPredicateChecked<E extends Exception> {
    *     {@code other} predicate
    */
   @NotNull
-  default LongPredicateChecked<E> and(
-      @NotNull LongPredicateChecked<? extends E> other
+  default LongPredicateChecked<EX> and(
+      @NotNull LongPredicateChecked<? extends EX> other
   ) {
     return (value) ->
         test(value) && other.test(value);
@@ -45,7 +45,7 @@ public interface LongPredicateChecked<E extends Exception> {
    * @return a predicate that represents the logical negation of this predicate
    */
   @NotNull
-  default LongPredicateChecked<E> negate() {
+  default LongPredicateChecked<EX> negate() {
     return (value) ->
         !test(value);
   }
@@ -64,8 +64,8 @@ public interface LongPredicateChecked<E extends Exception> {
    *     {@code other} predicate
    */
   @NotNull
-  default LongPredicateChecked<E> or(
-      @NotNull LongPredicateChecked<? extends E> other
+  default LongPredicateChecked<EX> or(
+      @NotNull LongPredicateChecked<? extends EX> other
   ) {
     return (value) ->
         test(value) || other.test(value);

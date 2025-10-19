@@ -7,14 +7,14 @@ import java.util.function.DoubleConsumer;
  * Enables the providing of a {@link DoubleConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
-public interface DoubleConsumerChecked<E extends Exception> {
+public interface DoubleConsumerChecked<EX extends Exception> {
 
   /**
    * Performs this operation on the given argument.
    *
    * @param value the input argument
    */
-  void accept(double value) throws E;
+  void accept(double value) throws EX;
 
   /**
    * Returns a composed {@code DoubleConsumer} that performs, in sequence, this operation followed by the {@code after}
@@ -26,7 +26,7 @@ public interface DoubleConsumerChecked<E extends Exception> {
    *     operation
    * @throws NullPointerException if {@code after} is null
    */
-  default DoubleConsumerChecked<E> andThen(DoubleConsumerChecked<? extends E> after) {
+  default DoubleConsumerChecked<EX> andThen(DoubleConsumerChecked<? extends EX> after) {
     Objects.requireNonNull(after);
 
     return (double t) -> {
