@@ -3,9 +3,9 @@ package org.deus_ex_java.lang;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class WrappedCheckedExceptionTests {
   @Test
@@ -38,8 +38,10 @@ public class WrappedCheckedExceptionTests {
         IllegalArgumentException.class,
         () ->
             new WrappedCheckedException(null));
-    assertEquals(
+    //two different possible message due to IntelliJ's and Maven's test plugin having different prefixes
+    var errorMessages = Set.of(
         "NotNull annotated argument 0 of org/deus_ex_java/lang/WrappedCheckedException.<init> must not be null",
-        illegalArgumentException.getMessage());
+        "Argument for @NotNull parameter 'cause' of org/deus_ex_java/lang/WrappedCheckedException.<init> must not be null");
+    assertTrue(errorMessages.contains(illegalArgumentException.getMessage()));
   }
 }
