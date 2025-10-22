@@ -1,8 +1,10 @@
 package org.deus_ex_java.util.refined;
 
 import org.deus_ex_java.lang.ParametersValidationException;
+import org.deus_ex_java.lang.refined.NonBlankString;
 import org.deus_ex_java.util.CollectionsOps;
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -72,11 +74,10 @@ public record NonEmptyList<T>(List<T> list) {
   public static <T> Either<ParametersValidationException, NonEmptyList<T>> from(
       @NotNull List<T> list
   ) {
-    try {
-      return Either.right(new NonEmptyList<>(list));
-    } catch (ParametersValidationException parametersValidationException) {
-      return Either.left(parametersValidationException);
-    }
+    return TryCatchesOps.wrap(
+        () ->
+            new NonEmptyList<>(list),
+        ParametersValidationException.class);
   }
 
   /**

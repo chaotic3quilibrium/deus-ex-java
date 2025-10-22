@@ -3,6 +3,7 @@ package org.deus_ex_java.util.refined;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.CollectionsOps;
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -72,11 +73,10 @@ public record NonEmptySet<T>(Set<T> set) {
   public static <T> Either<ParametersValidationException, NonEmptySet<T>> from(
       @NotNull Set<T> set
   ) {
-    try {
-      return Either.right(new NonEmptySet<>(set));
-    } catch (ParametersValidationException parametersValidationException) {
-      return Either.left(parametersValidationException);
-    }
+    return TryCatchesOps.wrap(
+        () ->
+            new NonEmptySet<>(set),
+        ParametersValidationException.class);
   }
 
   /**

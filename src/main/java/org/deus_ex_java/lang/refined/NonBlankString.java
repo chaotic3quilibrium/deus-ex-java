@@ -2,6 +2,7 @@ package org.deus_ex_java.lang.refined;
 
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -67,11 +68,10 @@ public record NonBlankString(
   public static Either<ParametersValidationException, NonBlankString> from(
       @NotNull String string
   ) {
-    try {
-      return Either.right(new NonBlankString(string));
-    } catch (ParametersValidationException parametersValidationException) {
-      return Either.left(parametersValidationException);
-    }
+    return TryCatchesOps.wrap(
+        () ->
+            new NonBlankString(string),
+        ParametersValidationException.class);
   }
 
   /**

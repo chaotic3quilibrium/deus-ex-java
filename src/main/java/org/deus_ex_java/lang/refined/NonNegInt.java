@@ -2,6 +2,7 @@ package org.deus_ex_java.lang.refined;
 
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -58,7 +59,7 @@ public record NonNegInt(int value) implements Comparable<NonNegInt> {
   public static Either<ParametersValidationException, NonNegInt> from(
       int value
   ) {
-    return Either.tryCatch(
+    return TryCatchesOps.wrap(
         () ->
             new NonNegInt(value),
         ParametersValidationException.class);

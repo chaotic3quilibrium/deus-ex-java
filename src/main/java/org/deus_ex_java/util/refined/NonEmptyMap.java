@@ -3,6 +3,7 @@ package org.deus_ex_java.util.refined;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.CollectionsOps;
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -72,11 +73,10 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
   public static <K, V> Either<ParametersValidationException, NonEmptyMap<K, V>> from(
       @NotNull Map<K, V> map
   ) {
-    try {
-      return Either.right(new NonEmptyMap<>(map));
-    } catch (ParametersValidationException parametersValidationException) {
-      return Either.left(parametersValidationException);
-    }
+    return TryCatchesOps.wrap(
+        () ->
+            new NonEmptyMap<>(map),
+        ParametersValidationException.class);
   }
 
   /**
