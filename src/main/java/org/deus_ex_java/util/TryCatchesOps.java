@@ -164,7 +164,7 @@ public final class TryCatchesOps {
    */
   @SafeVarargs
   @NotNull
-  public static <L extends Throwable> Optional<L> wrapChecked(
+  public static <L extends Throwable> Optional<L> wrapCheckedException(
       @NotNull VoidSupplierCheckedException voidSupplierCheckedException,
       @NotNull Class<L>... throwableClasses
   ) {
@@ -210,10 +210,10 @@ public final class TryCatchesOps {
    *     {@link WrappedCheckedException} wrapping the unrecognized exception is thrown.
    */
   @NotNull
-  public static Optional<RuntimeException> wrapChecked(
+  public static Optional<RuntimeException> wrapCheckedException(
       @NotNull VoidSupplierCheckedException voidSupplierCheckedException
   ) {
-    return wrapChecked(voidSupplierCheckedException, RuntimeException.class);
+    return wrapCheckedException(voidSupplierCheckedException, RuntimeException.class);
   }
 
   /**
@@ -242,7 +242,7 @@ public final class TryCatchesOps {
    */
   @SafeVarargs
   @NotNull
-  public static <L extends Throwable, R> Either<L, R> wrapChecked(
+  public static <L extends Throwable, R> Either<L, R> wrapCheckedException(
       @NotNull SupplierCheckedException<R> supplierCheckedException,
       @NotNull Class<L>... throwableClasses
   ) {
@@ -286,10 +286,10 @@ public final class TryCatchesOps {
    *     {@link Either}, otherwise, the exception is re-throw
    */
   @NotNull
-  public static <R> Either<Exception, R> wrapChecked(
+  public static <R> Either<Exception, R> wrapCheckedException(
       @NotNull SupplierCheckedException<R> supplierCheckedException
   ) {
-    return wrapChecked(supplierCheckedException, Exception.class);
+    return wrapCheckedException(supplierCheckedException, Exception.class);
   }
 
 }

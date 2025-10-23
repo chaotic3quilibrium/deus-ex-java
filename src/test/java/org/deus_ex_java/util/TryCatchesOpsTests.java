@@ -61,14 +61,14 @@ public class TryCatchesOpsTests {
   @Test
   public void testTryCatchCheckedException() {
     @SuppressWarnings({"NumericOverflow", "divzero"})
-    var eitherLeft = TryCatchesOps.wrapChecked(() -> 60 / 0);
+    var eitherLeft = TryCatchesOps.wrapCheckedException(() -> 60 / 0);
     assertTrue(eitherLeft.isLeft());
     assertEquals(ArithmeticException.class, eitherLeft.getLeft().getClass());
     assertEquals("/ by zero", eitherLeft.getLeft().getMessage());
-    var eitherRight = TryCatchesOps.wrapChecked(() -> 60 / 2);
+    var eitherRight = TryCatchesOps.wrapCheckedException(() -> 60 / 2);
     assertTrue(eitherRight.isRight());
     assertEquals(30, eitherRight.getRight());
-    var eitherLeftB = TryCatchesOps.wrapChecked(() -> {
+    var eitherLeftB = TryCatchesOps.wrapCheckedException(() -> {
       //noinspection resource
       InputStreamReader.nullReader().reset(); //intentionally throwing a checked exception
       return 10;
@@ -79,7 +79,7 @@ public class TryCatchesOpsTests {
     var throwable = assertThrows(
         IllegalStateException.class,
         () ->
-            TryCatchesOps.wrapChecked(() -> {
+            TryCatchesOps.wrapCheckedException(() -> {
                   //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("generate RuntimeException in an IOException expected context");
@@ -108,7 +108,7 @@ public class TryCatchesOpsTests {
     if (Objects.equals(exceptionTypeProvided.getCanonicalName(), "java.lang.RuntimeException")) {
       var throwable = assertThrows(
           WrappedCheckedException.class,
-          () -> TryCatchesOps.wrapChecked(() -> {
+          () -> TryCatchesOps.wrapCheckedException(() -> {
                 //noinspection resource
                 InputStreamReader.nullReader().reset(); //intentionally throwing a checked exception
                 return 10;
@@ -116,7 +116,7 @@ public class TryCatchesOpsTests {
               exceptionTypeProvided));
       assertEquals("wrapChecked(SupplierCheckedException) failure - reset() not supported", throwable.getMessage());
     } else {
-      var eitherLeft = TryCatchesOps.wrapChecked(() -> {
+      var eitherLeft = TryCatchesOps.wrapCheckedException(() -> {
             //noinspection resource
             InputStreamReader.nullReader().reset(); //intentionally throwing a checked exception
             return 10;

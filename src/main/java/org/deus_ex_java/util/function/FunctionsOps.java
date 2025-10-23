@@ -1,7 +1,6 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.lang.WrappedCheckedException;
-import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
@@ -237,7 +236,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 biFunctionCheckedExceptionTAndU.apply(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -286,7 +285,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t1, t2) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 binaryOperatorCheckedExceptionT.apply(t1, t2))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -335,7 +334,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 biPredicateCheckedExceptionT.test(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -433,7 +432,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 functionCheckedExceptionT.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -485,7 +484,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function2CheckedException.apply(a, b))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -538,7 +537,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function3CheckedException.apply(a, b, c))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -593,7 +592,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function4CheckedException.apply(a, b, c, d))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -650,7 +649,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function5CheckedException.apply(a, b, c, d, e))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -709,7 +708,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function6CheckedException.apply(a, b, c, d, e, f))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -770,7 +769,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function7CheckedException.apply(a, b, c, d, e, f, g))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -833,7 +832,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function8CheckedException.apply(a, b, c, d, e, f, g, h))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -898,7 +897,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h, i) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function9CheckedException.apply(a, b, c, d, e, f, g, h, i))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -965,7 +964,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h, i, j) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function10CheckedException.apply(a, b, c, d, e, f, g, h, i, j))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1012,7 +1011,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 predicateCheckedExceptionT.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1059,7 +1058,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
-        TryCatchesOps.wrapChecked(supplierCheckedExceptionT)
+        TryCatchesOps.wrapCheckedException(supplierCheckedExceptionT)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1105,7 +1104,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 unaryCheckedExceptionT.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
