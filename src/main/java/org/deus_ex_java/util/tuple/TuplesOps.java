@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * Utility class providing static methods to create and work with tuple instances.
  */
-public class TuplesOps {
+public final class TuplesOps {
   private TuplesOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
   }

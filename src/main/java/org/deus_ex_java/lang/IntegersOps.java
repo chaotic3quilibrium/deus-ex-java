@@ -5,22 +5,19 @@ import org.deus_ex_java.util.SetsOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Utility class providing static methods to create and work with {@link Integer} instances.
  */
-public class IntegersOps {
+public final class IntegersOps {
 
   private IntegersOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
   }
 
   /**
-   * Return an unmodifiable <u><i>ordered</i></u> {@link Set} containing the index for each bit set
-   * in {@code bits}.
+   * Return an unmodifiable <u><i>ordered</i></u> {@link Set} containing the index for each bit set in {@code bits}.
    *
    * @param bits the value from which to extract the list of indexes
    * @return a {@link Set} containing the index for each bit set in {@code bits}

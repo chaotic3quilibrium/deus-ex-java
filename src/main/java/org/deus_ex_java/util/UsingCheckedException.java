@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  * {@link RuntimeException}s exceptions, this class ensures all checked exception pathways return a
  * {@link WrappedCheckedException}.
  */
-public class UsingCheckedException {
+public final class UsingCheckedException {
 
   private UsingCheckedException() {
     throw new UnsupportedOperationException("suppressing class instantiation");

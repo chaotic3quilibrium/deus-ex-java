@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create and work with array instances.
  */
-public class ArraysOps {
+public final class ArraysOps {
 
   private ArraysOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");

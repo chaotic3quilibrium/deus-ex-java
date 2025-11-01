@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * href="https://docs.google.com/spreadsheets/d/1Xljq5x9alDwSHZTY1nkBxDAwF4MKX5x2zy6XD-x2zVk/edit?usp=sharing">Java
  * Lambda Reference Table V2</a>
  */
-public class FunctionsOps {
+public final class FunctionsOps {
 
   private FunctionsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
@@ -142,17 +142,18 @@ public class FunctionsOps {
   }
 
   /**
-   * Returns a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf}
-   * function and the computed value of type {@code R}, which was produced from one of the two
-   * supplied functions, {@code fThen} or {@code fElse}.
+   * Returns a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf} function and the
+   * computed value of type {@code R}, which was produced from one of the two supplied functions, {@code fThen} or
+   * {@code fElse}.
    *
-   * @param fIf the function to supply a value which determines which of the two functions to call to supply the return value
+   * @param fIf   the function to supply a value which determines which of the two functions to call to supply the
+   *              return value
    * @param fThen the function, only called if the {@code fIf} function returns true, supplying the return value
    * @param fElse the function, only called if the {@code fIf} function returns false, supplying the return value
-   * @param <R>                       the type of the result of the value supplying functions
-   * @return a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf}
-   *     function and the computed value of type {@code R}, which was produced from one of the two
-   *     supplied functions, {@code fThen} or {@code fElse}
+   * @param <R>   the type of the result of the value supplying functions
+   * @return a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf} function and the
+   *     computed value of type {@code R}, which was produced from one of the two supplied functions, {@code fThen} or
+   *     {@code fElse}
    */
   @NotNull
   public static <R> Supplier<Tuple2<Boolean, R>> ifThenElse(
@@ -173,16 +174,17 @@ public class FunctionsOps {
 
   /**
    * Returns a {@link SupplierCheckedException} of a {@link Tuple2} consisting of the result of the {@code fceIf}
-   * function and the computed value of type {@code R}, which was produced from one of the two
-   * supplied functions, {@code fceThen} or {@code fceElse}.
+   * function and the computed value of type {@code R}, which was produced from one of the two supplied functions,
+   * {@code fceThen} or {@code fceElse}.
    *
-   * @param fceIf the function to supply a value which determines which of the two functions to call to supply the return value
+   * @param fceIf   the function to supply a value which determines which of the two functions to call to supply the
+   *                return value
    * @param fceThen the function, only called if the {@code fceIf} function returns true, supplying the return value
    * @param fceElse the function, only called if the {@code fceIf} function returns false, supplying the return value
-   * @param <R>                       the type of the result of the value supplying functions
+   * @param <R>     the type of the result of the value supplying functions
    * @return a {@link SupplierCheckedException} of a {@link Tuple2} consisting of the result of the {@code fceIf}
-   *     function and the computed value of type {@code R}, which was produced from one of the two
-   *     supplied functions, {@code fceThen} or {@code fceElse}
+   *     function and the computed value of type {@code R}, which was produced from one of the two supplied functions,
+   *     {@code fceThen} or {@code fceElse}
    */
   @NotNull
   public static <R> SupplierCheckedException<Tuple2<R, Boolean>> ifThenElseCheckedException(

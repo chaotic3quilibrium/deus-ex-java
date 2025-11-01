@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * href="https://docs.google.com/spreadsheets/d/1Xljq5x9alDwSHZTY1nkBxDAwF4MKX5x2zy6XD-x2zVk/edit?usp=sharing">Java
  * Lambda Reference Table V2</a>
  */
-public class FunctionsPrimitivesOps {
+public final class FunctionsPrimitivesOps {
 
   private FunctionsPrimitivesOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
