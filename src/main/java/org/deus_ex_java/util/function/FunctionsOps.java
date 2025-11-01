@@ -2,6 +2,7 @@ package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.TryCatchesOps;
+import org.deus_ex_java.util.tuple.Tuple2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Callable;
@@ -138,6 +139,66 @@ public class FunctionsOps {
       @NotNull Function2CheckedException<? super A, ? super B, ? extends R> function2CheckedException
   ) {
     return function2CheckedException::apply;
+  }
+
+  /**
+   * Returns a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf}
+   * function and the computed value of type {@code R}, which was produced from one of the two
+   * supplied functions, {@code fThen} or {@code fElse}.
+   *
+   * @param fIf the function to supply a value which determines which of the two functions to call to supply the return value
+   * @param fThen the function, only called if the {@code fIf} function returns true, supplying the return value
+   * @param fElse the function, only called if the {@code fIf} function returns false, supplying the return value
+   * @param <R>                       the type of the result of the value supplying functions
+   * @return a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf}
+   *     function and the computed value of type {@code R}, which was produced from one of the two
+   *     supplied functions, {@code fThen} or {@code fElse}
+   */
+  @NotNull
+  public static <R> Supplier<Tuple2<Boolean, R>> ifThenElse(
+      @NotNull BooleanSupplier fIf,
+      @NotNull Supplier<R> fThen,
+      @NotNull Supplier<R> fElse
+  ) {
+    return () -> {
+      var isThen = fIf.getAsBoolean();
+
+      return new Tuple2<>(
+          isThen,
+          isThen
+              ? fThen.get()
+              : fElse.get());
+    };
+  }
+
+  /**
+   * Returns a {@link SupplierCheckedException} of a {@link Tuple2} consisting of the result of the {@code fceIf}
+   * function and the computed value of type {@code R}, which was produced from one of the two
+   * supplied functions, {@code fceThen} or {@code fceElse}.
+   *
+   * @param fceIf the function to supply a value which determines which of the two functions to call to supply the return value
+   * @param fceThen the function, only called if the {@code fceIf} function returns true, supplying the return value
+   * @param fceElse the function, only called if the {@code fceIf} function returns false, supplying the return value
+   * @param <R>                       the type of the result of the value supplying functions
+   * @return a {@link SupplierCheckedException} of a {@link Tuple2} consisting of the result of the {@code fceIf}
+   *     function and the computed value of type {@code R}, which was produced from one of the two
+   *     supplied functions, {@code fceThen} or {@code fceElse}
+   */
+  @NotNull
+  public static <R> SupplierCheckedException<Tuple2<R, Boolean>> ifThenElseCheckedException(
+      @NotNull BooleanSupplierCheckedException fceIf,
+      @NotNull SupplierCheckedException<R> fceThen,
+      @NotNull SupplierCheckedException<R> fceElse
+  ) {
+    return () -> {
+      var isThen = fceIf.getAsBoolean();
+
+      return new Tuple2<>(
+          isThen
+              ? fceThen.get()
+              : fceElse.get(),
+          isThen);
+    };
   }
 
   /**

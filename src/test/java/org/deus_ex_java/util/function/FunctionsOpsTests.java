@@ -41,6 +41,8 @@ public class FunctionsOpsTests {
     //    - BiFunction
     //    - BiFunctionChecked
     //    - BiFunctionCheckedException
+    //  -x2 ifThenElse
+    //    - ifThenElseCheckedException
     //  -x38 wrapCheckedException() pathways
     //    - BiConsumer*
     //    - BiFunction*
