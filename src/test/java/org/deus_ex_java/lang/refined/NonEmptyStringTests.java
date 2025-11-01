@@ -31,14 +31,14 @@ public class NonEmptyStringTests {
 
   @Test
   public void testCompareTo() {
-    var NonEmptyStringA1 = new NonEmptyString("a");
-    var NonEmptyStringA2 = new NonEmptyString("a");
-    var NonEmptyStringB = new NonEmptyString("b");
+    var nonEmptyStringA1 = new NonEmptyString("a");
+    var nonEmptyStringA2 = new NonEmptyString("a");
+    var nonEmptyStringB = new NonEmptyString("b");
     //noinspection EqualsWithItself
-    assertEquals(0, NonEmptyStringA1.compareTo(NonEmptyStringA1));
-    assertEquals(0, NonEmptyStringA1.compareTo(NonEmptyStringA2));
-    assertEquals(0, NonEmptyStringA2.compareTo(NonEmptyStringA1));
-    assertEquals(-1, NonEmptyStringA2.compareTo(NonEmptyStringB));
-    assertEquals(1, NonEmptyStringB.compareTo(NonEmptyStringA1));
+    assertEquals(0, nonEmptyStringA1.compareTo(nonEmptyStringA1));
+    assertEquals(0, nonEmptyStringA1.compareTo(nonEmptyStringA2));
+    assertEquals(0, nonEmptyStringA2.compareTo(nonEmptyStringA1));
+    assertEquals(-1, nonEmptyStringA2.compareTo(nonEmptyStringB));
+    assertEquals(1, nonEmptyStringB.compareTo(nonEmptyStringA1));
   }
 }
