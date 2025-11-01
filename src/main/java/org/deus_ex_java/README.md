@@ -151,7 +151,7 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 
 ## v1.1
 
-- 2025.11.02
+- 2025.11.01
 - Added tons of tests
   - Remaining tests needed marked by "TODO:" comments
 - Fixes and tweaks related to defects exposed by expanded testing surface

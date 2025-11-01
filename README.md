@@ -7,7 +7,7 @@ This is an abbreviated version of the [README.md](https://github.com/chaotic3qui
 <a href="https://github.com/chaotic3quilibrium/deus-ex-java" target="_blank"><span style="font-family:default; font-size:2.35em; color:#5FA845">
 deus-ex-java</span></a>
 
-- Version: 1.1 - 2025.11.02
+- Version: 1.1 - 2025.11.01
 
 ---
 
