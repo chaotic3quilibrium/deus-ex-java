@@ -8,17 +8,17 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 /**
- * A validation wrapper restricting an {@code String} to a non-empty value.
+ * A validation wrapper restricting an {@code String} to a non-empty lower-case value.
  * <p>
- * The default {@code new NonEmptyString(...)} constructor implements enforced validation; i.e. throws a
+ * The default {@code new NonEmptyLowerCaseString(...)} constructor implements enforced validation; i.e. throws a
  * {@link ParametersValidationException} within any attempt to instantiate with a value which returns a non-empty
- * {@link Optional} from the {@link NonEmptyString#validate} method.
+ * {@link Optional} from the {@link NonEmptyLowerCaseString#validate} method.
  *
- * @param string an {@code String} with a non-empty value
+ * @param string an {@code String} with a non-empty lower-case value
  */
-public record NonEmptyString(
+public record NonEmptyLowerCaseString(
     @NotNull String string
-) implements Comparable<NonEmptyString> {
+) implements Comparable<NonEmptyLowerCaseString> {
 
   /**
    * Returns a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
@@ -27,9 +27,10 @@ public record NonEmptyString(
    * <u><b>Preconditions:</b></u>
    * <ul>
    * <li>{@code string} must be non-empty</li>
+   * <li>{@code string} must be lower-case</li>
    * </ul>
    *
-   * @param string an {@code String} with a non-empty value
+   * @param string an {@code String} with a non-empty lower-case value
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
@@ -40,8 +41,14 @@ public record NonEmptyString(
     if (string.isEmpty()) {
 
       return Optional.of(new ParametersValidationException(
-          "NonEmptyString invalid parameter(s)",
+          "NonEmptyLowerCaseString invalid parameter(s)",
           "string.isEmpty() must be false"));
+    }
+    if (!string.equals(string.toLowerCase())) {
+
+      return Optional.of(new ParametersValidationException(
+          "NonEmptyLowerCaseString invalid parameter(s)",
+          "string.equals(string.toLowerCase()) must be true"));
     }
 
     return Optional.empty();
@@ -58,12 +65,12 @@ public record NonEmptyString(
    *     {@link #validate(String)} method
    */
   @NotNull
-  public static Either<ParametersValidationException, NonEmptyString> from(
+  public static Either<ParametersValidationException, NonEmptyLowerCaseString> from(
       @NotNull String string
   ) {
     return TryCatchesOps.wrap(
         () ->
-            new NonEmptyString(string),
+            new NonEmptyLowerCaseString(string),
         ParametersValidationException.class);
   }
 
@@ -74,7 +81,7 @@ public record NonEmptyString(
    * @throws ParametersValidationException when the call to the {@link #validate(String)} method returns a non-empty
    *                                       {@link Optional}.
    */
-  public NonEmptyString {
+  public NonEmptyLowerCaseString {
     validate(string)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
@@ -87,14 +94,14 @@ public record NonEmptyString(
    * {@code that.value}, otherwise the value {@code 0} because {@code this.value} must be by elimination
    * lexicographically equal to {@code that.value} (signed comparison).
    *
-   * @param that the NonEmptyString to be lexicographically compared.
+   * @param that the NonEmptyLowerCaseString to be lexicographically compared.
    * @return a value less than {@code 0} when {@code this.string} is lexicographically less than {@code that.value},
    *     otherwise a value greater than {@code 0} when {@code this.value} is lexicographically greater than
    *     {@code that.value}, otherwise the value {@code 0} because {@code this.value} must be by elimination
    *     lexicographically equal to {@code that.value} (signed comparison)
    */
   @Override
-  public int compareTo(@NotNull NonEmptyString that) {
+  public int compareTo(@NotNull NonEmptyLowerCaseString that) {
     return this.string.compareTo(that.string);
   }
 }

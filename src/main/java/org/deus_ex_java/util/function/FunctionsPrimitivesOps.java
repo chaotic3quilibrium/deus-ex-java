@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.lang.WrappedCheckedException;
-import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.*;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * href="https://docs.google.com/spreadsheets/d/1Xljq5x9alDwSHZTY1nkBxDAwF4MKX5x2zy6XD-x2zVk/edit?usp=sharing">Java
  * Lambda Reference Table V2</a>
  */
-public class FunctionsPrimitivesOps {
+public final class FunctionsPrimitivesOps {
 
   private FunctionsPrimitivesOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
@@ -61,7 +61,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
-        Either.tryCatchChecked(booleanSupplierCheckedException::getAsBoolean)
+        TryCatchesOps.wrapCheckedException(booleanSupplierCheckedException::getAsBoolean)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -105,7 +105,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 doubleBinaryOperatorCheckedException.applyAsDouble(left, right))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -199,7 +199,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 doubleFunctionCheckedException.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -244,7 +244,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 doublePredicateCheckedException.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -289,7 +289,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
-        Either.tryCatchChecked(doubleSupplierCheckedException::getAsDouble)
+        TryCatchesOps.wrapCheckedException(doubleSupplierCheckedException::getAsDouble)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -333,7 +333,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 doubleToIntFunctionCheckedException.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -378,7 +378,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 doubleToLongFunctionCheckedException.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -423,7 +423,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 doubleUnaryOperatorCheckedException.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -468,7 +468,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 intBinaryOperatorCheckedException.applyAsInt(left, right))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -562,7 +562,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 intFunctionCheckedException.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -607,7 +607,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 intPredicateCheckedException.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -652,7 +652,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
-        Either.tryCatchChecked(intSupplierCheckedException::getAsInt)
+        TryCatchesOps.wrapCheckedException(intSupplierCheckedException::getAsInt)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -696,7 +696,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 intToDoubleFunctionCheckedException.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -741,7 +741,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 intToLongFunctionCheckedException.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -786,7 +786,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 intUnaryOperatorCheckedException.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -831,7 +831,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 longBinaryOperatorCheckedException.applyAsLong(left, right))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -925,7 +925,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 longFunctionCheckedException.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -970,7 +970,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 longPredicateCheckedException.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1015,7 +1015,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
-        Either.tryCatchChecked(longSupplierCheckedException::getAsLong)
+        TryCatchesOps.wrapCheckedException(longSupplierCheckedException::getAsLong)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1059,7 +1059,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 longToDoubleFunctionCheckedException.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1104,7 +1104,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 longToIntFunctionCheckedException.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1149,7 +1149,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 longUnaryOperatorCheckedException.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1345,7 +1345,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 toDoubleBiFunctionCheckedExceptionTAndU.applyAsDouble(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1394,7 +1394,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 toIntBiFunctionCheckedExceptionTAndU.applyAsInt(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1443,7 +1443,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 toLongBiFunctionCheckedExceptionTAndU.applyAsLong(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1490,7 +1490,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 toDoubleFunctionCheckedExceptionT.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1537,7 +1537,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 toIntFunctionCheckedExceptionT.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1584,7 +1584,7 @@ public class FunctionsPrimitivesOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 toLongFunctionCheckedExceptionT.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();

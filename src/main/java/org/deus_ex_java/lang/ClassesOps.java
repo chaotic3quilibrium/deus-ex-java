@@ -1,6 +1,7 @@
 package org.deus_ex_java.lang;
 
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -54,7 +55,7 @@ public final class ClassesOps {
   public static <T> Optional<T> narrow(
       @NotNull Supplier<T> supplier
   ) {
-    return Either.tryCatch(
+    return TryCatchesOps.wrap(
             supplier,
             ClassCastException.class)
         .toOptional();

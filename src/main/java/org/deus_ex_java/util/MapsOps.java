@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Map} instances.
  */
-public class MapsOps {
+public final class MapsOps {
 
   private MapsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");

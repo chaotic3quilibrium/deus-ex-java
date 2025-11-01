@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Set} instances.
  */
-public class SetsOps {
+public final class SetsOps {
 
   private SetsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");

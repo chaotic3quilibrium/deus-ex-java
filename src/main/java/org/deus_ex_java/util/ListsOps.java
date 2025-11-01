@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link List} instances.
  */
-public class ListsOps {
+public final class ListsOps {
 
   private ListsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");

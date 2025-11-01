@@ -1,7 +1,8 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.lang.WrappedCheckedException;
-import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
+import org.deus_ex_java.util.tuple.Tuple2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Callable;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
  * href="https://docs.google.com/spreadsheets/d/1Xljq5x9alDwSHZTY1nkBxDAwF4MKX5x2zy6XD-x2zVk/edit?usp=sharing">Java
  * Lambda Reference Table V2</a>
  */
-public class FunctionsOps {
+public final class FunctionsOps {
 
   private FunctionsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
@@ -141,6 +142,68 @@ public class FunctionsOps {
   }
 
   /**
+   * Returns a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf} function and the
+   * computed value of type {@code R}, which was produced from one of the two supplied functions, {@code fThen} or
+   * {@code fElse}.
+   *
+   * @param fIf   the function to supply a value which determines which of the two functions to call to supply the
+   *              return value
+   * @param fThen the function, only called if the {@code fIf} function returns true, supplying the return value
+   * @param fElse the function, only called if the {@code fIf} function returns false, supplying the return value
+   * @param <R>   the type of the result of the value supplying functions
+   * @return a {@link Supplier} of a {@link Tuple2} consisting of the result of the {@code fIf} function and the
+   *     computed value of type {@code R}, which was produced from one of the two supplied functions, {@code fThen} or
+   *     {@code fElse}
+   */
+  @NotNull
+  public static <R> Supplier<Tuple2<Boolean, R>> ifThenElse(
+      @NotNull BooleanSupplier fIf,
+      @NotNull Supplier<R> fThen,
+      @NotNull Supplier<R> fElse
+  ) {
+    return () -> {
+      var isThen = fIf.getAsBoolean();
+
+      return new Tuple2<>(
+          isThen,
+          isThen
+              ? fThen.get()
+              : fElse.get());
+    };
+  }
+
+  /**
+   * Returns a {@link SupplierCheckedException} of a {@link Tuple2} consisting of the result of the {@code fceIf}
+   * function and the computed value of type {@code R}, which was produced from one of the two supplied functions,
+   * {@code fceThen} or {@code fceElse}.
+   *
+   * @param fceIf   the function to supply a value which determines which of the two functions to call to supply the
+   *                return value
+   * @param fceThen the function, only called if the {@code fceIf} function returns true, supplying the return value
+   * @param fceElse the function, only called if the {@code fceIf} function returns false, supplying the return value
+   * @param <R>     the type of the result of the value supplying functions
+   * @return a {@link SupplierCheckedException} of a {@link Tuple2} consisting of the result of the {@code fceIf}
+   *     function and the computed value of type {@code R}, which was produced from one of the two supplied functions,
+   *     {@code fceThen} or {@code fceElse}
+   */
+  @NotNull
+  public static <R> SupplierCheckedException<Tuple2<R, Boolean>> ifThenElseCheckedException(
+      @NotNull BooleanSupplierCheckedException fceIf,
+      @NotNull SupplierCheckedException<R> fceThen,
+      @NotNull SupplierCheckedException<R> fceElse
+  ) {
+    return () -> {
+      var isThen = fceIf.getAsBoolean();
+
+      return new Tuple2<>(
+          isThen
+              ? fceThen.get()
+              : fceElse.get(),
+          isThen);
+    };
+  }
+
+  /**
    * Returns a {@link BiConsumer} that wraps the checked exception lambda, {@code biConsumerCheckedExceptionT}, with a
    * {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    * operations.
@@ -236,7 +299,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 biFunctionCheckedExceptionTAndU.apply(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -285,7 +348,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t1, t2) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 binaryOperatorCheckedExceptionT.apply(t1, t2))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -334,7 +397,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 biPredicateCheckedExceptionT.test(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -432,7 +495,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 functionCheckedExceptionT.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -484,7 +547,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function2CheckedException.apply(a, b))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -537,7 +600,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function3CheckedException.apply(a, b, c))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -592,7 +655,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function4CheckedException.apply(a, b, c, d))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -649,7 +712,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function5CheckedException.apply(a, b, c, d, e))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -708,7 +771,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function6CheckedException.apply(a, b, c, d, e, f))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -769,7 +832,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function7CheckedException.apply(a, b, c, d, e, f, g))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -832,7 +895,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function8CheckedException.apply(a, b, c, d, e, f, g, h))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -897,7 +960,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h, i) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function9CheckedException.apply(a, b, c, d, e, f, g, h, i))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -964,7 +1027,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h, i, j) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 function10CheckedException.apply(a, b, c, d, e, f, g, h, i, j))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1011,7 +1074,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 predicateCheckedExceptionT.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
@@ -1058,7 +1121,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
-        Either.tryCatchChecked(supplierCheckedExceptionT)
+        TryCatchesOps.wrapCheckedException(supplierCheckedExceptionT)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1104,7 +1167,7 @@ public class FunctionsOps {
       @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        Either.tryCatchChecked(() ->
+        TryCatchesOps.wrapCheckedException(() ->
                 unaryCheckedExceptionT.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();

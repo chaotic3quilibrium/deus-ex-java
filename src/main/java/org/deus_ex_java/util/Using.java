@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  * {@link RuntimeException}s, and only returns a {@link WrappedCheckedException} if any call to
  * {@link AutoCloseable#close()} causes a checked exception.
  */
-public class Using {
+public final class Using {
 
   private Using() {
     throw new UnsupportedOperationException("suppressing class instantiation");

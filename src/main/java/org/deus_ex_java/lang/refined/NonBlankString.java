@@ -2,6 +2,7 @@ package org.deus_ex_java.lang.refined;
 
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.Either;
+import org.deus_ex_java.util.TryCatchesOps;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -67,11 +68,10 @@ public record NonBlankString(
   public static Either<ParametersValidationException, NonBlankString> from(
       @NotNull String string
   ) {
-    try {
-      return Either.right(new NonBlankString(string));
-    } catch (ParametersValidationException parametersValidationException) {
-      return Either.left(parametersValidationException);
-    }
+    return TryCatchesOps.wrap(
+        () ->
+            new NonBlankString(string),
+        ParametersValidationException.class);
   }
 
   /**
@@ -94,7 +94,7 @@ public record NonBlankString(
    * {@code that.value}, otherwise the value {@code 0} because {@code this.value} must be by elimination
    * lexicographically equal to {@code that.value} (signed comparison).
    *
-   * @param that the PosInt to be numerically compared.
+   * @param that the NonBlankString to be lexicographically compared.
    * @return a value less than {@code 0} when {@code this.string} is lexicographically less than {@code that.value},
    *     otherwise a value greater than {@code 0} when {@code this.value} is lexicographically greater than
    *     {@code that.value}, otherwise the value {@code 0} because {@code this.value} must be by elimination
