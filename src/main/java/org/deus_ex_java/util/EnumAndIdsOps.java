@@ -4,7 +4,6 @@ package org.deus_ex_java.util;
 import org.deus_ex_java.lang.ClassesOps;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
-import org.deus_ex_java.util.function.Function2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -127,7 +126,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param classE the {@link Class} of the specific enum being augmented
    * @param fEToId a function to produce an {@code ID} value from an {@link Enum} value
    * @param <E>    the specific Enum's type
-   * @param <ID> type of each id associated with an enum's value
+   * @param <ID>   type of each id associated with an enum's value
    * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
    *     derive the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String
    *     search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an
@@ -142,13 +141,13 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         classE,
         fEToId,
         enumValueAndId ->
-        new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()));
+            new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()));
   }
 
   /**
    * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
-   * derive the associated {@code ID} from each {@link Enum} value, and using {@code fEAndIdToNonEmptyLowerCaseString} to derive the String
-   * search term for each {@code ID} associated with an Enum value.
+   * derive the associated {@code ID} from each {@link Enum} value, and using {@code fEAndIdToNonEmptyLowerCaseString}
+   * to derive the String search term for each {@code ID} associated with an Enum value.
    * <p>
    * A precondition for using the EnumAndIdsOps factory methods is:
    * <ul>
@@ -165,15 +164,16 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * ensure the same {@link EnumAndIdsOps} instance is returned. There are no means provided to allow additional
    * independent instances of {@link EnumAndIdsOps} for the same {@link Enum} class.
    *
-   * @param classE      the {@link Class} of the specific enum being augmented
-   * @param fEToId      a function to produce an {@code ID} value from an {@link Enum} value
-   * @param fEAndIdToNonEmptyLowerCaseString a function to produce a String value for an ID, assuming the returned value is different from
-   *                    that returned by the .toString() method
-   * @param <E>         the specific Enum's type
-   * @param <ID> type of each id associated with an enum's value
+   * @param classE                           the {@link Class} of the specific enum being augmented
+   * @param fEToId                           a function to produce an {@code ID} value from an {@link Enum} value
+   * @param fEAndIdToNonEmptyLowerCaseString a function to produce a String value for an ID, assuming the returned value
+   *                                         is different from that returned by the .toString() method
+   * @param <E>                              the specific Enum's type
+   * @param <ID>                             type of each id associated with an enum's value
    * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
-   *     derive the associated {@code ID} from each {@link Enum} value, and using {@code fEAndIdToNonEmptyLowerCaseString} to derive the String
-   *     search term for each {@code ID} associated with an Enum value
+   *     derive the associated {@code ID} from each {@link Enum} value, and using
+   *     {@code fEAndIdToNonEmptyLowerCaseString} to derive the String search term for each {@code ID} associated with
+   *     an Enum value
    */
   @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
@@ -190,9 +190,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
 
   /**
    * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
-   * derive the associated {@code ID} from each {@link Enum} value, using {@code fEAndIdToNonEmptyLowerCaseString} to derive the String
-   * search term for each {@code ID}, and expanding the String search terms by using {@code fEAndIdToNonEmptyLowerCaseStrings} to derive
-   * alternative String value(s).
+   * derive the associated {@code ID} from each {@link Enum} value, using {@code fEAndIdToNonEmptyLowerCaseString} to
+   * derive the String search term for each {@code ID}, and expanding the String search terms by using
+   * {@code fEAndIdToNonEmptyLowerCaseStrings} to derive alternative String value(s).
    * <p>
    * A precondition for using the EnumAndIdsOps factory methods is:
    * <ul>
@@ -209,13 +209,13 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * ensure the same {@link EnumAndIdsOps} instance is returned. There are no means provided to allow additional
    * independent instances of {@link EnumAndIdsOps} for the same {@link Enum} class.
    *
-   * @param classE        the {@link Class} of the specific enum being augmented
-   * @param fEToId        a function to produce an {@code ID} value from an {@link Enum} value
-   * @param fEAndIdToNonEmptyLowerCaseString   a function to produce a String value for an ID, assuming the returned values is different from
-   *                      that returned by the .toString() method
+   * @param classE                            the {@link Class} of the specific enum being augmented
+   * @param fEToId                            a function to produce an {@code ID} value from an {@link Enum} value
+   * @param fEAndIdToNonEmptyLowerCaseString  a function to produce a String value for an ID, assuming the returned
+   *                                          values is different from that returned by the .toString() method
    * @param fEAndIdToNonEmptyLowerCaseStrings a function to produce additional String values (0 to n) for an Enum value
-   * @param <E>           the specific Enum's type
-   * @param <ID> type of each id associated with an enum's value
+   * @param <E>                               the specific Enum's type
+   * @param <ID>                              type of each id associated with an enum's value
    * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using {@code fEToId} to
    *     derive the associated {@code ID} from each {@link Enum} value, using {@code fIdToString} to derive the String
    *     search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an

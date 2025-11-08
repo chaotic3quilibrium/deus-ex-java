@@ -219,7 +219,8 @@ public final class Either<L, R> {
    *
    * @return a stream from forwarding the call to {@link Either#toOptionalRight}
    */
-  public Stream<R> toStream() {
+  @NotNull
+  public Stream<R> stream() {
     return toOptional().stream();
   }
 

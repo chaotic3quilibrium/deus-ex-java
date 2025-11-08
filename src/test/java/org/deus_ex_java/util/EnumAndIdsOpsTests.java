@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EnumAndIdsOpsTests {
   public interface EquivalentInt {
+    @SuppressWarnings("unused")
     int getEquivalent();
   }
 
@@ -186,6 +187,9 @@ public class EnumAndIdsOpsTests {
             entry(TrafficLightWithIdE.SYELLOW, 2),
             entry(TrafficLightWithIdE.SRED, 5)),
         tlwix.stream().toList());
+    assertEquals(
+        Set.of("1", "2", "5", "sred", "x4", "x6", "syellow", "sgreen", "x7"),
+        tlwix.valueOfLookupKeys());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.join());
     assertEquals(1, tlwix.get(TrafficLightWithIdE.SGREEN));
     assertEquals(Optional.of(TrafficLightWithIdE.SGREEN), tlwix.get(1));
@@ -268,6 +272,7 @@ public class EnumAndIdsOpsTests {
   }
 
   public interface EquivalentString {
+    @SuppressWarnings("unused")
     String getEquivalent();
   }
 

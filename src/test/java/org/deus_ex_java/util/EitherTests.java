@@ -1,18 +1,9 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.WrappedCheckedException;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -139,6 +130,15 @@ public class EitherTests {
     Either<Integer, String> eitherFromRight = Either.from(() -> 42, Optional.of("FortyOne"));
     assertTrue(eitherFromRight.toOptional().isPresent());
     assertEquals("FortyOne", eitherFromRight.toOptional().get());
+  }
+
+  @Test
+  public void testToStream() {
+    Either<Integer, String> eitherFromLeft = Either.from(() -> 40, Optional.empty());
+    assertTrue(eitherFromLeft.stream().toList().isEmpty());
+    Either<Integer, String> eitherFromRight = Either.from(() -> 42, Optional.of("FortyOne"));
+    assertFalse(eitherFromRight.stream().toList().isEmpty());
+    assertEquals(List.of("FortyOne"), eitherFromRight.stream().toList());
   }
 
   @Test
