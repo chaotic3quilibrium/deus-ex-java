@@ -2,6 +2,7 @@ package org.deus_ex_java.util;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
@@ -45,32 +46,60 @@ public final class ArraysOps {
   }
 
   /**
-   * Returns a new {@code int} array from a collection of {@link Integer}s.
+   * Returns a new {@code int} array from a source of {@link Integer}s.
    *
-   * @param integers the source of the derived {@code int} values
-   * @return a new {@code int} array from a collection of {@link Integer}s
+   * @param collection the source of the derived {@code int} values
+   * @return a new {@code int} array from a source of {@link Integer}s
    */
   public static int[] toDistinctSortedArrayInt(
-      @NotNull Stream<Integer> integers
+      @NotNull Collection<Integer> collection
   ) {
-    return toDistinctSortedArrayInt(integers, Integer::intValue);
+    return toDistinctSortedArrayInt(collection.stream());
   }
 
   /**
-   * Returns a new {@code int} array from a collection of {@code ts} deriving the {@code int} value via the function
+   * Returns a new {@code int} array from a source of {@link Integer}s.
+   *
+   * @param stream the source of the derived {@code int} values
+   * @return a new {@code int} array from a source of {@link Integer}s
+   */
+  public static int[] toDistinctSortedArrayInt(
+      @NotNull Stream<Integer> stream
+  ) {
+    return toDistinctSortedArrayInt(stream, Integer::intValue);
+  }
+
+  /**
+   * Returns a new {@code int} array from a source of {@link Integer}s deriving the {@code int} value via the function
    * {@code fTToId}.
    *
-   * @param ts     the source of the derived {@code int} values
-   * @param fTToId the function to use to extract the {@code int} value from an element of the collection
-   * @param <T>    the type of instances contained in the collection
-   * @return a new {@code int} array from a collection of {@code ts} deriving the {@code int} value via the function
+   * @param collection the source of the derived {@code int} values
+   * @param fTToId     the function to use to extract the {@code int} value from an element of the source
+   * @return a new {@code int} array from a source of {@link Integer}s deriving the {@code int} value via the function
    *     {@code fTToId}
    */
   public static <T> int[] toDistinctSortedArrayInt(
-      @NotNull Stream<T> ts,
+      @NotNull Collection<T> collection,
       @NotNull ToIntFunction<T> fTToId
   ) {
-    return ts
+    return toDistinctSortedArrayInt(collection.stream(), fTToId);
+  }
+
+  /**
+   * Returns a new {@code int} array from a source of {@code ts} deriving the {@code int} value via the function
+   * {@code fTToId}.
+   *
+   * @param stream the source of the derived {@code int} values
+   * @param fTToId the function to use to extract the {@code int} value from an element of the source
+   * @param <T>    the type of instances contained in the source
+   * @return a new {@code int} array from a source of {@code ts} deriving the {@code int} value via the function
+   *     {@code fTToId}
+   */
+  public static <T> int[] toDistinctSortedArrayInt(
+      @NotNull Stream<T> stream,
+      @NotNull ToIntFunction<T> fTToId
+  ) {
+    return stream
         .mapToInt(fTToId)
         .distinct()
         .sorted()

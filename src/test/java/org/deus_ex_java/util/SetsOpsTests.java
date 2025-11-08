@@ -78,17 +78,27 @@ public class SetsOpsTests {
   }
 
   @Test
-  public void testToSet() {
+  public void testNullSanitizeStream() {
     var expectedSet = Set.of(3, 2, 1);
     var nullContainingSet = Stream.of(null, 2, null, 1, null, 3, null).collect(Collectors.toSet());
     assertEquals(4, nullContainingSet.size());
-    var actualSet = SetsOps.toSet(nullContainingSet.stream());
+    var actualSet = SetsOps.nullSanitize(nullContainingSet.stream());
     assertEquals(expectedSet, actualSet);
     assertTrue(CollectionsOps.isUnmodifiable(actualSet));
   }
 
   @Test
-  public void testToSetOrdered() {
+  public void testNullSanitize() {
+    var expectedSet = Set.of(3, 2, 1);
+    var nullContainingSet = Stream.of(null, 2, null, 1, null, 3, null).collect(Collectors.toSet());
+    assertEquals(4, nullContainingSet.size());
+    var actualSet = SetsOps.nullSanitize(nullContainingSet);
+    assertEquals(expectedSet, actualSet);
+    assertTrue(CollectionsOps.isUnmodifiable(actualSet));
+  }
+
+  @Test
+  public void testToSetOrderedStream() {
     var expectedSetOrdered = new LinkedHashSet<>(List.of(3, 2, 1));
     var nullContainingSetOrdered = new LinkedHashSet<>(Stream.of(null, 3, null, 2, null, 1, null).toList());
     assertEquals(4, nullContainingSetOrdered.size());
@@ -97,6 +107,26 @@ public class SetsOpsTests {
     assertEquals(expectedSetOrdered, actualSetOrdered);
     assertEquals(expectedSetOrdered.stream().toList(), actualSetOrdered.stream().toList());
     assertTrue(CollectionsOps.isUnmodifiable(actualSetOrdered));
+  }
+
+  @Test
+  public void testToSetOrdered() {
+    var expectedSetOrdered = new LinkedHashSet<>(List.of(3, 2, 1));
+    var nullContainingSetOrdered = new LinkedHashSet<>(Stream.of(null, 3, null, 2, null, 1, null).toList());
+    assertEquals(4, nullContainingSetOrdered.size());
+    assertNull(nullContainingSetOrdered.iterator().next());
+    var actualSetOrdered = SetsOps.toSetOrdered(nullContainingSetOrdered);
+    assertEquals(expectedSetOrdered, actualSetOrdered);
+    assertEquals(expectedSetOrdered.stream().toList(), actualSetOrdered.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(actualSetOrdered));
+  }
+
+  @Test
+  public void testReverse() {
+    var expectedSetOrdered = new LinkedHashSet<>(List.of(1, 2, 3));
+    var nullContainingSetOrdered = new LinkedHashSet<>(Stream.of(null, 3, null, 2, null, 1, null).toList());
+    assertEquals(expectedSetOrdered, SetsOps.reverse(nullContainingSetOrdered.stream()));
+    assertEquals(expectedSetOrdered, SetsOps.reverse(nullContainingSetOrdered));
   }
 
   private <T> void validateContrastSetPairMap(

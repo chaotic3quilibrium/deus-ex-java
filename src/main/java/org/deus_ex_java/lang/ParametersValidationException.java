@@ -125,8 +125,8 @@ public final class ParametersValidationException extends RuntimeException {
     super(
         formatMessage(
             message,
-            ListsOps.toList(parametersValidationFailureMessages.stream())));
-    this.parametersValidationFailureMessages = ListsOps.toList(parametersValidationFailureMessages.stream());
+            ListsOps.nullSanitize(parametersValidationFailureMessages.stream())));
+    this.parametersValidationFailureMessages = ListsOps.nullSanitize(parametersValidationFailureMessages.stream());
   }
 
   /**
@@ -143,7 +143,7 @@ public final class ParametersValidationException extends RuntimeException {
     this(
         DEFAULT_MESSAGE,
         cause,
-        ListsOps.toList(parametersValidationFailureMessages.stream()));
+        ListsOps.nullSanitize(parametersValidationFailureMessages.stream()));
   }
 
   /**
@@ -181,9 +181,9 @@ public final class ParametersValidationException extends RuntimeException {
     super(
         formatMessage(
             message,
-            ListsOps.toList(parametersValidationFailureMessages.stream())),
+            ListsOps.nullSanitize(parametersValidationFailureMessages.stream())),
         cause);
-    this.parametersValidationFailureMessages = ListsOps.toList(parametersValidationFailureMessages.stream());
+    this.parametersValidationFailureMessages = ListsOps.nullSanitize(parametersValidationFailureMessages.stream());
   }
 
   /**
@@ -207,12 +207,11 @@ public final class ParametersValidationException extends RuntimeException {
     super(
         formatMessage(
             message,
-            ListsOps.toList(parametersValidationFailureMessages.stream())),
+            ListsOps.nullSanitize(parametersValidationFailureMessages.stream())),
         cause,
         enableSuppression,
         writableStackTrace);
-    this.parametersValidationFailureMessages = ListsOps.toList(parametersValidationFailureMessages.stream());
-    ;
+    this.parametersValidationFailureMessages = ListsOps.nullSanitize(parametersValidationFailureMessages.stream());
   }
 
   /**

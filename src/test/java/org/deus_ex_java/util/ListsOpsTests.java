@@ -62,17 +62,27 @@ public class ListsOpsTests {
   }
 
   @Test
-  public void testToList() {
+  public void testNullSanitizeStream() {
     var expectedList = List.of(1, 2, 3);
     var nullContainingList = Arrays.asList(null, 1, null, 2, null, 3, null);
     assertEquals(7, nullContainingList.size());
-    var actualList = ListsOps.toList(nullContainingList.stream());
+    var actualList = ListsOps.nullSanitize(nullContainingList.stream());
     assertEquals(expectedList, actualList);
     assertTrue(CollectionsOps.isUnmodifiable(actualList));
   }
 
   @Test
-  public void testToDistinctSortedListInteger() {
+  public void testNullSanitize() {
+    var expectedList = List.of(1, 2, 3);
+    var nullContainingList = Arrays.asList(null, 1, null, 2, null, 3, null);
+    assertEquals(7, nullContainingList.size());
+    var actualList = ListsOps.nullSanitize(nullContainingList);
+    assertEquals(expectedList, actualList);
+    assertTrue(CollectionsOps.isUnmodifiable(actualList));
+  }
+
+  @Test
+  public void testToDistinctSortedListIntegerStream() {
     assertEquals(
         List.of(1, 2, 3, 4),
         ListsOps.toDistinctSortedListInteger(
@@ -85,8 +95,30 @@ public class ListsOpsTests {
   }
 
   @Test
-  public void testFlatten() {
+  public void testToDistinctSortedListInteger() {
     assertEquals(
+        List.of(1, 2, 3, 4),
+        ListsOps.toDistinctSortedListInteger(
+            List.of(4, 1, 2, 3)));
+    assertEquals(
+        List.of(1, 2, 3, 4),
+        ListsOps.toDistinctSortedListInteger(
+            List.of("4", "1", "2", "3"),
+            Integer::valueOf));
+  }
+
+  @Test
+  public void testReverse() {
+    var expectedListOrdered = List.of(1, 2, 3);
+    var nullContainingListOrdered = Stream.of(null, 3, null, 2, null, 1, null).toList();
+    assertEquals(expectedListOrdered, ListsOps.reverse(nullContainingListOrdered.stream()));
+    assertEquals(expectedListOrdered, ListsOps.reverse(nullContainingListOrdered));
+  }
+
+  @Test
+  public void testFlattenStream() {
+    assertEquals(
+        List.of(1, 2, 3),
         ListsOps.flatten(
             Stream.of(
                 Optional.empty(),
@@ -94,8 +126,21 @@ public class ListsOpsTests {
                 Optional.of(2),
                 Optional.empty(),
                 Optional.of(3),
-                Optional.empty())),
-        List.of(1, 2, 3));
+                Optional.empty())));
+  }
+
+  @Test
+  public void testFlatten() {
+    assertEquals(
+        List.of(1, 2, 3),
+        ListsOps.flatten(
+            List.of(
+                Optional.empty(),
+                Optional.of(1),
+                Optional.of(2),
+                Optional.empty(),
+                Optional.of(3),
+                Optional.empty())));
   }
 
   @Test

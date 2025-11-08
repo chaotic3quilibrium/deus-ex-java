@@ -2,6 +2,7 @@ package org.deus_ex_java.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -64,11 +65,26 @@ public class ArraysOpsTests {
   }
 
   @Test
-  public void testToDistinctSortedArrayInt() {
-    var arrayFromInt = ArraysOps.toDistinctSortedArrayInt(Stream.of(1, 3, 2, 6, 6, 5, 7, 8, 9, 4, 0, 1));
+  public void testToDistinctSortedArrayIntFromStream() {
+    var arrayFromInt = ArraysOps.toDistinctSortedArrayInt(
+        Stream.of(1, 3, 2, 6, 6, 5, 7, 8, 9, 4, 0, 1));
     var arrayExpected = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     assertArrayEquals(arrayExpected, arrayFromInt);
-    var arrayFromString = ArraysOps.toDistinctSortedArrayInt(Stream.of("1", "3", "2", "6", "6", "5", "7", "8", "9", "4", "0", "1"), Integer::parseInt);
+    var arrayFromString = ArraysOps.toDistinctSortedArrayInt(
+        Stream.of("1", "3", "2", "6", "6", "5", "7", "8", "9", "4", "0", "1"),
+        Integer::parseInt);
+    assertArrayEquals(arrayExpected, arrayFromString);
+  }
+
+  @Test
+  public void testToDistinctSortedArrayIntFromCollection() {
+    var arrayFromInt = ArraysOps.toDistinctSortedArrayInt(
+        List.of(1, 3, 2, 6, 6, 5, 7, 8, 9, 4, 0, 1));
+    var arrayExpected = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    assertArrayEquals(arrayExpected, arrayFromInt);
+    var arrayFromString = ArraysOps.toDistinctSortedArrayInt(
+        List.of("1", "3", "2", "6", "6", "5", "7", "8", "9", "4", "0", "1"),
+        Integer::parseInt);
     assertArrayEquals(arrayExpected, arrayFromString);
   }
 }

@@ -2,7 +2,7 @@
 
 - Copyright (C) 2025 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.1`](#v11)
+- [`v1.2`](#v12)
 
 ---
 
@@ -60,7 +60,9 @@ As detailed in this [Java Janitor Jim Substack](https://javajanitorjim.substack.
 > "Java is a blue collar language. It's not PhD thesis material, but a language for a job."
 > - James Gosling at the 1996 OOPSLA
 
+If one of the compelling motivations of Java is to design and biased towards "Integrity by Default" (excellent JavaOne 2025 [talk/video](https://www.youtube.com/watch?v=uTPRTkny7kQ)), deus-ex-java builds atop that with "integrity by design".
 
+The fundamental idea is to move towards complex systems composed emergently of simpler systems. Hence, the deep bias on preventing invalid states from being instantiate-able, or even representable.
 
 High level overview:
 
@@ -68,7 +70,7 @@ High level overview:
 - Strategically simplify Java code by preferring/biasing...
   - Incrementally reducing technical debt over larger/riskier large scale refactor or complete rewrites
   - Pragmatism over purity
-  - Composability over reusability
+  - (mathematical) composability over (linguistic) reusability
   - readability over extensive boilerplate or clever terse code
   - compile time errors over runtime errors
   - immutability over mutability
@@ -82,6 +84,7 @@ High level overview:
   - DRY (Don't Repeat Yourself) over copy/pasting (a.k.a. copy-pasta)
   - Expressions (functional) over statements (imperative)
   - Entirely avoiding implementing insecure and fragile Java Serialization, prefer any of the other [well-designed alternatives](https://www.baeldung.com/java-serialization-approaches)
+  - Unmodifiable collections over mutable collections
 - This is NOT an FP library
   - please use https://vavr.io if aiming more closely for FP purity
   - it IS a library which could allow an easier transition towards FP purity
@@ -114,8 +117,9 @@ High level overview:
 
 # Support
 
-Website: <https://github.com/chaotic3quilibrium/deus-ex-java>
-Email: <jim.oflaherty.jr+dejrms@gmail.com>
+**Website:** <https://github.com/chaotic3quilibrium/deus-ex-java>
+
+**Email:** [jim.oflaherty.jr@gmail.com](mailto:jim.oflaherty.jr+dejrms@gmail.com)
 
 ---
 
@@ -148,6 +152,13 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 ---
 
 # Version History
+
+## v1.2
+
+- 2025.11.08
+- Added convenient Collection twins for the Stream methods in ListsOps, SetsOps, and MapsOps
+- Expanded more tests
+- Tweaked javadocs
 
 ## v1.1
 

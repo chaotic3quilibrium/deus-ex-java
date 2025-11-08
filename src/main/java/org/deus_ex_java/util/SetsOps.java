@@ -155,14 +155,28 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable set with the null elements filtered out.
+   * Returns an unmodifiable unordered {@link Set} filtered of {@code null}s.
+   *
+   * @param collection the source of the T elements
+   * @param <T>        the type of the instances
+   * @return an unmodifiable unordered {@link Set} filtered of {@code null}s
+   */
+  @NotNull
+  public static <T> Set<T> nullSanitize(
+      @NotNull Collection<T> collection
+  ) {
+    return nullSanitize(collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Set} filtered of {@code null}s.
    *
    * @param stream the source of the T elements
    * @param <T>    the type of the instances
-   * @return an unmodifiable set with the null elements filtered out
+   * @return an unmodifiable unordered {@link Set} filtered of {@code null}s
    */
   @NotNull
-  public static <T> Set<T> toSet(
+  public static <T> Set<T> nullSanitize(
       @NotNull Stream<T> stream
   ) {
     return stream
@@ -172,11 +186,25 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> set with the null elements filtered out.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s.
+   *
+   * @param collection the source of the T elements
+   * @param <T>        the type of the instances
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s.
+   */
+  @NotNull
+  public static <T> Set<T> toSetOrdered(
+      @NotNull Collection<T> collection
+  ) {
+    return toSetOrdered(collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s.
    *
    * @param stream the (assumed to be) <u><i>ordered</i></u> source of the T elements
    * @param <T>    the type of the instances
-   * @return an unmodifiable <u><i>ordered</i></u> set with the null elements filtered out
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s
    */
   @NotNull
   public static <T> Set<T> toSetOrdered(
@@ -190,6 +218,53 @@ public final class SetsOps {
     return !set.isEmpty()
         ? Collections.unmodifiableSet(set)
         : Set.of();
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
+   * {@code null}s.
+   *
+   * @param ts  the (assumed to be) <u><i>ordered</i></u> source of the T elements
+   * @param <T> the type of instances contained in the source
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
+   *     {@code null}s
+   */
+  @NotNull
+  public static <T> Set<T> reverse(
+      Set<T> ts
+  ) {
+    if (!ts.isEmpty()) {
+
+      return reverse(ts.stream());
+    }
+
+    return Set.of();
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
+   * {@code null}s.
+   *
+   * @param stream the (assumed to be) <u><i>ordered</i></u> source of the T elements
+   * @param <T>    the type of instances contained in the source
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
+   *     {@code null}s
+   */
+  @NotNull
+  public static <T> Set<T> reverse(
+      Stream<T> stream
+  ) {
+    var mutableList = stream
+        .filter(t ->
+            !Objects.isNull(t))
+        .collect(Collectors.toList());
+    if (!mutableList.isEmpty()) {
+      Collections.reverse(mutableList);
+
+      return toSetOrdered(mutableList.stream());
+    }
+
+    return Set.of();
   }
 
   /**
@@ -593,6 +668,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -627,6 +703,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -664,6 +741,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -699,11 +777,12 @@ public final class SetsOps {
    * @param t6  the sixth element
    * @param t7  the seventh element
    * @param t8  the eighth element
-   * @param t9  the nineth element
+   * @param t9  the ninth element
    * @param <T> the type of instances contained in the set
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -741,12 +820,13 @@ public final class SetsOps {
    * @param t6  the sixth element
    * @param t7  the seventh element
    * @param t8  the eighth element
-   * @param t9  the nineth element
+   * @param t9  the ninth element
    * @param t10 the tenth element
    * @param <T> the type of instances contained in the set
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,

@@ -1,10 +1,12 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ParametersValidationException;
+import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EnumAndIdsOpsTests {
   public interface EquivalentInt {
+    @SuppressWarnings("unused")
     int getEquivalent();
   }
 
@@ -131,7 +134,8 @@ public class EnumAndIdsOpsTests {
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdD.class,
         TrafficLightWithIdD::getEquivalent,
-        id -> "C" + id.toString() + "!");
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(("C" + enumValueAndId.getValue().toString() + "!").toLowerCase()));
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.join());
     assertEquals(Optional.of(TrafficLightWithIdD.SGREEN), tlwix.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdD.SGREEN, 1)), tlwix.valueOf("c1!"));
@@ -165,9 +169,10 @@ public class EnumAndIdsOpsTests {
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdE.class,
         TrafficLightWithIdE::getEquivalent,
-        Object::toString,
-        enumValue ->
-            "X%d".formatted(enumValue.name().length()));
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()),
+        enumValueAndId ->
+            Set.of(new NonEmptyLowerCaseString("X%d".formatted(enumValueAndId.getKey().name().length()).toLowerCase())));
     assertEquals(TrafficLightWithIdE.class, tlwix.getEnumsOps().getClassE());
     assertEquals(Integer.class, tlwix.getClassId());
     assertEquals(
@@ -182,6 +187,9 @@ public class EnumAndIdsOpsTests {
             entry(TrafficLightWithIdE.SYELLOW, 2),
             entry(TrafficLightWithIdE.SRED, 5)),
         tlwix.stream().toList());
+    assertEquals(
+        Set.of("1", "2", "5", "sred", "x4", "x6", "syellow", "sgreen", "x7"),
+        tlwix.valueOfLookupKeys());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.join());
     assertEquals(1, tlwix.get(TrafficLightWithIdE.SGREEN));
     assertEquals(Optional.of(TrafficLightWithIdE.SGREEN), tlwix.get(1));
@@ -249,20 +257,22 @@ public class EnumAndIdsOpsTests {
             EnumAndIdsOps.from(
                 TrafficLightWithIdF.class,
                 TrafficLightWithIdF::getEquivalent,
-                Object::toString,
-                enumValue ->
-                    "X%d".formatted(enumValue.getEquivalent())));
+                enumValueAndId ->
+                    new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()),
+                enumValueAndId ->
+                    Set.of(new NonEmptyLowerCaseString("X%d".formatted(enumValueAndId.getKey().getEquivalent()).toLowerCase()))));
     assertEquals(
-        "EnumsIdOps invalid parameter(s) - Parameter Validation Failures: [invalid state for enum [TrafficLightWithIdF] where the .toLowerCase() of enumValue.toString(), fIdToString.apply(fEToId.apply(enumValue)), and optionalFEToAltString.map(fEToAltString -> fEToAltString.apply(enumValue)).get() is not unique across all the enums values - erred values: " +
+        "EnumAndIdsOps invalid parameter(s) - Parameter Validation Failures: [invalid state for enum [TrafficLightWithIdF] where the .toLowerCase() of enumValue.toString(), fEAndIdToNonEmptyLowerCaseString.apply(enumValue, id), and optionalFEAndIdToNonEmptyLowerCaseStrings.map(fEAndIdToNonEmptyLowerCaseStrings -> fEAndIdToNonEmptyLowerCaseStrings.apply(enumValue, id)).get() is not unique across all the enums values - erred values: " +
             "keyLowerCase: 3 -> enumValueName: SYELLOW -> collisionSource: ID_VALUE, " +
-            "keyLowerCase: x3 -> enumValueName: SYELLOW -> collisionSource: ALT_STRING_VALUE, " +
+            "keyLowerCase: x3 -> enumValueName: SYELLOW -> collisionSource: ALTERNATE_STRING_VALUE, " +
             "keyLowerCase: 3 -> enumValueName: SRED -> collisionSource: ID_VALUE, " +
-            "keyLowerCase: x3 -> enumValueName: SRED -> collisionSource: ALT_STRING_VALUE]",
+            "keyLowerCase: x3 -> enumValueName: SRED -> collisionSource: ALTERNATE_STRING_VALUE]",
         parametersValidationException.getMessage());
     assertEquals(1, parametersValidationException.getParametersValidationFailureMessages().size());
   }
 
   public interface EquivalentString {
+    @SuppressWarnings("unused")
     String getEquivalent();
   }
 
@@ -287,9 +297,10 @@ public class EnumAndIdsOpsTests {
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdG.class,
         TrafficLightWithIdG::getEquivalent,
-        Object::toString,
-        enumValue ->
-            enumValue.name().toLowerCase());
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(enumValueAndId.getValue().toLowerCase()),
+        enumValueAndId ->
+            Set.of(new NonEmptyLowerCaseString(enumValueAndId.getKey().name().toLowerCase())));
     assertEquals(TrafficLightWithIdG.class, tlwix.getEnumsOps().getClassE());
     assertEquals(String.class, tlwix.getClassId());
     assertEquals(
