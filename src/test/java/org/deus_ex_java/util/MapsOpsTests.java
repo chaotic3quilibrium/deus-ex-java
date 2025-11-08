@@ -79,12 +79,12 @@ public class MapsOpsTests {
   }
 
   @Test
-  public void testFilterToNonNulls() {
+  public void testNullSanitize() {
     var mapNullAndNull = new HashMap<Integer, String>();
     mapNullAndNull.put(1, "x");
     mapNullAndNull.put(null, "y");
     mapNullAndNull.put(2, null);
-    var mapNonNull = MapsOps.filterToNonNulls(mapNullAndNull);
+    var mapNonNull = MapsOps.nullSanitize(mapNullAndNull);
     assertEquals(Map.of(1, "x"), mapNonNull);
     assertFalse(mapNonNull.isEmpty());
     assertTrue(CollectionsOps.isUnmodifiable(mapNonNull));

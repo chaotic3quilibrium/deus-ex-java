@@ -102,7 +102,7 @@ public final class MapsOps {
    * @return a new unmodifiable unordered {@link Map} from an existing {@code map}, removing every {@link Entry} from
    *     {@code entrySet} where either the key or the value is {@code null}
    */
-  public static <K, V> Map<K, V> filterToNonNulls(
+  public static <K, V> Map<K, V> nullSanitize(
       @NotNull Map<K, V> map
   ) {
     return map
@@ -234,7 +234,7 @@ public final class MapsOps {
           .forEach(index -> {
             var map = maps[index];
             if (map != null) {
-              var resolvedMap = filterToNonNulls(map);
+              var resolvedMap = nullSanitize(map);
               if (!resolvedMap.isEmpty()) {
                 result.putAll(resolvedMap);
               }
@@ -291,6 +291,25 @@ public final class MapsOps {
    * filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if the
    * entry remains, it is ignored if it contains a duplicate key.
    *
+   * @param collection the source of the entries
+   * @param <K>        the type of the key in the entries
+   * @param <V>        the type of the value in the entries
+   * @return an unmodifiable unordered map filtering out each {@code Entry} where it is {@code null}, otherwise
+   *     filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if
+   *     the entry remains, it is ignored if it contains a duplicate key
+   */
+  @NotNull
+  public static <T, K, V> Map<K, V> toMap(
+      @NotNull Collection<Entry<K, V>> collection
+  ) {
+    return toMap(collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable unordered map filtering out each {@code Entry} where it is {@code null}, otherwise
+   * filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if the
+   * entry remains, it is ignored if it contains a duplicate key.
+   *
    * @param kAndVs the source of the entries
    * @param <K>    the type of the key in the entries
    * @param <V>    the type of the value in the entries
@@ -303,6 +322,30 @@ public final class MapsOps {
       @NotNull Stream<Entry<K, V>> kAndVs
   ) {
     return toMap(kAndVs, Optional::of);
+  }
+
+  /**
+   * Returns an unmodifiable unordered map filtering out each {@code T} where it is {@code null}, otherwise optionally
+   * transforming the {@code T} via the function, {@code fTtoOptionalEntry}, into an {@link Optional} {@link Entry}, and
+   * then filtering the {@link Optional} out where either the contained entry's key and/or the value are {@code null},
+   * and then if the entry remains, it is ignored if it contains a duplicate key.
+   *
+   * @param collection        the source of the input to create entries
+   * @param fTtoOptionalEntry function to filter and/or transform a T into an instance of {@link Entry}
+   * @param <T>               the type of the source value the entries
+   * @param <K>               the type of the key in the entries
+   * @param <V>               the type of the value in the entries
+   * @return an unmodifiable unordered map filtering out each {@code T} where it is {@code null}, otherwise optionally
+   *     transforming the {@code T} via the function, {@code fTtoOptionalEntry}, into an {@link Optional} {@link Entry},
+   *     and then filtering the {@link Optional} out where either the contained entry's key and/or the value are
+   *     {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
+   */
+  @NotNull
+  public static <T, K, V> Map<K, V> toMap(
+      @NotNull Collection<T> collection,
+      @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
+  ) {
+    return toMap(collection.stream(), fTtoOptionalEntry);
   }
 
   /**
@@ -350,7 +393,26 @@ public final class MapsOps {
    * otherwise filtering the entry out where either the contained entry's key and/or the value are {@code null}, and
    * then if the entry remains, it is ignored if it contains a duplicate key.
    *
-   * @param kAndVs the (assumed to be) <u><i>ordered</i></u> source of the entries
+   * @param collection the (assumed to be) <u><i>ordered</i></u> source of the entries
+   * @param <K>        the type of the key in the entries
+   * @param <V>        the type of the value in the entries
+   * @return an unmodifiable <u><i>ordered</i></u> map filtering out each {@code Entry} where it is {@code null},
+   *     otherwise filtering the entry out where either the contained entry's key and/or the value are {@code null}, and
+   *     then if the entry remains, it is ignored if it contains a duplicate key
+   */
+  @NotNull
+  public static <T, K, V> Map<K, V> toMapOrdered(
+      @NotNull Collection<Entry<K, V>> collection
+  ) {
+    return toMapOrdered(collection.stream(), Optional::of);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> map filtering out each {@code Entry} where it is {@code null},
+   * otherwise filtering the entry out where either the contained entry's key and/or the value are {@code null}, and
+   * then if the entry remains, it is ignored if it contains a duplicate key.
+   *
+   * @param stream the (assumed to be) <u><i>ordered</i></u> source of the entries
    * @param <K>    the type of the key in the entries
    * @param <V>    the type of the value in the entries
    * @return an unmodifiable <u><i>ordered</i></u> map filtering out each {@code Entry} where it is {@code null},
@@ -359,9 +421,9 @@ public final class MapsOps {
    */
   @NotNull
   public static <T, K, V> Map<K, V> toMapOrdered(
-      @NotNull Stream<Entry<K, V>> kAndVs
+      @NotNull Stream<Entry<K, V>> stream
   ) {
-    return toMapOrdered(kAndVs, Optional::of);
+    return toMapOrdered(stream, Optional::of);
   }
 
   /**
@@ -370,7 +432,7 @@ public final class MapsOps {
    * {@link Entry}, and then filtering the {@link Optional} out where either the contained entry's key and/or the value
    * are {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key.
    *
-   * @param ts                the (assumed to be) <u><i>ordered</i></u> source of the input to create entries
+   * @param collection        the (assumed to be) <u><i>ordered</i></u> source of the input to create entries
    * @param fTtoOptionalEntry function to filter and/or transform a T into an instance of {@link Entry}
    * @param <T>               the type of the source value the entries
    * @param <K>               the type of the key in the entries
@@ -382,10 +444,34 @@ public final class MapsOps {
    */
   @NotNull
   public static <T, K, V> Map<K, V> toMapOrdered(
-      @NotNull Stream<T> ts,
+      @NotNull Collection<T> collection,
       @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
-    var map = ts
+    return toMapOrdered(collection.stream(), fTtoOptionalEntry);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> map filtering out each {@code T} where it is {@code null}, otherwise
+   * optionally transforming the {@code T} via the function, {@code fTtoOptionalEntry}, into an {@link Optional}
+   * {@link Entry}, and then filtering the {@link Optional} out where either the contained entry's key and/or the value
+   * are {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key.
+   *
+   * @param stream            the (assumed to be) <u><i>ordered</i></u> source of the input to create entries
+   * @param fTtoOptionalEntry function to filter and/or transform a T into an instance of {@link Entry}
+   * @param <T>               the type of the source value the entries
+   * @param <K>               the type of the key in the entries
+   * @param <V>               the type of the value in the entries
+   * @return an unmodifiable <u><i>ordered</i></u> map filtering out each {@code T} where it is {@code null}, otherwise
+   *     optionally transforming the {@code T} via the function, {@code fTtoOptionalEntry}, into an {@link Optional}
+   *     {@link Entry}, and then filtering the {@link Optional} out where either the contained entry's key and/or the
+   *     value are {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
+   */
+  @NotNull
+  public static <T, K, V> Map<K, V> toMapOrdered(
+      @NotNull Stream<T> stream,
+      @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
+  ) {
+    var map = stream
         .filter(t ->
             !Objects.isNull(t))
         .flatMap(t ->
@@ -482,6 +568,48 @@ public final class MapsOps {
               });
 
       return Collections.unmodifiableMap(result);
+    }
+
+    return Map.of();
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} of the source's elements in reverse order.
+   *
+   * @param vByK the (assumed to be) <u><i>ordered</i></u> source of the entries
+   * @param <K>  the type of the key instances of the entry in the stream
+   * @param <V>  the type of the value instances of the entry in the stream
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} of the source's elements in reverse order
+   */
+  @NotNull
+  public static <K, V> Map<K, V> reverse(
+      Map<K, V> vByK
+  ) {
+    if (!vByK.isEmpty()) {
+
+      return reverse(vByK.entrySet().stream());
+    }
+
+    return Map.of();
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} of the source's elements in reverse order.
+   *
+   * @param stream the (assumed to be) <u><i>ordered</i></u> source of the entries
+   * @param <K>    the type of the key instances of the entry in the stream
+   * @param <V>    the type of the value instances of the entry in the stream
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} of the source's elements in reverse order
+   */
+  @NotNull
+  public static <K, V> Map<K, V> reverse(
+      Stream<Entry<K, V>> stream
+  ) {
+    var mutableList = stream.collect(Collectors.toList());
+    if (!mutableList.isEmpty()) {
+      Collections.reverse(mutableList);
+
+      return toMapOrdered(mutableList.stream());
     }
 
     return Map.of();
