@@ -1,8 +1,5 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.WrappedCheckedException;
-import org.deus_ex_java.util.function.SupplierChecked;
-import org.deus_ex_java.util.function.SupplierCheckedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Represents an immutable value of one of two possible types (a <a
@@ -214,6 +212,15 @@ public final class Either<L, R> {
   @NotNull
   public Optional<R> toOptional() {
     return toOptionalRight();
+  }
+
+  /**
+   * Returns a stream from forwarding the call to {@link Either#toOptionalRight}.
+   *
+   * @return a stream from forwarding the call to {@link Either#toOptionalRight}
+   */
+  public Stream<R> toStream() {
+    return toOptional().stream();
   }
 
   /**
