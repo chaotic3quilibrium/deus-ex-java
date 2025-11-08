@@ -668,6 +668,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -702,6 +703,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -739,6 +741,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -779,6 +782,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,
@@ -822,6 +826,7 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
    * @throws IllegalArgumentException if the values are not unique
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <T> Set<T> ofOrdered(
       @NotNull T t1,

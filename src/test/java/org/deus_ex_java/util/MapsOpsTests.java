@@ -196,7 +196,7 @@ public class MapsOpsTests {
   }
 
   @Test
-  public void testToMap() {
+  public void testNullSanitizeStream() {
     var mapA = new HashMap<Integer, String>();
     mapA.put(null, "xnull");
     mapA.put(1, "x1");
@@ -205,7 +205,7 @@ public class MapsOpsTests {
     @SuppressWarnings("SimplifyStreamApiCallChains")
     var entries = mapA.entrySet().stream().collect(Collectors.toList());
     entries.add(1, null);
-    var mapB = MapsOps.toMap(entries.stream());
+    var mapB = MapsOps.nullSanitize(entries.stream());
     assertEquals(Map.of(1, "x1", 2, "x2"), mapB);
     var list = new ArrayList<String>();
     list.add(null);
@@ -230,7 +230,41 @@ public class MapsOpsTests {
   }
 
   @Test
-  public void testToMapOrdered() {
+  public void testNullSanitizeCollection() {
+    var mapA = new HashMap<Integer, String>();
+    mapA.put(null, "xnull");
+    mapA.put(1, "x1");
+    mapA.put(-1, null);
+    mapA.put(2, "x2");
+    @SuppressWarnings("SimplifyStreamApiCallChains")
+    var entries = mapA.entrySet().stream().collect(Collectors.toList());
+    entries.add(1, null);
+    var mapB = MapsOps.nullSanitize(entries);
+    assertEquals(Map.of(1, "x1", 2, "x2"), mapB);
+    var list = new ArrayList<String>();
+    list.add(null);
+    list.add("x1");
+    list.add(null);
+    list.add("x");
+    list.add(null);
+    list.add("2");
+    list.add("x2");
+    list.add("3");
+    list.add("x3");
+    var mapC = MapsOps.toMap(
+        list,
+        string -> {
+          if ((string != null) && (string.length() > 1)) {
+            return Optional.of(entry(Integer.parseInt(string.substring(1, 2)), string));
+          }
+
+          return Optional.empty();
+        });
+    assertEquals(Map.of(1, "x1", 2, "x2", 3, "x3"), mapC);
+  }
+
+  @Test
+  public void testToMapOrderedStream() {
     var mapA = new LinkedHashMap<Integer, String>();
     mapA.put(null, "xnull");
     mapA.put(1, "x1");
@@ -264,6 +298,40 @@ public class MapsOpsTests {
   }
 
   @Test
+  public void testToMapOrdered() {
+    var mapA = new LinkedHashMap<Integer, String>();
+    mapA.put(null, "xnull");
+    mapA.put(1, "x1");
+    mapA.put(-1, null);
+    mapA.put(2, "x2");
+    @SuppressWarnings("SimplifyStreamApiCallChains")
+    var entries = mapA.entrySet().stream().collect(Collectors.toList());
+    entries.add(1, null);
+    var mapB = MapsOps.toMapOrdered(entries);
+    assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2"), mapB);
+    var list = new ArrayList<String>();
+    list.add(null);
+    list.add("x1");
+    list.add(null);
+    list.add("x");
+    list.add(null);
+    list.add("2");
+    list.add("x2");
+    list.add("3");
+    list.add("x3");
+    var mapC = MapsOps.toMapOrdered(
+        list,
+        string -> {
+          if ((string != null) && (string.length() > 1)) {
+            return Optional.of(entry(Integer.parseInt(string.substring(1, 2)), string));
+          }
+
+          return Optional.empty();
+        });
+    assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3"), mapC);
+  }
+
+  @Test
   public void testSwap() {
     var map = MapsOps.swap(Map.of(1, "x1", 2, "x2", 3, "x3"));
     assertEquals(Map.of("x1", 1, "x2", 2, "x3", 3), map);
@@ -273,6 +341,21 @@ public class MapsOpsTests {
   public void testSwapOrdered() {
     var map = MapsOps.swap(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3"));
     assertEquals(MapsOps.ofOrdered("x1", 1, "x2", 2, "x3", 3), map);
+  }
+
+  @Test
+  public void testReverse() {
+    var expectedMapOrdered = MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3");
+    var nullContainingMapOrdered = new LinkedHashMap<Integer, String>();
+    nullContainingMapOrdered.put(null, "xnull");
+    nullContainingMapOrdered.put(1, "x1");
+    nullContainingMapOrdered.put(-1, null);
+    nullContainingMapOrdered.put(2, "x2");
+    nullContainingMapOrdered.put(3, "x3");
+    nullContainingMapOrdered.put(4, null);
+
+    assertEquals(expectedMapOrdered, MapsOps.reverse(nullContainingMapOrdered.entrySet().stream()));
+    assertEquals(expectedMapOrdered, MapsOps.reverse(nullContainingMapOrdered));
   }
 
   @Test

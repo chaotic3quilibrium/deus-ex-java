@@ -750,6 +750,7 @@ public final class ListsOps {
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
    *     {@code null}s
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
       @NotNull Stream<Tuple5<A, B, C, D, E>> stream
@@ -827,6 +828,7 @@ public final class ListsOps {
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
       @NotNull Stream<Tuple5<A, B, C, D, E>> stream,
@@ -895,6 +897,7 @@ public final class ListsOps {
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
    *     {@code null}s
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
       @NotNull Stream<Tuple6<A, B, C, D, E, F>> stream
@@ -978,6 +981,7 @@ public final class ListsOps {
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
       @NotNull Stream<Tuple6<A, B, C, D, E, F>> stream,
@@ -1051,6 +1055,7 @@ public final class ListsOps {
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
    *     {@code null}s
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
       @NotNull Stream<Tuple7<A, B, C, D, E, F, G>> stream
@@ -1140,6 +1145,7 @@ public final class ListsOps {
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
       @NotNull Stream<Tuple7<A, B, C, D, E, F, G>> stream,
@@ -1218,6 +1224,7 @@ public final class ListsOps {
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
    *     {@code null}s
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
       @NotNull Stream<Tuple8<A, B, C, D, E, F, G, H>> stream
@@ -1313,6 +1320,7 @@ public final class ListsOps {
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
       @NotNull Stream<Tuple8<A, B, C, D, E, F, G, H>> stream,
@@ -1396,6 +1404,7 @@ public final class ListsOps {
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
    *     {@code null}s
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
       @NotNull Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream
@@ -1497,6 +1506,7 @@ public final class ListsOps {
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
       @NotNull Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream,
@@ -1585,6 +1595,7 @@ public final class ListsOps {
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
    *     {@code null}s
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
       @NotNull Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream
@@ -1692,6 +1703,7 @@ public final class ListsOps {
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
       @NotNull Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream,

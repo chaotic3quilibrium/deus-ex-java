@@ -299,10 +299,10 @@ public final class MapsOps {
    *     the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMap(
+  public static <K, V> Map<K, V> nullSanitize(
       @NotNull Collection<Entry<K, V>> collection
   ) {
-    return toMap(collection.stream());
+    return nullSanitize(collection.stream());
   }
 
   /**
@@ -318,7 +318,7 @@ public final class MapsOps {
    *     the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMap(
+  public static <K, V> Map<K, V> nullSanitize(
       @NotNull Stream<Entry<K, V>> kAndVs
   ) {
     return toMap(kAndVs, Optional::of);
@@ -401,7 +401,7 @@ public final class MapsOps {
    *     then if the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMapOrdered(
+  public static <K, V> Map<K, V> toMapOrdered(
       @NotNull Collection<Entry<K, V>> collection
   ) {
     return toMapOrdered(collection.stream(), Optional::of);
@@ -420,7 +420,7 @@ public final class MapsOps {
    *     then if the entry remains, it is ignored if it contains a duplicate key
    */
   @NotNull
-  public static <T, K, V> Map<K, V> toMapOrdered(
+  public static <K, V> Map<K, V> toMapOrdered(
       @NotNull Stream<Entry<K, V>> stream
   ) {
     return toMapOrdered(stream, Optional::of);
@@ -773,6 +773,7 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <K, V> Map<K, V> ofOrdered(
       @NotNull K key1, @NotNull V value1,
@@ -812,6 +813,7 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <K, V> Map<K, V> ofOrdered(
       @NotNull K key1, @NotNull V value1,
@@ -855,6 +857,7 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <K, V> Map<K, V> ofOrdered(
       @NotNull K key1, @NotNull V value1,
@@ -902,6 +905,7 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <K, V> Map<K, V> ofOrdered(
       @NotNull K key1, @NotNull V value1,
@@ -953,6 +957,7 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <K, V> Map<K, V> ofOrdered(
       @NotNull K key1, @NotNull V value1,
@@ -1008,6 +1013,7 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
+  @SuppressWarnings("DuplicatedCode")
   @NotNull
   public static <K, V> Map<K, V> ofOrdered(
       @NotNull K key1, @NotNull V value1,

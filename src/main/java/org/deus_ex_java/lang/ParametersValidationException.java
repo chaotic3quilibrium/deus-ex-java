@@ -212,7 +212,6 @@ public final class ParametersValidationException extends RuntimeException {
         enableSuppression,
         writableStackTrace);
     this.parametersValidationFailureMessages = ListsOps.nullSanitize(parametersValidationFailureMessages.stream());
-    ;
   }
 
   /**
