@@ -7,7 +7,7 @@ This is an abbreviated version of the [README.md](https://github.com/chaotic3qui
 <a href="https://github.com/chaotic3quilibrium/deus-ex-java" target="_blank"><span style="font-family:default; font-size:2.35em; color:#5FA845">
 deus-ex-java</span></a>
 
-- Version: 1.1 - 2025.11.01
+- Version: 1.2 - 2025.11.08
 
 ---
 
@@ -40,14 +40,15 @@ As a library targeting Java 17, deus-ex-java is a Java augmentation library to e
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.0.0</version>
+    <version>1.2.0</version>
   </dependency>
 ```
 
 # Support
 
-Website: <https://github.com/chaotic3quilibrium/deus-ex-java>
-Email: <jim.oflaherty.jr+dejrms@gmail.com>
+**Website:** <https://github.com/chaotic3quilibrium/deus-ex-java>
+
+**Email:** [jim.oflaherty.jr@gmail.com](mailto:jim.oflaherty.jr+dejrms@gmail.com)
 
 ---
 

@@ -2,7 +2,7 @@
 
 - Copyright (C) 2025 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.1`](#v11)
+- [`v1.2`](#v12)
 
 ---
 
@@ -117,8 +117,9 @@ High level overview:
 
 # Support
 
-Website: <https://github.com/chaotic3quilibrium/deus-ex-java>
-Email: <jim.oflaherty.jr+dejrms@gmail.com>
+**Website:** <https://github.com/chaotic3quilibrium/deus-ex-java>
+
+**Email:** [jim.oflaherty.jr@gmail.com](mailto:jim.oflaherty.jr+dejrms@gmail.com)
 
 ---
 
@@ -151,6 +152,13 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 ---
 
 # Version History
+
+## v1.2
+
+- 2025.11.08
+- Added convenient Collection twins for the Stream methods in ListsOps, SetsOps, and MapsOps
+- Expanded more tests
+- Tweaked javadocs
 
 ## v1.1
 
