@@ -92,7 +92,7 @@ public class TryCatchesOpsTests {
     assertEquals("generate RuntimeException in an IOException expected context", throwable.getMessage());
   }
 
-  private static Stream<Arguments> provideTestTryCatchCheckedThrowable() {
+  public static Stream<Arguments> testTryCatchCheckedThrowable() {
     return Stream.of(
         Arguments.of(Throwable.class),
         Arguments.of(Exception.class),
@@ -101,7 +101,7 @@ public class TryCatchesOpsTests {
   }
 
   @ParameterizedTest
-  @MethodSource("provideTestTryCatchCheckedThrowable")
+  @MethodSource
   public void testTryCatchCheckedThrowable(
       Class<Throwable> exceptionTypeProvided
   ) {
@@ -114,7 +114,7 @@ public class TryCatchesOpsTests {
                 return 10;
               },
               exceptionTypeProvided));
-      assertEquals("wrapChecked(SupplierCheckedException) failure - reset() not supported", throwable.getMessage());
+      assertEquals("wrapCheckedException(SupplierCheckedException) failure - reset() not supported", throwable.getMessage());
     } else {
       var eitherLeft = TryCatchesOps.wrapCheckedException(() -> {
             //noinspection resource

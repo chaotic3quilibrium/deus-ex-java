@@ -359,6 +359,30 @@ public class MapsOpsTests {
   }
 
   @Test
+  public void testOfEntriesOrdered() {
+    var mapNoArg = MapsOps.ofEntriesOrdered();
+    assertTrue(mapNoArg.isEmpty());
+    var map = MapsOps.ofEntriesOrdered(
+        entry(1, "x"));
+    assertNotNull(map);
+    assertFalse(map.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(map));
+    var map2 = new LinkedHashMap<Integer, String>();
+    map2.put(1, "x");
+    assertEquals(map2, map);
+    var map3 = MapsOps.ofEntriesOrdered(
+        entry(1, "x1"),
+        entry(2, "x2"));
+    assertNotNull(map3);
+    assertFalse(map3.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(map3));
+    var map4 = new LinkedHashMap<Integer, String>();
+    map4.put(1, "x1");
+    map4.put(2, "x2");
+    assertEquals(map4, map3);
+  }
+
+  @Test
   public void testOfOrderedX1() {
     var map = MapsOps.ofOrdered(
         1, "x");

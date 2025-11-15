@@ -616,6 +616,54 @@ public final class MapsOps {
   }
 
   /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@code Map} containing the (filtered to non-null, including key and
+   * value) entries.
+   *
+   * @param kAndVs the source of the entries
+   * @param <K>    the type of the key instances of the entry in the source
+   * @param <V>    the type of the value instances of the entry in the source
+   * @return an unmodifiable <u><i>ordered</i></u> {@code Map} containing the (filtered to non-null, including key and
+   *     value) entries
+   * @throws IllegalArgumentException if any key instance is duplicated; i.e. all keys must be unique, and identifies
+   *                                  the {@code key}(s) causing the collision
+   */
+  @SuppressWarnings("ConstantValue")
+  @NotNull
+  @SafeVarargs
+  public static <K, V> Map<K, V> ofEntriesOrdered(
+      @NotNull Entry<K, V>... kAndVs
+  ) {
+    if (kAndVs.length > 0) {
+      var result = new LinkedHashMap<K, V>();
+      var duplicates = new ArrayList<Entry<K, V>>();
+      Arrays.stream(kAndVs)
+          .filter(kAndV ->
+              Objects.nonNull(kAndV) && isNonNulls(kAndV))
+          .forEachOrdered(kAndV -> {
+            if (result.put(kAndV.getKey(), kAndV.getValue()) != null) {
+              duplicates.add(kAndV);
+            }
+          });
+      if (!duplicates.isEmpty()) {
+        throw new IllegalArgumentException("duplicate keys encountered - %s".formatted(
+            String.join(
+                ",",
+                duplicates
+                    .stream()
+                    .map(kAndV ->
+                        kAndV.getKey().toString())
+                    .toList())));
+      }
+
+      return !result.isEmpty()
+          ? Collections.unmodifiableMap(result)
+          : Map.of();
+    }
+
+    return Map.of();
+  }
+
+  /**
    * Returns the passed in <u><i>mutable</i></u> {@code Map}, if an entry was successfully added/appended without
    * displacing a pre-existing entry, otherwise throws an {@link IllegalArgumentException} that identifies the
    * {@code key} causing the collision.

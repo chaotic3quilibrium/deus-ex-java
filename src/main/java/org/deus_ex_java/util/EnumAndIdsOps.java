@@ -516,9 +516,19 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     return this.orderedMapEnumValueById;
   }
 
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} of all the lower-case String values
+   * upon which the {@code valueOf*()} methods perform their {@link String} key lookups.
+   *
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of all the lower-case String values
+   *     upon which the {@code valueOf*()} methods perform their {@link String} key lookups
+   */
   @NotNull
   public Set<String> valueOfLookupKeys() {
-    return this.enumValueByNameOrIdOrAlternatesLowerCase.keySet();
+    return SetsOps.toSetOrdered(
+        this.enumValueByNameOrIdOrAlternatesLowerCase.keySet()
+            .stream()
+            .sorted());
   }
 
   /**

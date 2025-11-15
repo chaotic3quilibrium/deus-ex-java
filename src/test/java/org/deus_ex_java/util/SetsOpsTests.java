@@ -197,6 +197,21 @@ public class SetsOpsTests {
   }
 
   @Test
+  public void testOfOrdered() {
+    var set = SetsOps.ofOrdered();
+    assertNotNull(set);
+    assertTrue(set.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(set));
+    var set2 = new LinkedHashSet<Integer>();
+    assertEquals(set2, set);
+    var set3 = SetsOps.ofOrdered(1, 3, 2, 4);
+    assertNotNull(set3);
+    assertFalse(set3.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(set3));
+    assertEquals(List.of(1, 3, 2, 4), set3.stream().toList());
+  }
+
+  @Test
   public void testOfOrderedX1() {
     var set = SetsOps.ofOrdered(
         1);
