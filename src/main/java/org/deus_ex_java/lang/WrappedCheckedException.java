@@ -14,6 +14,9 @@ import java.util.stream.Stream;
  * <p>
  * {@link FunctionsOps} uses this to wrap the checked exception lambdas to enable use of the lambda within
  * {@link Stream} operations.
+ * <p>
+ * <b>WARNING</b>: A {@link FatalThrowable} is thrown if the {@code cause} parameter returns true from
+ * {@link FatalThrowable#isFatalThrowable}.
  */
 public final class WrappedCheckedException extends RuntimeException {
   @Serial
@@ -28,13 +31,17 @@ public final class WrappedCheckedException extends RuntimeException {
    * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
    * @param cause   the cause (which is saved for later retrieval by the {@link #getCause()} method).  (A {@code null}
    *                value is <i>not</i> permitted.)
-   * @throws NullPointerException if the provided {@code cause} is {@code null}.
+   * @throws NullPointerException if the provided {@code cause} is {@code null}
+   * @throws FatalThrowable       if the provided {@code cause} returns true from
+   *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
       @NotNull String message,
       @NotNull Throwable cause
   ) {
-    super(message, Objects.requireNonNull(cause));
+    super(
+        message,
+        Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)));
   }
 
   /**
@@ -45,11 +52,13 @@ public final class WrappedCheckedException extends RuntimeException {
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).  (A {@code null}
    *              value is <i>not</i> permitted.)
    * @throws NullPointerException if the provided {@code cause} is {@code null}.
+   * @throws FatalThrowable       if the provided {@code cause} returns true from
+   *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
       @NotNull Throwable cause
   ) {
-    super(Objects.requireNonNull(cause));
+    super(Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)));
   }
 
   /**
@@ -61,6 +70,8 @@ public final class WrappedCheckedException extends RuntimeException {
    * @param enableSuppression  whether suppression is enabled or disabled
    * @param writableStackTrace whether the stack trace should be writable
    * @throws NullPointerException if the provided {@code cause} is {@code null}.
+   * @throws FatalThrowable       if the provided {@code cause} returns true from
+   *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
       @NotNull String message,
@@ -68,6 +79,10 @@ public final class WrappedCheckedException extends RuntimeException {
       boolean enableSuppression,
       boolean writableStackTrace
   ) {
-    super(message, Objects.requireNonNull(cause), enableSuppression, writableStackTrace);
+    super(
+        message,
+        Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)),
+        enableSuppression,
+        writableStackTrace);
   }
 }

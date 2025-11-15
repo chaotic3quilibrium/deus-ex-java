@@ -1,5 +1,6 @@
 package org.deus_ex_java.util;
 
+import org.deus_ex_java.lang.FatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.function.SupplierCheckedException;
 import org.deus_ex_java.util.function.VoidSupplier;
@@ -161,6 +162,8 @@ public final class TryCatchesOps {
    *     {@code throwableClasses}, the exception is returned within the {@link Optional#of}, otherwise, if the
    *     unrecognized exception is an instance of {@link RuntimeException}, it is rethrown, otherwise a new
    *     {@link WrappedCheckedException} wrapping the unrecognized exception is thrown
+   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
+   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   @SafeVarargs
   @NotNull
@@ -187,7 +190,7 @@ public final class TryCatchesOps {
       }
 
       throw new WrappedCheckedException(
-          "wrapChecked(VoidSupplierCheckedException) failure - " + throwable.getMessage(),
+          "wrapCheckedException(VoidSupplierCheckedException) failure - " + throwable.getMessage(),
           throwable);
     }
   }
@@ -208,6 +211,8 @@ public final class TryCatchesOps {
    *     exception is a {@link RuntimeException}, the exception is returned within the {@link Optional#of}, otherwise,
    *     if the unrecognized exception is an instance of {@link RuntimeException}, it is rethrown, otherwise a new
    *     {@link WrappedCheckedException} wrapping the unrecognized exception is thrown.
+   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
+   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   @NotNull
   public static Optional<RuntimeException> wrapCheckedException(
@@ -239,6 +244,8 @@ public final class TryCatchesOps {
    *     and the exception satisfies the {@link Class#isInstance(Object)} of one of the provided elements within
    *     {@code throwableClasses}, the exception is returned within the left side of an {@link Either}, otherwise, the
    *     exception is re-thrown
+   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
+   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   @SafeVarargs
   @NotNull
@@ -263,7 +270,7 @@ public final class TryCatchesOps {
       }
 
       throw new WrappedCheckedException(
-          "wrapChecked(SupplierCheckedException) failure - " + throwable.getMessage(),
+          "wrapCheckedException(SupplierCheckedException) failure - " + throwable.getMessage(),
           throwable);
     }
   }
@@ -284,6 +291,8 @@ public final class TryCatchesOps {
    *     is returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown
    *     and the exception is a {@link RuntimeException}, the exception is returned within the left side of an
    *     {@link Either}, otherwise, the exception is re-throw
+   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
+   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   @NotNull
   public static <R> Either<Exception, R> wrapCheckedException(
