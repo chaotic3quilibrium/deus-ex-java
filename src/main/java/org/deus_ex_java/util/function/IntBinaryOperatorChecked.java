@@ -1,11 +1,14 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.IntBinaryOperator;
 
 /**
  * Enables the providing of a {@link IntBinaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface IntBinaryOperatorChecked<EX extends Exception> {
   /**
    * Applies this operator to the given operands.

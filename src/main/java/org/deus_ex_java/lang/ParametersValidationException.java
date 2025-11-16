@@ -1,8 +1,8 @@
 package org.deus_ex_java.lang;
 
 import org.deus_ex_java.util.ListsOps;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serial;
 import java.util.List;
@@ -15,6 +15,7 @@ import java.util.Objects;
  * It's intended to facilitate the "validated record instance" pattern that implements the principle of only allowing
  * the creation of instances with a valid state.
  */
+@NullMarked
 public final class ParametersValidationException extends RuntimeException {
   @Serial
   private static final long serialVersionUID = -2463403636851524272L;
@@ -26,10 +27,9 @@ public final class ParametersValidationException extends RuntimeException {
 
   private final List<String> parametersValidationFailureMessages;
 
-  @NotNull
   private static String formatMessage(
-      @NotNull String message,
-      @NotNull List<String> parametersValidationFailureMessages
+      String message,
+      List<String> parametersValidationFailureMessages
   ) {
     return parametersValidationFailureMessages.isEmpty()
         ? message
@@ -52,7 +52,7 @@ public final class ParametersValidationException extends RuntimeException {
    * @param message the main message parameter
    */
   public ParametersValidationException(
-      @NotNull String message
+      String message
   ) {
     this(message, List.of());
   }
@@ -64,7 +64,7 @@ public final class ParametersValidationException extends RuntimeException {
    * @param parametersValidationFailureMessages detail parameter validation failure messages
    */
   public ParametersValidationException(
-      @NotNull List<String> parametersValidationFailureMessages
+      List<String> parametersValidationFailureMessages
   ) {
     this(DEFAULT_MESSAGE, parametersValidationFailureMessages);
   }
@@ -92,7 +92,7 @@ public final class ParametersValidationException extends RuntimeException {
    * @param cause   an exception leading to a parameter validation failure
    */
   public ParametersValidationException(
-      @NotNull String message,
+      String message,
       @Nullable Throwable cause
   ) {
     super(message, cause);
@@ -106,8 +106,8 @@ public final class ParametersValidationException extends RuntimeException {
    * @param parametersValidationFailureMessage detail parameter validation failure message
    */
   public ParametersValidationException(
-      @NotNull String message,
-      @NotNull String parametersValidationFailureMessage
+      String message,
+      String parametersValidationFailureMessage
   ) {
     this(message, List.of(parametersValidationFailureMessage));
   }
@@ -119,8 +119,8 @@ public final class ParametersValidationException extends RuntimeException {
    * @param parametersValidationFailureMessages detail parameter validation failure messages
    */
   public ParametersValidationException(
-      @NotNull String message,
-      @NotNull List<String> parametersValidationFailureMessages
+      String message,
+      List<String> parametersValidationFailureMessages
   ) {
     super(
         formatMessage(
@@ -138,7 +138,7 @@ public final class ParametersValidationException extends RuntimeException {
    */
   public ParametersValidationException(
       @Nullable Throwable cause,
-      @NotNull List<String> parametersValidationFailureMessages
+      List<String> parametersValidationFailureMessages
   ) {
     this(
         DEFAULT_MESSAGE,
@@ -155,9 +155,9 @@ public final class ParametersValidationException extends RuntimeException {
    * @param parametersValidationFailureMessage detail parameter validation failure message
    */
   public ParametersValidationException(
-      @NotNull String message,
+      String message,
       @Nullable Throwable cause,
-      @NotNull String parametersValidationFailureMessage
+      String parametersValidationFailureMessage
   ) {
     this(
         message,
@@ -174,9 +174,9 @@ public final class ParametersValidationException extends RuntimeException {
    * @param parametersValidationFailureMessages detail parameter validation failure messages
    */
   public ParametersValidationException(
-      @NotNull String message,
+      String message,
       @Nullable Throwable cause,
-      @NotNull List<String> parametersValidationFailureMessages
+      List<String> parametersValidationFailureMessages
   ) {
     super(
         formatMessage(
@@ -198,11 +198,11 @@ public final class ParametersValidationException extends RuntimeException {
    * @param parametersValidationFailureMessages detail parameter validation failure messages
    */
   public ParametersValidationException(
-      @NotNull String message,
+      String message,
       @Nullable Throwable cause,
       boolean enableSuppression,
       boolean writableStackTrace,
-      @NotNull List<String> parametersValidationFailureMessages
+      List<String> parametersValidationFailureMessages
   ) {
     super(
         formatMessage(
@@ -219,7 +219,6 @@ public final class ParametersValidationException extends RuntimeException {
    *
    * @return a list consisting of a message for each failed validation
    */
-  @NotNull
   public List<String> getParametersValidationFailureMessages() {
     return this.parametersValidationFailureMessages;
   }

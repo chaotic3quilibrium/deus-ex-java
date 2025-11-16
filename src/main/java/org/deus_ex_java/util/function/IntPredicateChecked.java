@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.IntPredicate;
 
@@ -8,6 +8,7 @@ import java.util.function.IntPredicate;
  * Enables the providing of a {@link IntPredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface IntPredicateChecked<EX extends Exception> {
 
   /**
@@ -32,7 +33,6 @@ public interface IntPredicateChecked<EX extends Exception> {
    *     {@code other} predicate
    * @throws NullPointerException if other is null
    */
-  @NotNull
   default IntPredicateChecked<EX> and(IntPredicateChecked<? extends EX> other) {
     return (value) ->
         test(value) && other.test(value);
@@ -61,7 +61,6 @@ public interface IntPredicateChecked<EX extends Exception> {
    * @return a composed predicate that represents the short-circuiting logical OR of this predicate and the
    *     {@code other} predicate
    */
-  @NotNull
   default IntPredicateChecked<EX> or(IntPredicateChecked<? extends EX> other) {
     return (value) ->
         test(value) || other.test(value);

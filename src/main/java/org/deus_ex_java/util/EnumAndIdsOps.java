@@ -4,7 +4,8 @@ package org.deus_ex_java.util;
 import org.deus_ex_java.lang.ClassesOps;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,11 +42,12 @@ import static java.util.Map.entry;
  * @param <E>  type of the {@link Enum}
  * @param <ID> type of the associated {@code ID}
  */
+@NullMarked
 public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   private static final Object ENUM_ID_OPS_BY_CLASS_E_SYNC = new Object();
   private static final Object EXTENDED_CONTEXT_BY_CLASS_E_LOCK = new Object();
   private static final Map<Class<?>, ExtendedContext<?, ?>> EXTENDED_CONTEXT_BY_CLASS_E = new ConcurrentHashMap<>();
-  private static volatile Memoizer<Class<?>, EnumAndIdsOps<?, ?>> ENUM_ID_OPS_BY_CLASS_E;
+  private static volatile @Nullable Memoizer<Class<?>, EnumAndIdsOps<?, ?>> ENUM_AND_ID_OPS_BY_CLASS_E;
 
   /**
    * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using
@@ -65,9 +67,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param <E>    the specific Enum's type
    * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class
    */
-  @NotNull
   public static <E extends Enum<E>> EnumAndIdsOps<E, Integer> from(
-      @NotNull Class<E> classE
+      Class<E> classE
   ) {
     return from(classE, 0);
   }
@@ -92,9 +93,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param <E>           the specific Enum's type
    * @return an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class
    */
-  @NotNull
   public static <E extends Enum<E>> EnumAndIdsOps<E, Integer> from(
-      @NotNull Class<E> classE,
+      Class<E> classE,
       int ordinalOffset
   ) {
     return from(
@@ -132,10 +132,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an
    *     alternative String from an {@link Enum} value
    */
-  @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
-      @NotNull Class<E> classE,
-      @NotNull Function<E, ID> fEToId
+      Class<E> classE,
+      Function<E, ID> fEToId
   ) {
     return from(
         classE,
@@ -175,11 +174,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code fEAndIdToNonEmptyLowerCaseString} to derive the String search term for each {@code ID} associated with
    *     an Enum value
    */
-  @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
-      @NotNull Class<E> classE,
-      @NotNull Function<E, ID> fEToId,
-      @NotNull Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString
+      Class<E> classE,
+      Function<E, ID> fEToId,
+      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString
   ) {
     return fromHelper(
         classE,
@@ -221,12 +219,11 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     search term for each {@code ID}, and expanding the String search using {@code fEToAltString} to derive an
    *     alternative String from an {@link Enum} value
    */
-  @NotNull
   public static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> from(
-      @NotNull Class<E> classE,
-      @NotNull Function<E, ID> fEToId,
-      @NotNull Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
-      @NotNull Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>> fEAndIdToNonEmptyLowerCaseStrings
+      Class<E> classE,
+      Function<E, ID> fEToId,
+      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
+      Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>> fEAndIdToNonEmptyLowerCaseStrings
   ) {
     return fromHelper(
         classE,
@@ -236,26 +233,25 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   private record ExtendedContext<E extends Enum<E>, ID>(
-      @NotNull Function<E, ID> fEToId,
-      @NotNull Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
-      @NotNull Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
+      Function<E, ID> fEToId,
+      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
+      Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
   ) {
 
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @NotNull
   private static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> fromHelper(
-      @NotNull Class<E> classE,
-      @NotNull Function<E, ID> fEToId,
-      @NotNull Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
-      @NotNull Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
+      Class<E> classE,
+      Function<E, ID> fEToId,
+      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
+      Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
   ) {
-    if (ENUM_ID_OPS_BY_CLASS_E == null) {
+    if (ENUM_AND_ID_OPS_BY_CLASS_E == null) {
       synchronized (ENUM_ID_OPS_BY_CLASS_E_SYNC) {
-        if (ENUM_ID_OPS_BY_CLASS_E == null) {
+        if (ENUM_AND_ID_OPS_BY_CLASS_E == null) {
           //noinspection unchecked
-          ENUM_ID_OPS_BY_CLASS_E = Memoizer.from(classWildcard ->
+          ENUM_AND_ID_OPS_BY_CLASS_E = Memoizer.from(classWildcard ->
               ClassesOps.narrow(() ->
                       (Class<E>) classWildcard)
                   .map(classWildCardNarrowedToClassE ->
@@ -287,9 +283,14 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
               fEAndIdToNonEmptyLowerCaseString,
               optionalFEAndIdToNonEmptyLowerCaseStrings));
       try {
-        //noinspection unchecked
-        return ClassesOps.narrow(() ->
-                (EnumAndIdsOps<E, ID>) ENUM_ID_OPS_BY_CLASS_E.get(classE))
+        return ClassesOps.narrow(() -> {
+              //noinspection unchecked
+              return Optional.ofNullable(ENUM_AND_ID_OPS_BY_CLASS_E)
+                  .map(enumAndIdOpsByClassE ->
+                      (EnumAndIdsOps<E, ID>) enumAndIdOpsByClassE.get(classE))
+                  .orElseThrow(() ->
+                      new IllegalStateException("ENUM_AND_ID_OPS_BY_CLASS_E is null"));
+            })
             .orElseThrow(() ->
                 new IllegalStateException("unable to narrow to EnumAndIdsOps<E, ID> for class " + classE.getName()));
       } finally {
@@ -312,10 +313,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private EnumAndIdsOps(
-      @NotNull Class<E> classE,
-      @NotNull Function<E, ID> fEToId,
-      @NotNull Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
-      @NotNull Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
+      Class<E> classE,
+      Function<E, ID> fEToId,
+      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
+      Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
   ) {
     var enumOps = EnumsOps.from(classE);
     var enumsValues = enumOps.toList();
@@ -441,7 +442,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @return an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class used to delegate base behaviors
    */
-  @NotNull
   public EnumsOps<E> getEnumsOps() {
     return this.enumsOps;
   }
@@ -451,7 +451,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @return the {@link Class} of the id being associated with the enum
    */
-  @NotNull
   public Class<ID> getClassId() {
     return this.classId;
   }
@@ -461,7 +460,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @return an unmodifiable {@link List} of each of the {@link Enum}s with its associated ID
    */
-  @NotNull
   public List<Entry<E, ID>> toList() {
     return getOrderedMapIdByEnumValue()
         .entrySet()
@@ -474,7 +472,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *
    * @return a {@link Stream} of each of the {@link Enum}s with its associated {@code ID}
    */
-  @NotNull
   public Stream<Entry<E, ID>> stream() {
     return getOrderedMapIdByEnumValue()
         .entrySet()
@@ -488,7 +485,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @return an unmodifiable <u><i>ordered</i></u> map of each {@link Enum}'s value and its associated {@code ID}, with
    *     the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}
    */
-  @NotNull
   public Map<E, ID> getOrderedMapIdByEnumValue() {
     return this.orderedMapIdByEnumValue;
   }
@@ -499,8 +495,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param enumValue the value upon which to search
    * @return the {@code ID} associated with an {@link Enum}'s value
    */
-  @NotNull
-  public ID get(@NotNull E enumValue) {
+  public ID get(E enumValue) {
     return getOrderedMapIdByEnumValue().get(enumValue);
   }
 
@@ -511,19 +506,17 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @return an unmodifiable <u><i>ordered</i></u> map of each {@code ID} and it associated {@link Enum}'s value, with
    *     the {@link Map#keySet()} ordered by the {@link Enum#ordinal()}
    */
-  @NotNull
   public Map<ID, E> getOrderedMapEnumValueById() {
     return this.orderedMapEnumValueById;
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} of all the lower-case String values
-   * upon which the {@code valueOf*()} methods perform their {@link String} key lookups.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} of all the lower-case String values upon which the
+   * {@code valueOf*()} methods perform their {@link String} key lookups.
    *
-   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of all the lower-case String values
-   *     upon which the {@code valueOf*()} methods perform their {@link String} key lookups
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of all the lower-case String values upon which the
+   *     {@code valueOf*()} methods perform their {@link String} key lookups
    */
-  @NotNull
   public Set<String> valueOfLookupKeys() {
     return SetsOps.toSetOrdered(
         this.enumValueByNameOrIdOrAlternatesLowerCase.keySet()
@@ -537,8 +530,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param id the value upon which to search
    * @return the {@link Enum}'s value associated with an {@code ID}
    */
-  @NotNull
-  public Optional<E> get(@NotNull ID id) {
+  public Optional<E> get(ID id) {
     return Optional.ofNullable(getOrderedMapEnumValueById().get(id));
   }
 
@@ -552,9 +544,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise an {@link Entry} containing
    *     the first {@link Enum} and its associated {@code ID}
    */
-  @NotNull
   public Entry<E, ID> valueOfOrDefaultToFirst(
-      @NotNull String nameOrIdOrAltToString
+      String nameOrIdOrAltToString
   ) {
     return valueOf(
         nameOrIdOrAltToString,
@@ -570,10 +561,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
    *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}
    */
-  @NotNull
   public Entry<E, ID> valueOf(
-      @NotNull String nameOrIdOrAltToString,
-      @NotNull Entry<E, ID> orElseDefault
+      String nameOrIdOrAltToString,
+      Entry<E, ID> orElseDefault
   ) {
     return valueOf(nameOrIdOrAltToString)
         .orElse(orElseDefault);
@@ -587,9 +577,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
    *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@link Optional#empty}
    */
-  @NotNull
   public Optional<Entry<E, ID>> valueOf(
-      @NotNull String nameOrIdOrAlternate
+      String nameOrIdOrAlternate
   ) {
     return Optional.ofNullable(this.enumValueByNameOrIdOrAlternatesLowerCase.get(nameOrIdOrAlternate.toLowerCase()))
         .map(enumValue ->
@@ -598,9 +587,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                 getOrderedMapIdByEnumValue().get(enumValue)));
   }
 
-  @NotNull
   public String generateJoinDefault(
-      @NotNull Entry<E, ID> entry
+      Entry<E, ID> entry
   ) {
     return "%s(%s)".formatted(
         entry.getKey().name(),
@@ -616,7 +604,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the *
    *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String join() {
     return join(EnumsOps.DEFAULT_SEPARATOR);
   }
@@ -631,8 +618,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the specified
    *     {@code separator}
    */
-  @NotNull
-  public String join(@NotNull String separator) {
+  public String join(String separator) {
     return join(this::generateJoinDefault, separator);
   }
 
@@ -646,9 +632,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for all the enum values, and joined together with a copy of the
    *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String join(
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString
+      Function<Entry<E, ID>, String> eAndIdToString
   ) {
     return join(eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
   }
@@ -664,10 +649,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for all the enum values, and joined together with a copy of the specified
    *     {@code separator}
    */
-  @NotNull
   public String join(
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString,
-      @NotNull String separator
+      Function<Entry<E, ID>, String> eAndIdToString,
+      String separator
   ) {
     return join(getEnumsOps().stream(), eAndIdToString, separator);
   }
@@ -682,8 +666,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
    *     the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
-  public String join(@NotNull Stream<E> es) {
+  public String join(Stream<E> es) {
     return join(es, this::generateJoinDefault);
   }
 
@@ -698,10 +681,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for each of the provided {@link Enum} values, and joined together with a copy
    *     of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String join(
-      @NotNull Stream<E> es,
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString
+      Stream<E> es,
+      Function<Entry<E, ID>, String> eAndIdToString
   ) {
     return join(es, eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
   }
@@ -717,10 +699,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
    *     the specified {@code separator}
    */
-  @NotNull
   public String join(
-      @NotNull Stream<E> es,
-      @NotNull String separator
+      Stream<E> es,
+      String separator
   ) {
     return join(es, this::generateJoinDefault, separator);
   }
@@ -737,11 +718,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     transformed by the {@code eAndIdToString} function, and joined together with a copy of the specified
    *     {@code separator}
    */
-  @NotNull
   public String join(
-      @NotNull Stream<E> es,
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString,
-      @NotNull String separator
+      Stream<E> es,
+      Function<Entry<E, ID>, String> eAndIdToString,
+      String separator
   ) {
     return String.join(
         separator,
@@ -759,7 +739,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the
    *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String joinOnIds() {
     return joinOnIds(EnumsOps.DEFAULT_SEPARATOR);
   }
@@ -774,8 +753,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the specified
    *     {@code separator}
    */
-  @NotNull
-  public String joinOnIds(@NotNull String separator) {
+  public String joinOnIds(String separator) {
     return joinOnIds(this::generateJoinDefault, separator);
   }
 
@@ -789,9 +767,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for all the id values, and joined together with a copy of the
    *     {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String joinOnIds(
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString
+      Function<Entry<E, ID>, String> eAndIdToString
   ) {
     return joinOnIds(eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
   }
@@ -807,10 +784,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for all the id values, and joined together with a copy of the specified
    *     {@code separator}
    */
-  @NotNull
   public String joinOnIds(
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString,
-      @NotNull String separator
+      Function<Entry<E, ID>, String> eAndIdToString,
+      String separator
   ) {
     return joinOnIds(getOrderedMapEnumValueById().keySet().stream(), eAndIdToString, separator);
   }
@@ -825,8 +801,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
    *     the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
-  public String joinOnIds(@NotNull Stream<ID> ids) {
+  public String joinOnIds(Stream<ID> ids) {
     return joinOnIds(ids, this::generateJoinDefault);
   }
 
@@ -841,10 +816,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
    *     the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String joinOnIds(
-      @NotNull Stream<ID> ids,
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString
+      Stream<ID> ids,
+      Function<Entry<E, ID>, String> eAndIdToString
   ) {
     return joinOnIds(ids, eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
   }
@@ -860,10 +834,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
    *     the specified {@code separator}
    */
-  @NotNull
   public String joinOnIds(
-      @NotNull Stream<ID> ids,
-      @NotNull String separator
+      Stream<ID> ids,
+      String separator
   ) {
     return joinOnIds(ids, this::generateJoinDefault, separator);
   }
@@ -880,11 +853,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    *     {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
    *     the specified {@code separator}
    */
-  @NotNull
   public String joinOnIds(
-      @NotNull Stream<ID> ids,
-      @NotNull Function<Entry<E, ID>, String> eAndIdToString,
-      @NotNull String separator
+      Stream<ID> ids,
+      Function<Entry<E, ID>, String> eAndIdToString,
+      String separator
   ) {
     return String.join(
         separator,

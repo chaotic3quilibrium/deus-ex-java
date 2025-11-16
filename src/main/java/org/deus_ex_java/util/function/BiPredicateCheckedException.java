@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.BiPredicate;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.BiPredicate;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface BiPredicateCheckedException<T, U> extends BiPredicateChecked<T, U, Exception> {
 
 }

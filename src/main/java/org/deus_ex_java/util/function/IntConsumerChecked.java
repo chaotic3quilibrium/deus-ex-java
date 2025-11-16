@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.IntConsumer;
 
@@ -8,6 +8,7 @@ import java.util.function.IntConsumer;
  * Enables the providing of a {@link IntConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface IntConsumerChecked<EX extends Exception> {
 
   /**
@@ -26,9 +27,8 @@ public interface IntConsumerChecked<EX extends Exception> {
    * @return a composed {@code IntConsumer} that performs in sequence this operation followed by the {@code after}
    *     operation
    */
-  @NotNull
   default IntConsumerChecked<EX> andThen(
-      @NotNull IntConsumerChecked<? extends EX> after
+      IntConsumerChecked<? extends EX> after
   ) {
     return (int t) -> {
       accept(t);

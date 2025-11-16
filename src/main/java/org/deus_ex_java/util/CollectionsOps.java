@@ -1,6 +1,6 @@
 package org.deus_ex_java.util;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +9,7 @@ import java.util.Map;
 /**
  * Utility class providing static methods to create and work with {@link Collection} instances.
  */
+@NullMarked
 public final class CollectionsOps {
 
   private CollectionsOps() {
@@ -23,7 +24,7 @@ public final class CollectionsOps {
    * @return {@code true} if the {@link Collection} throws an {@link UnsupportedOperationException} when calling
    *     {@link Collection#addAll} with {@link Collections#emptyList}, false otherwise
    */
-  public static boolean isUnmodifiable(@NotNull Collection<?> collection) {
+  public static boolean isUnmodifiable(Collection<?> collection) {
     try {
       collection.addAll(Collections.emptyList());
 
@@ -41,7 +42,7 @@ public final class CollectionsOps {
    * @return {@code true} if the {@link Map} throws an {@link UnsupportedOperationException} when calling
    *     {@link Map#putAll} with an empty {@link Map#of}, false otherwise
    */
-  public static boolean isUnmodifiable(@NotNull Map<?, ?> map) {
+  public static boolean isUnmodifiable(Map<?, ?> map) {
     try {
       map.putAll(Map.of());
 

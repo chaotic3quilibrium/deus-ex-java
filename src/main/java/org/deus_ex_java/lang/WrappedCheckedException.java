@@ -1,7 +1,7 @@
 package org.deus_ex_java.lang;
 
 import org.deus_ex_java.util.function.FunctionsOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.Serial;
 import java.util.Objects;
@@ -18,6 +18,7 @@ import java.util.stream.Stream;
  * <b>WARNING</b>: A {@link FatalThrowable} is thrown if the {@code cause} parameter returns true from
  * {@link FatalThrowable#isFatalThrowable}.
  */
+@NullMarked
 public final class WrappedCheckedException extends RuntimeException {
   @Serial
   private static final long serialVersionUID = -7411859319326389055L;
@@ -36,8 +37,8 @@ public final class WrappedCheckedException extends RuntimeException {
    *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
-      @NotNull String message,
-      @NotNull Throwable cause
+      String message,
+      Throwable cause
   ) {
     super(
         message,
@@ -56,7 +57,7 @@ public final class WrappedCheckedException extends RuntimeException {
    *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
-      @NotNull Throwable cause
+      Throwable cause
   ) {
     super(Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)));
   }
@@ -74,8 +75,8 @@ public final class WrappedCheckedException extends RuntimeException {
    *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
-      @NotNull String message,
-      @NotNull Throwable cause,
+      String message,
+      Throwable cause,
       boolean enableSuppression,
       boolean writableStackTrace
   ) {

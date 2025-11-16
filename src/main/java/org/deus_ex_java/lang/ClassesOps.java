@@ -1,8 +1,7 @@
 package org.deus_ex_java.lang;
 
-import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -10,6 +9,7 @@ import java.util.function.Supplier;
 /**
  * Utility class providing static methods to create {@link Class} instances.
  */
+@NullMarked
 public final class ClassesOps {
 
   private ClassesOps() {
@@ -26,10 +26,9 @@ public final class ClassesOps {
    * @return an {@link Optional} containing the object successfully narrowed by {@code tClass}, otherwise
    *     {@link Optional#empty()}
    */
-  @NotNull
   public static <T> Optional<T> narrow(
-      @NotNull Object object,
-      @NotNull Class<T> tClass
+      Object object,
+      Class<T> tClass
   ) {
     return tClass.isInstance(object)
         ? Optional.of(tClass.cast(object))
@@ -51,9 +50,8 @@ public final class ClassesOps {
    * @return an {@link Optional} containing the object successfully narrowed within the {@code supplier}; i.e.
    *     {@code supplier.get()} didn't throw a {@link ClassCastException}, otherwise {@link Optional#empty()}
    */
-  @NotNull
   public static <T> Optional<T> narrow(
-      @NotNull Supplier<T> supplier
+      Supplier<T> supplier
   ) {
     return TryCatchesOps.wrap(
             supplier,

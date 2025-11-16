@@ -3,7 +3,7 @@ package org.deus_ex_java.lang.refined;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Optional;
 
@@ -16,8 +16,9 @@ import java.util.Optional;
  *
  * @param string an {@code String} with a non-empty lower-case value
  */
+@NullMarked
 public record NonEmptyLowerCaseString(
-    @NotNull String string
+    String string
 ) implements Comparable<NonEmptyLowerCaseString> {
 
   /**
@@ -34,9 +35,8 @@ public record NonEmptyLowerCaseString(
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  @NotNull
   public static Optional<ParametersValidationException> validate(
-      @NotNull String string
+      String string
   ) {
     if (string.isEmpty()) {
 
@@ -64,9 +64,8 @@ public record NonEmptyLowerCaseString(
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
    *     {@link #validate(String)} method
    */
-  @NotNull
   public static Either<ParametersValidationException, NonEmptyLowerCaseString> from(
-      @NotNull String string
+      String string
   ) {
     return TryCatchesOps.wrap(
         () ->
@@ -101,7 +100,7 @@ public record NonEmptyLowerCaseString(
    *     lexicographically equal to {@code that.value} (signed comparison)
    */
   @Override
-  public int compareTo(@NotNull NonEmptyLowerCaseString that) {
+  public int compareTo(NonEmptyLowerCaseString that) {
     return this.string.compareTo(that.string);
   }
 }

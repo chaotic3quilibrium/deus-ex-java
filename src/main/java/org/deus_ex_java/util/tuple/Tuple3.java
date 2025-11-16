@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.tuple;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.stream.Stream;
 
@@ -15,10 +15,11 @@ import java.util.stream.Stream;
  * @param <T2> the type of the value contained in the second element
  * @param <T3> the type of the value contained in the third element
  */
+@NullMarked
 public record Tuple3<T1, T2, T3>(
-    @NotNull T1 _1,
-    @NotNull T2 _2,
-    @NotNull T3 _3
+    T1 _1,
+    T2 _2,
+    T3 _3
 ) implements Tuple {
   @Override
   public int arity() {

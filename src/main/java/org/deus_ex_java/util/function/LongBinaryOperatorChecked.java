@@ -1,11 +1,14 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.LongBinaryOperator;
 
 /**
  * Enables the providing of a {@link LongBinaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface LongBinaryOperatorChecked<EX extends Exception> {
 
   /**

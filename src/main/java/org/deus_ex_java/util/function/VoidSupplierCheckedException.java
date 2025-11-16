@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Represents an action to execute without having to unnecessarily specify an input argument, and unnecessarily supply a
  * return value; i.e. exists entirely to computes an optionally side-effecting result, or throws an explicit checked
@@ -12,6 +14,7 @@ package org.deus_ex_java.util.function;
  * whose functional method is {@link #execute()}.
  */
 @FunctionalInterface
+@NullMarked
 public interface VoidSupplierCheckedException extends VoidSupplierChecked<Exception> {
 
 }

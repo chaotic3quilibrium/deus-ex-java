@@ -5,7 +5,7 @@ import org.deus_ex_java.util.tuple.Tuple2;
 import org.deus_ex_java.util.tuple.Tuple3;
 import org.deus_ex_java.util.tuple.Tuple4;
 import org.deus_ex_java.util.tuple.Tuple5;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -21,6 +21,7 @@ import java.util.function.Supplier;
  * {@link RuntimeException}s, and only returns a {@link WrappedCheckedException} if any call to
  * {@link AutoCloseable#close()} causes a checked exception.
  */
+@NullMarked
 public final class Using {
 
   private Using() {
@@ -44,10 +45,9 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <A extends AutoCloseable, T> Either<RuntimeException, T> apply(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, T> fAToT
+      Supplier<A> fSupplierA,
+      Function<A, T> fAToT
   ) {
     try (
         var a = fSupplierA.get()
@@ -83,10 +83,9 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <A extends AutoCloseable, T> T applyUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, T> fAToT
+      Supplier<A> fSupplierA,
+      Function<A, T> fAToT
   ) {
 
     return apply(
@@ -114,14 +113,13 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       T> Either<RuntimeException, T> apply(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Function<Tuple2<A, B>, T> fAAndBToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Function<Tuple2<A, B>, T> fAAndBToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -160,14 +158,13 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       T> T applyUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Function<Tuple2<A, B>, T> fAAndBToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Function<Tuple2<A, B>, T> fAAndBToT
   ) {
     return apply(
         fSupplierA,
@@ -197,14 +194,13 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       T> Either<RuntimeException, T> applyNested(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, T> fTuple2ToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, T> fTuple2ToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -243,14 +239,13 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       T> T applyNestedUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, T> fTuple2ToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, T> fTuple2ToT
   ) {
     return applyNested(
         fSupplierA,
@@ -280,16 +275,15 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       T> Either<RuntimeException, T> apply(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Supplier<C> fSupplierC,
-      @NotNull Function<Tuple3<A, B, C>, T> fAAndBAndCToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Supplier<C> fSupplierC,
+      Function<Tuple3<A, B, C>, T> fAAndBAndCToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -331,16 +325,15 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       T> T applyUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Supplier<C> fSupplierC,
-      @NotNull Function<Tuple3<A, B, C>, T> fAAndBAndCToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Supplier<C> fSupplierC,
+      Function<Tuple3<A, B, C>, T> fAAndBAndCToT
   ) {
     return apply(
         fSupplierA,
@@ -374,16 +367,15 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       T> Either<RuntimeException, T> applyNested(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, C> fAndBToC,
-      @NotNull Function<Tuple3<A, B, C>, T> fAAndBAndCToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, C> fAndBToC,
+      Function<Tuple3<A, B, C>, T> fAAndBAndCToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -426,16 +418,15 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       T> Either<RuntimeException, T> applyNestedUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, C> fAndBToC,
-      @NotNull Function<Tuple3<A, B, C>, T> fAAndBAndCToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, C> fAndBToC,
+      Function<Tuple3<A, B, C>, T> fAAndBAndCToT
   ) {
     return applyNested(
         fSupplierA,
@@ -467,18 +458,17 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       D extends AutoCloseable,
       T> Either<RuntimeException, T> apply(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Supplier<C> fSupplierC,
-      @NotNull Supplier<D> fSupplierD,
-      @NotNull Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Supplier<C> fSupplierC,
+      Supplier<D> fSupplierD,
+      Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -523,18 +513,17 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       D extends AutoCloseable,
       T> T applyUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Supplier<C> fSupplierC,
-      @NotNull Supplier<D> fSupplierD,
-      @NotNull Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Supplier<C> fSupplierC,
+      Supplier<D> fSupplierD,
+      Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
   ) {
     return apply(
         fSupplierA,
@@ -573,18 +562,17 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       D extends AutoCloseable,
       T> Either<RuntimeException, T> applyNested(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, C> fAndBToC,
-      @NotNull Function<Tuple3<A, B, C>, D> fAndBAndCToD,
-      @NotNull Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, C> fAndBToC,
+      Function<Tuple3<A, B, C>, D> fAndBAndCToD,
+      Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -632,18 +620,17 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with * its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
       D extends AutoCloseable,
       T> Either<RuntimeException, T> applyNestedUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, C> fAndBToC,
-      @NotNull Function<Tuple3<A, B, C>, D> fAndBAndCToD,
-      @NotNull Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, C> fAndBToC,
+      Function<Tuple3<A, B, C>, D> fAndBAndCToD,
+      Function<Tuple4<A, B, C, D>, T> fAAndBAndCAndDToT
   ) {
     return applyNested(
         fSupplierA,
@@ -678,7 +665,6 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
@@ -686,12 +672,12 @@ public final class Using {
       D extends AutoCloseable,
       E extends AutoCloseable,
       T> Either<RuntimeException, T> apply(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Supplier<C> fSupplierC,
-      @NotNull Supplier<D> fSupplierD,
-      @NotNull Supplier<E> fSupplierE,
-      @NotNull Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Supplier<C> fSupplierC,
+      Supplier<D> fSupplierD,
+      Supplier<E> fSupplierE,
+      Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -739,7 +725,6 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
@@ -747,12 +732,12 @@ public final class Using {
       D extends AutoCloseable,
       E extends AutoCloseable,
       T> T applyUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Supplier<B> fSupplierB,
-      @NotNull Supplier<C> fSupplierC,
-      @NotNull Supplier<D> fSupplierD,
-      @NotNull Supplier<E> fSupplierE,
-      @NotNull Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
+      Supplier<A> fSupplierA,
+      Supplier<B> fSupplierB,
+      Supplier<C> fSupplierC,
+      Supplier<D> fSupplierD,
+      Supplier<E> fSupplierE,
+      Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
   ) {
     return apply(
         fSupplierA,
@@ -795,7 +780,6 @@ public final class Using {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
@@ -803,12 +787,12 @@ public final class Using {
       D extends AutoCloseable,
       E extends AutoCloseable,
       T> Either<RuntimeException, T> applyNested(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, C> fAndBToC,
-      @NotNull Function<Tuple3<A, B, C>, D> fAndBAndCToD,
-      @NotNull Function<Tuple4<A, B, C, D>, E> fAndBAndCAndDToE,
-      @NotNull Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, C> fAndBToC,
+      Function<Tuple3<A, B, C>, D> fAndBAndCToD,
+      Function<Tuple4<A, B, C, D>, E> fAndBAndCAndDToE,
+      Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
   ) {
     try (
         var a = fSupplierA.get();
@@ -860,7 +844,6 @@ public final class Using {
    *     {@link AutoCloseable#close()} failure throwing a checked exception, will be a {@link WrappedCheckedException}
    *     with its {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    */
-  @NotNull
   public static <
       A extends AutoCloseable,
       B extends AutoCloseable,
@@ -868,12 +851,12 @@ public final class Using {
       D extends AutoCloseable,
       E extends AutoCloseable,
       T> T applyNestedUnsafe(
-      @NotNull Supplier<A> fSupplierA,
-      @NotNull Function<A, B> fAToB,
-      @NotNull Function<Tuple2<A, B>, C> fAndBToC,
-      @NotNull Function<Tuple3<A, B, C>, D> fAndBAndCToD,
-      @NotNull Function<Tuple4<A, B, C, D>, E> fAndBAndCAndDToE,
-      @NotNull Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
+      Supplier<A> fSupplierA,
+      Function<A, B> fAToB,
+      Function<Tuple2<A, B>, C> fAndBToC,
+      Function<Tuple3<A, B, C>, D> fAndBAndCToD,
+      Function<Tuple4<A, B, C, D>, E> fAndBAndCAndDToE,
+      Function<Tuple5<A, B, C, D, E>, T> fAAndBAndCAndDAndEToT
   ) {
     return applyNested(
         fSupplierA,

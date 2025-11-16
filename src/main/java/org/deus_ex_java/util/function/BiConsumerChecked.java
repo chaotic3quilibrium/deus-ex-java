@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
@@ -7,6 +9,7 @@ import java.util.function.BiConsumer;
  * Enables the providing of a {@link BiConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface BiConsumerChecked<T, U, EX extends Exception> {
 
   /**

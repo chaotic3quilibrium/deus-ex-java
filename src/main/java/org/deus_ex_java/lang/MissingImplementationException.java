@@ -1,6 +1,6 @@
 package org.deus_ex_java.lang;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.Serial;
 
@@ -8,6 +8,7 @@ import java.io.Serial;
  * {@code MissingImplementationException} is an <em>unchecked exception</em> final class used to be a placeholder when a
  * method implementation needs to be temporarily stubbed out.
  */
+@NullMarked
 public final class MissingImplementationException extends RuntimeException {
   @Serial
   private static final long serialVersionUID = -1277898104227409358L;
@@ -25,7 +26,7 @@ public final class MissingImplementationException extends RuntimeException {
    * @param message the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
    */
   public MissingImplementationException(
-      @NotNull String message
+      String message
   ) {
     super(message);
   }
@@ -40,8 +41,8 @@ public final class MissingImplementationException extends RuntimeException {
    * @param writableStackTrace whether the stack trace should be writable
    */
   public MissingImplementationException(
-      @NotNull String message,
-      @NotNull Throwable cause,
+      String message,
+      Throwable cause,
       boolean enableSuppression,
       boolean writableStackTrace
   ) {

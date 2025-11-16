@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.tuple;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
@@ -9,6 +9,7 @@ import java.util.Objects;
 /**
  * Utility class providing static methods to create and work with tuple instances.
  */
+@NullMarked
 public final class TuplesOps {
   private TuplesOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
@@ -23,9 +24,8 @@ public final class TuplesOps {
    * @return a conversion from an {@link Entry}
    * @see Tuple2#to() Tuple2.to() for the inverted version of this method
    */
-  @NotNull
   public static <K, V> Tuple2<K, V> from(
-      @NotNull Entry<K, V> entry
+      Entry<K, V> entry
   ) {
     return new Tuple2<>(
         Objects.requireNonNull(entry.getKey()),
@@ -41,9 +41,8 @@ public final class TuplesOps {
    * @return a conversion from an {@link SimpleImmutableEntry}
    * @see Tuple2#toSimpleImmutableEntry() Tuple2.toSimpleImmutableEntry() for the inverted version of this method
    */
-  @NotNull
   public static <K, V> Tuple2<K, V> from(
-      @NotNull SimpleImmutableEntry<K, V> simpleImmutableEntry
+      SimpleImmutableEntry<K, V> simpleImmutableEntry
   ) {
     return new Tuple2<>(
         Objects.requireNonNull(simpleImmutableEntry.getKey()),

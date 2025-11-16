@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple6;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -19,6 +19,7 @@ import java.util.function.Function;
  * @param <R> the type of the result of the function
  */
 @FunctionalInterface
+@NullMarked
 public interface Function6<A, B, C, D, E, F, R> {
 
   /**
@@ -32,13 +33,13 @@ public interface Function6<A, B, C, D, E, F, R> {
    * @param f the sixth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e,
-      @NotNull F f);
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e,
+      F f);
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -49,17 +50,16 @@ public interface Function6<A, B, C, D, E, F, R> {
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function6<A, B, C, D, E, F, V> andThen(
-      @NotNull Function<? super R, ? extends V> after
+      Function<? super R, ? extends V> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f) ->
         after.apply(apply(a, b, c, d, e, f));
   }
 
@@ -71,9 +71,8 @@ public interface Function6<A, B, C, D, E, F, R> {
    * @return a {@link Function6} where the input parameters are extracted from a {@link Function} which accepts a
    *     {@link Tuple6}
    */
-  @NotNull
   default Function6<A, B, C, D, E, F, R> untupled(
-      @NotNull Function<
+      Function<
           Tuple6<
               ? super A,
               ? super B,
@@ -85,12 +84,12 @@ public interface Function6<A, B, C, D, E, F, R> {
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f) ->
         function.apply(
             new Tuple6<>(a, b, c, d, e, f));
   }
@@ -100,9 +99,8 @@ public interface Function6<A, B, C, D, E, F, R> {
    *
    * @return a {@link Function} accepting a {@link Tuple6} of the original input parameters
    */
-  @NotNull
   default Function<Tuple6<A, B, C, D, E, F>, R> tupled() {
-    return (@NotNull Tuple6<A, B, C, D, E, F> tuple6) ->
+    return (Tuple6<A, B, C, D, E, F> tuple6) ->
         apply(
             tuple6._1(),
             tuple6._2(),

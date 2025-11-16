@@ -1,6 +1,7 @@
 package org.deus_ex_java.util;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -34,6 +35,7 @@ import java.util.function.Supplier;
  *            value
  * @param <V> type of the cached computed value
  **/
+@NullMarked
 public final class Memoizer<K, V> {
 
   /**
@@ -49,20 +51,19 @@ public final class Memoizer<K, V> {
    * @return lazy {@link Supplier<T>} that creates the instance of {@code t} upon the first call to
    *     {@link Supplier#get()}.
    */
-  @NotNull
   public static <T> Supplier<T> lazyInstantiation(
-      @NotNull Supplier<T> executeExactlyOnceSupplierT
+      Supplier<@Nullable T> executeExactlyOnceSupplierT
   ) {
     Objects.requireNonNull(executeExactlyOnceSupplierT);
 
     return new Supplier<>() {
       private boolean isInitialized;
-      private Supplier<T> supplierT = this::executeExactlyOnce;
+      private Supplier<@Nullable T> supplierT = this::executeExactlyOnce;
 
-      private synchronized T executeExactlyOnce() {
+      private synchronized @Nullable T executeExactlyOnce() {
         if (!isInitialized) {
           try {
-            var t = executeExactlyOnceSupplierT.get();
+            T t = executeExactlyOnceSupplierT.get();
             supplierT = () -> t;
           } catch (Exception exception) {
             supplierT = () -> null;
@@ -73,7 +74,7 @@ public final class Memoizer<K, V> {
         return supplierT.get();
       }
 
-      public T get() {
+      public @Nullable T get() {
         return supplierT.get();
       }
     };
@@ -104,7 +105,6 @@ public final class Memoizer<K, V> {
    * @return an instance of {@link Memoizer} without a default {@code deriveVFromK} function and doesn't maintain
    *     insertion order of the keys
    */
-  @NotNull
   public static <K, V> Memoizer<K, V> from() {
     return new Memoizer<>(
         Optional.empty(),
@@ -121,9 +121,8 @@ public final class Memoizer<K, V> {
    *     function to be overridden by the {@link #get(Object, Function)} method, and doesn't maintain insertion order of
    *     the keys
    */
-  @NotNull
   public static <K, V> Memoizer<K, V> from(
-      @NotNull Function<K, V> defaultDeriveVFromK
+      Function<K, V> defaultDeriveVFromK
   ) {
     return new Memoizer<>(
         Optional.of(
@@ -145,10 +144,9 @@ public final class Memoizer<K, V> {
    *     the function to be overridden by the {@link #get(Object, Function)} method, and doesn't maintain insertion
    *     order of the keys
    */
-  @NotNull
   public static <K, V> Memoizer<K, V> from(
-      @NotNull Function<K, V> defaultDeriveVFromK,
-      @NotNull Memoizer.MethodOverride methodOverride
+      Function<K, V> defaultDeriveVFromK,
+      Memoizer.MethodOverride methodOverride
   ) {
     return new org.deus_ex_java.util.Memoizer<>(
         Optional.of(Map.entry(Objects.requireNonNull(defaultDeriveVFromK), methodOverride)),
@@ -164,9 +162,8 @@ public final class Memoizer<K, V> {
    * @return an instance of {@link Memoizer} without a default {@code deriveVFromK} function, and optionally maintain
    *     insertion order of the keys
    */
-  @NotNull
   public static <K, V> Memoizer<K, V> from(
-      @NotNull Memoizer.InsertionOrder insertionOrder
+      Memoizer.InsertionOrder insertionOrder
   ) {
     return new org.deus_ex_java.util.Memoizer<>(
         Optional.empty(),
@@ -187,11 +184,10 @@ public final class Memoizer<K, V> {
    *     this default function to be overridden by the {@link #get(Object, Function)} method, and optionally maintaining
    *     the insertion order of the keys.
    */
-  @NotNull
   public static <K, V> Memoizer<K, V> from(
-      @NotNull Function<K, V> defaultDeriveVFromK,
-      @NotNull Memoizer.MethodOverride methodOverride,
-      @NotNull Memoizer.InsertionOrder insertionOrder
+      Function<K, V> defaultDeriveVFromK,
+      Memoizer.MethodOverride methodOverride,
+      Memoizer.InsertionOrder insertionOrder
   ) {
     return new org.deus_ex_java.util.Memoizer<>(
         Optional.of(Map.entry(Objects.requireNonNull(defaultDeriveVFromK), methodOverride)),
@@ -200,8 +196,8 @@ public final class Memoizer<K, V> {
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private Memoizer(
-      @NotNull Optional<Entry<Function<K, V>, Memoizer.MethodOverride>> optionalDefaultDeriveVFromKAndMethodOverride,
-      @NotNull Memoizer.InsertionOrder insertionOrder
+      Optional<Entry<Function<K, V>, Memoizer.MethodOverride>> optionalDefaultDeriveVFromKAndMethodOverride,
+      Memoizer.InsertionOrder insertionOrder
   ) {
     this.optionalDefaultDeriveVFromKAndMethodOverride = optionalDefaultDeriveVFromKAndMethodOverride;
     this.insertionOrder = insertionOrder;
@@ -219,7 +215,6 @@ public final class Memoizer<K, V> {
    *     {@code overrideDeriveVFromK} function, otherwise the same method call will throw an
    *     {@link UnsupportedOperationException}
    */
-  @NotNull
   public Memoizer.MethodOverride getMethodOverride() {
     return this.optionalDefaultDeriveVFromKAndMethodOverride
         .map(Entry::getValue)
@@ -233,16 +228,14 @@ public final class Memoizer<K, V> {
    * @return if {@link Memoizer.InsertionOrder#RETAIN}, indicates {@link #keySet} returns a {@link Set} of the keys
    *     currently managed, and in temporal (insertion) order, otherwise encounter order is unspecified
    */
-  @NotNull
   public Memoizer.InsertionOrder getInsertionOrder() {
     return this.insertionOrder;
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @NotNull
   private V get(
-      @NotNull K k,
-      @NotNull Optional<Function<K, V>> optionalOverrideDeriveVFromK
+      K k,
+      Optional<Function<K, V>> optionalOverrideDeriveVFromK
   ) {
     var result = this.vByK.get(Objects.requireNonNull(k, "k must not be null"));
     if (result == null) {
@@ -264,7 +257,7 @@ public final class Memoizer<K, V> {
         synchronized (vByKWriteLock) {
           result = this.vByK.get(k);
           if (result == null) {
-            var oldV = this.vByK.put(k, v);
+            V oldV = this.vByK.put(k, v);
             result = v;
             if (oldV != null) {
               System.out.println("Memoizer.get() internal - SHOULD NEVER GET HERE");
@@ -287,8 +280,7 @@ public final class Memoizer<K, V> {
    * @throws IllegalArgumentException if no value has been associated with {@code k}
    * @throws NullPointerException     if the value returned by the *DeriveVFromF function is {@code null}
    */
-  @NotNull
-  public V get(@NotNull K k) {
+  public V get(K k) {
     return get(k, Optional.empty());
   }
 
@@ -309,10 +301,9 @@ public final class Memoizer<K, V> {
    *                                       {@link Memoizer.MethodOverride#INHIBITED}
    * @throws NullPointerException          if the value returned by the {@code *DeriveVFromF} function is {@code null}
    */
-  @NotNull
   public V get(
-      @NotNull K k,
-      @NotNull Function<K, V> overrideDeriveVFromK
+      K k,
+      Function<K, V> overrideDeriveVFromK
   ) {
     if (this.getMethodOverride() == Memoizer.MethodOverride.INHIBITED) {
       throw new UnsupportedOperationException(
@@ -329,7 +320,6 @@ public final class Memoizer<K, V> {
    * @return a {@link Set<K>} of keys currently managed, and is in temporal (insertion) order when
    *     {@link #getInsertionOrder()} returns {@link Memoizer.InsertionOrder#RETAIN}
    */
-  @NotNull
   public Set<K> keySet() {
     return Collections.unmodifiableSet(this.vByK.keySet());
   }

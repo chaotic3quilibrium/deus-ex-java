@@ -2,7 +2,7 @@ package org.deus_ex_java.lang;
 
 import org.deus_ex_java.util.ArraysOps;
 import org.deus_ex_java.util.SetsOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * Utility class providing static methods to create and work with {@link Integer} instances.
  */
+@NullMarked
 public final class IntegersOps {
 
   private IntegersOps() {
@@ -22,7 +23,6 @@ public final class IntegersOps {
    * @param bits the value from which to extract the list of indexes
    * @return a {@link Set} containing the index for each bit set in {@code bits}
    */
-  @NotNull
   public static Set<Integer> findSetBitIndices(int bits) {
     if (bits == 0) {
       return Set.of();

@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.Objects;
 import java.util.function.BiPredicate;
 
@@ -7,6 +9,7 @@ import java.util.function.BiPredicate;
  * Enables the providing of a {@link BiPredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface BiPredicateChecked<T, U, EX extends Exception> {
 
   /**

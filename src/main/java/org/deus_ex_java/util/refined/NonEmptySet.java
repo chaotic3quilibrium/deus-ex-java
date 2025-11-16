@@ -4,7 +4,7 @@ import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.CollectionsOps;
 import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Optional;
 import java.util.Set;
@@ -19,6 +19,7 @@ import java.util.stream.Stream;
  *
  * @param set a {@link Set} that is non-empty and unmodifiable
  */
+@NullMarked
 public record NonEmptySet<T>(Set<T> set) {
 
   /**
@@ -35,9 +36,8 @@ public record NonEmptySet<T>(Set<T> set) {
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  @NotNull
   public static <T> Optional<ParametersValidationException> validate(
-      @NotNull Set<T> set
+      Set<T> set
   ) {
     var preconditionFailureMessages = Stream.of(
             set.isEmpty()
@@ -69,9 +69,8 @@ public record NonEmptySet<T>(Set<T> set) {
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
    *     {@link #validate(Set)} method
    */
-  @NotNull
   public static <T> Either<ParametersValidationException, NonEmptySet<T>> from(
-      @NotNull Set<T> set
+      Set<T> set
   ) {
     return TryCatchesOps.wrap(
         () ->

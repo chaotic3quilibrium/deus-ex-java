@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.DoubleUnaryOperator;
 
@@ -8,6 +8,7 @@ import java.util.function.DoubleUnaryOperator;
  * Enables the providing of a {@link DoubleUnaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface DoubleUnaryOperatorChecked<EX extends Exception> {
   /**
    * Applies this operator to the given operand.
@@ -26,9 +27,8 @@ public interface DoubleUnaryOperatorChecked<EX extends Exception> {
    * @return a composed operator that first applies the {@code before} operator and then applies this operator
    * @see #andThen(DoubleUnaryOperatorChecked)
    */
-  @NotNull
   default DoubleUnaryOperatorChecked<EX> compose(
-      @NotNull DoubleUnaryOperatorChecked<? extends EX> before
+      DoubleUnaryOperatorChecked<? extends EX> before
   ) {
     return (double v) ->
         applyAsDouble(before.applyAsDouble(v));
@@ -43,9 +43,8 @@ public interface DoubleUnaryOperatorChecked<EX extends Exception> {
    * @return a composed operator that first applies this operator and then applies the {@code after} operator
    * @see #compose(DoubleUnaryOperatorChecked)
    */
-  @NotNull
   default DoubleUnaryOperatorChecked<EX> andThen(
-      @NotNull DoubleUnaryOperatorChecked<? extends EX> after
+      DoubleUnaryOperatorChecked<? extends EX> after
   ) {
     return (double t) ->
         after.applyAsDouble(applyAsDouble(t));
@@ -56,7 +55,6 @@ public interface DoubleUnaryOperatorChecked<EX extends Exception> {
    *
    * @return a unary operator that always returns its input argument
    */
-  @NotNull
   static <EX extends Exception> DoubleUnaryOperatorChecked<EX> identity() {
     return t ->
         t;

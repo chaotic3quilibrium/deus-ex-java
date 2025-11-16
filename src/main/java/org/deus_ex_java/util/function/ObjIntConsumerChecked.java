@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.ObjIntConsumer;
 
@@ -8,6 +8,7 @@ import java.util.function.ObjIntConsumer;
  * Enables the providing of a {@link ObjIntConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface ObjIntConsumerChecked<T, EX extends Exception> {
 
   /**
@@ -16,5 +17,5 @@ public interface ObjIntConsumerChecked<T, EX extends Exception> {
    * @param t     the first input argument
    * @param value the second input argument
    */
-  void accept(@NotNull T t, int value) throws EX;
+  void accept(T t, int value) throws EX;
 }

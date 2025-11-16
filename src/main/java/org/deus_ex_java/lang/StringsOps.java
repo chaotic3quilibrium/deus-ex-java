@@ -2,14 +2,15 @@ package org.deus_ex_java.lang;
 
 import org.deus_ex_java.lang.refined.NonBlankString;
 import org.deus_ex_java.lang.refined.NonEmptyString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 
 /**
  * Utility class providing static methods to create {@link String} instances.
  */
+@NullMarked
 public final class StringsOps {
 
   private StringsOps() {
@@ -27,7 +28,6 @@ public final class StringsOps {
    * @param string possibly {@code null} {@link String} to reify to make {@code null} safe
    * @return an empty {@link String} of {@code ""}, if {@code string} is {@code null}, otherwise returns {@code string}
    */
-  @NotNull
   public static String nullToEmpty(@Nullable String string) {
     return string != null
         ? string

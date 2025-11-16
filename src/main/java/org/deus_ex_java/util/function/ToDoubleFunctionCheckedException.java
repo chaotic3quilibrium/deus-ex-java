@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.ToDoubleFunction;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.ToDoubleFunction;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface ToDoubleFunctionCheckedException<T> extends ToDoubleFunctionChecked<T, Exception> {
 
 }

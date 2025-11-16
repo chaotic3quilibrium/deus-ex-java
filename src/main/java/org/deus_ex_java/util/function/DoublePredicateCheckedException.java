@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.DoublePredicate;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.DoublePredicate;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface DoublePredicateCheckedException extends DoublePredicateChecked<Exception> {
 
 }

@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple4;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -17,6 +17,7 @@ import java.util.function.Function;
  * @param <R> the type of the result of the function
  */
 @FunctionalInterface
+@NullMarked
 public interface Function4<A, B, C, D, R> {
 
   /**
@@ -28,11 +29,11 @@ public interface Function4<A, B, C, D, R> {
    * @param d the fourth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d);
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d);
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -43,15 +44,14 @@ public interface Function4<A, B, C, D, R> {
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function4<A, B, C, D, V> andThen(
-      @NotNull Function<? super R, ? extends V> after
+      Function<? super R, ? extends V> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d) ->
+        A a,
+        B b,
+        C c,
+        D d) ->
         after.apply(apply(a, b, c, d));
   }
 
@@ -63,9 +63,8 @@ public interface Function4<A, B, C, D, R> {
    * @return a {@link Function4} where the input parameters are extracted from a {@link Function} which accepts a
    *     {@link Tuple4}
    */
-  @NotNull
   default Function4<A, B, C, D, R> untupled(
-      @NotNull Function<
+      Function<
           Tuple4<
               ? super A,
               ? super B,
@@ -75,10 +74,10 @@ public interface Function4<A, B, C, D, R> {
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d) ->
+        A a,
+        B b,
+        C c,
+        D d) ->
         function.apply(
             new Tuple4<>(a, b, c, d));
   }
@@ -88,9 +87,8 @@ public interface Function4<A, B, C, D, R> {
    *
    * @return a {@link Function} accepting a {@link Tuple4} of the original input parameters
    */
-  @NotNull
   default Function<Tuple4<A, B, C, D>, R> tupled() {
-    return (@NotNull Tuple4<A, B, C, D> tuple4) ->
+    return (Tuple4<A, B, C, D> tuple4) ->
         apply(
             tuple4._1(),
             tuple4._2(),

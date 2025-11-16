@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function2} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function2Checked<A, B, R, EX extends Exception> {
 
   /**
@@ -21,9 +22,8 @@ public interface Function2Checked<A, B, R, EX extends Exception> {
    * @return a {@link Function2Checked} wrapper around a {@link BiFunctionChecked} instance
    * @see FunctionsOps#to(Function2Checked) FunctionsOps.to(Function2Checked) for the inverted version of this method
    */
-  @NotNull
   static <A, B, R, EX extends Exception> Function2Checked<A, B, R, EX> of(
-      @NotNull BiFunctionChecked<? super A, ? super B, ? extends R, ? extends EX> biFunctionChecked
+      BiFunctionChecked<? super A, ? super B, ? extends R, ? extends EX> biFunctionChecked
   ) {
     return biFunctionChecked::apply;
   }
@@ -35,9 +35,9 @@ public interface Function2Checked<A, B, R, EX extends Exception> {
    * @param b the second function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b) throws EX;
+  R apply(
+      A a,
+      B b) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -49,13 +49,12 @@ public interface Function2Checked<A, B, R, EX extends Exception> {
    * @return a composed function that first applies this function and then applies the {@code after} function
    * @throws NullPointerException if after is null
    */
-  @NotNull
   default <V> Function2Checked<A, B, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b) ->
+        A a,
+        B b) ->
         after.apply(apply(a, b));
   }
 
@@ -65,11 +64,10 @@ public interface Function2Checked<A, B, R, EX extends Exception> {
    *
    * @param functionChecked target function instance to wrap
    * @return a {@link Function2Checked} where the input parameters are extracted from a {@link FunctionChecked} which
-   * accepts a {@link Tuple2}
+   *     accepts a {@link Tuple2}
    */
-  @NotNull
   default Function2Checked<A, B, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple2<
               ? super A,
               ? super B>,
@@ -77,8 +75,8 @@ public interface Function2Checked<A, B, R, EX extends Exception> {
           > functionChecked
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b) ->
+        A a,
+        B b) ->
         functionChecked.apply(
             new Tuple2<>(a, b));
   }
@@ -88,9 +86,8 @@ public interface Function2Checked<A, B, R, EX extends Exception> {
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple2} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple2<A, B>, R, EX> tupled() {
-    return (@NotNull Tuple2<A, B> tuple2) ->
+    return (Tuple2<A, B> tuple2) ->
         apply(
             tuple2._1(),
             tuple2._2());

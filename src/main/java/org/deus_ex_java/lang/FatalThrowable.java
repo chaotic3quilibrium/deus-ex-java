@@ -1,6 +1,6 @@
 package org.deus_ex_java.lang;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.Serial;
 import java.util.Objects;
@@ -13,6 +13,7 @@ import java.util.Optional;
  * <p>
  * This class is the fallback for a {@link WrappedCheckedException} which is inhibited from wrapping a fatal exception.
  */
+@NullMarked
 public final class FatalThrowable extends RuntimeException {
   @Serial
   private static final long serialVersionUID = -3037986701314233065L;
@@ -30,7 +31,7 @@ public final class FatalThrowable extends RuntimeException {
    *     {@link ThreadDeath}, {@link InterruptedException}, or {@link LinkageError}
    */
   public static boolean isFatalThrowable(
-      @NotNull Throwable throwable
+      Throwable throwable
   ) {
     return (throwable instanceof VirtualMachineError) ||
         (throwable instanceof ThreadDeath) ||
@@ -47,7 +48,7 @@ public final class FatalThrowable extends RuntimeException {
    *     {@link FatalThrowable} containing the {@code throwable} as its cause
    */
   public static Optional<FatalThrowable> filterToFatalThrowable(
-      @NotNull Throwable throwable
+      Throwable throwable
   ) {
     return !isFatalThrowable(throwable)
         ? Optional.empty()
@@ -81,8 +82,8 @@ public final class FatalThrowable extends RuntimeException {
    * Intentionally suppressed to ensure it can only be instantiated via the static factory methods above.
    */
   private FatalThrowable(
-      @NotNull String message,
-      @NotNull Throwable cause
+      String message,
+      Throwable cause
   ) {
     super(message, Objects.requireNonNull(cause));
   }

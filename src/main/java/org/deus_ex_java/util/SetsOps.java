@@ -1,8 +1,8 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.util.refined.NonEmptySet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Set} instances.
  */
+@NullMarked
 public final class SetsOps {
 
   private SetsOps() {
@@ -28,7 +29,6 @@ public final class SetsOps {
    * @param <T> the type of instances contained in the {@link Set}
    * @return an empty {@link Set} using {@link Set#of}, if {@code ts} is {@code null}, otherwise returns {@code ts}
    */
-  @NotNull
   public static <T> Set<T> nullToEmpty(@Nullable Set<T> ts) {
     return ts != null
         ? ts
@@ -43,10 +43,9 @@ public final class SetsOps {
    * @param <T>   the type of instances contained in the set
    * @return an unmodifiable unordered set with the {@code value} added
    */
-  @NotNull
   public static <T> Set<T> addItem(
-      @NotNull Set<T> set,
-      @NotNull T value
+      Set<T> set,
+      T value
   ) {
     if (!set.isEmpty()) {
       var result = new HashSet<>(set);
@@ -66,10 +65,9 @@ public final class SetsOps {
    * @param <T>   the type of instances contained in the set
    * @return an unmodifiable <u><i>ordered</i></u> set with the {@code value} appended
    */
-  @NotNull
   public static <T> Set<T> appendItem(
-      @NotNull Set<T> set,
-      @NotNull T value
+      Set<T> set,
+      T value
   ) {
     if (!set.isEmpty()) {
       var result = new LinkedHashSet<>(set);
@@ -89,10 +87,9 @@ public final class SetsOps {
    * @return unmodifiable unordered set consisting of each set (filtered to non-null) from sets added together
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <T> Set<T> addSets(
-      @NotNull Set<T>... sets
+      Set<T>... sets
   ) {
     if (sets.length > 0) {
       var result = new HashSet<T>();
@@ -128,10 +125,9 @@ public final class SetsOps {
    *     together
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <T> Set<T> appendSets(
-      @NotNull Set<T>... sets
+      Set<T>... sets
   ) {
     if (sets.length > 0) {
       var result = new LinkedHashSet<T>();
@@ -161,9 +157,8 @@ public final class SetsOps {
    * @param <T>        the type of the instances
    * @return an unmodifiable unordered {@link Set} filtered of {@code null}s
    */
-  @NotNull
   public static <T> Set<T> nullSanitize(
-      @NotNull Collection<T> collection
+      Collection<@Nullable T> collection
   ) {
     return nullSanitize(collection.stream());
   }
@@ -175,9 +170,8 @@ public final class SetsOps {
    * @param <T>    the type of the instances
    * @return an unmodifiable unordered {@link Set} filtered of {@code null}s
    */
-  @NotNull
   public static <T> Set<T> nullSanitize(
-      @NotNull Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
     return stream
         .filter(t ->
@@ -192,9 +186,8 @@ public final class SetsOps {
    * @param <T>        the type of the instances
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s.
    */
-  @NotNull
   public static <T> Set<T> toSetOrdered(
-      @NotNull Collection<T> collection
+      Collection<@Nullable T> collection
   ) {
     return toSetOrdered(collection.stream());
   }
@@ -206,13 +199,15 @@ public final class SetsOps {
    * @param <T>    the type of the instances
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s
    */
-  @NotNull
   public static <T> Set<T> toSetOrdered(
-      @NotNull Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
+    //noinspection RedundantCast
     var set = stream
         .filter(t ->
             !Objects.isNull(t))
+        .map(t ->
+            (T) t)
         .collect(Collectors.toCollection(LinkedHashSet::new));
 
     return !set.isEmpty()
@@ -229,9 +224,8 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <T> Set<T> reverse(
-      Set<T> ts
+      Set<@Nullable T> ts
   ) {
     if (!ts.isEmpty()) {
 
@@ -250,9 +244,8 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <T> Set<T> reverse(
-      Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
     var mutableList = stream
         .filter(t ->
@@ -412,10 +405,9 @@ public final class SetsOps {
    * @throws NullPointerException if {@code leftTs} or {@code rightTs} contains any {@code null}s
    */
   @SuppressWarnings("unchecked")
-  @NotNull
   public static <T> Map<SetPairViewKey, Set<T>> contrastSetPair(
-      @NotNull Set<T> leftTs,
-      @NotNull Set<T> rightTs
+      Set<T> leftTs,
+      Set<T> rightTs
   ) {
     if (!leftTs.isEmpty()) {
       if (!rightTs.isEmpty()) {
@@ -518,10 +510,9 @@ public final class SetsOps {
    *                                  {@code key}(s) causing the collision
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <T> Set<T> ofOrdered(
-      @NotNull T... ts
+      T... ts
   ) {
     if (ts.length > 0) {
       var tsSansNulls = Arrays.stream(ts)

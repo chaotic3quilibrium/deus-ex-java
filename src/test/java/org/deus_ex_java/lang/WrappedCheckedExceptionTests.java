@@ -3,9 +3,9 @@ package org.deus_ex_java.lang;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WrappedCheckedExceptionTests {
   @Test
@@ -32,16 +32,13 @@ public class WrappedCheckedExceptionTests {
   }
 
   @Test
-  public void testThrowsIllegalArgumentExceptionOnNullCause() {
+  public void testThrowsNullPointerExceptionOnNullCause() {
     @SuppressWarnings({"ThrowableNotThrown", "DataFlowIssue"})
-    var illegalArgumentException = assertThrows(
-        IllegalArgumentException.class,
+    var nullPointerException = assertThrows(
+        NullPointerException.class,
         () ->
             new WrappedCheckedException(null));
-    //two different possible message due to IntelliJ's and Maven's test plugin having different prefixes
-    var errorMessages = Set.of(
-        "NotNull annotated argument 0 of org/deus_ex_java/lang/WrappedCheckedException.<init> must not be null",
-        "Argument for @NotNull parameter 'cause' of org/deus_ex_java/lang/WrappedCheckedException.<init> must not be null");
-    assertTrue(errorMessages.contains(illegalArgumentException.getMessage()));
   }
+
+  //TODO: must test the FatalThrowable pathway
 }

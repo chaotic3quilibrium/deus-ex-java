@@ -5,12 +5,16 @@ import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.function.SupplierCheckedException;
 import org.deus_ex_java.util.function.VoidSupplier;
 import org.deus_ex_java.util.function.VoidSupplierCheckedException;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * Utility class providing static methods to reify try/catch <em>statements</em> into expressions.
+ */
+@NullMarked
 public final class TryCatchesOps {
 
   /**
@@ -33,10 +37,9 @@ public final class TryCatchesOps {
    *     otherwise, the unrecognized exception is re-thrown
    */
   @SafeVarargs
-  @NotNull
   public static <L extends Throwable> Optional<L> wrap(
-      @NotNull VoidSupplier voidSupplier,
-      @NotNull Class<L>... throwableClasses
+      VoidSupplier voidSupplier,
+      Class<L>... throwableClasses
   ) {
     try {
       voidSupplier.execute();
@@ -69,9 +72,8 @@ public final class TryCatchesOps {
    *     {@link Throwable} exception is thrown and the exception is a {@link RuntimeException}, the exception is
    *     returned within the {@link Optional#of}, otherwise, the unrecognized exception is re-thrown
    */
-  @NotNull
   public static Optional<RuntimeException> wrap(
-      @NotNull VoidSupplier voidSupplier
+      VoidSupplier voidSupplier
   ) {
     return wrap(voidSupplier, RuntimeException.class);
   }
@@ -95,10 +97,9 @@ public final class TryCatchesOps {
    * @return a well-defined instance of {@link Either}
    */
   @SafeVarargs
-  @NotNull
   public static <L extends Throwable, R> Either<L, R> wrap(
-      @NotNull Supplier<R> supplier,
-      @NotNull Class<L>... throwableClasses
+      Supplier<R> supplier,
+      Class<L>... throwableClasses
   ) {
     try {
       return Either.right(supplier.get());
@@ -133,9 +134,8 @@ public final class TryCatchesOps {
    *     {@link RuntimeException}, the exception is returned within the left side of an {@link Either}, otherwise, the
    *     exception is re-thrown
    */
-  @NotNull
   public static <R> Either<RuntimeException, R> wrap(
-      @NotNull Supplier<R> supplier
+      Supplier<R> supplier
   ) {
     return wrap(supplier, RuntimeException.class);
   }
@@ -166,10 +166,9 @@ public final class TryCatchesOps {
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   @SafeVarargs
-  @NotNull
   public static <L extends Throwable> Optional<L> wrapCheckedException(
-      @NotNull VoidSupplierCheckedException voidSupplierCheckedException,
-      @NotNull Class<L>... throwableClasses
+      VoidSupplierCheckedException voidSupplierCheckedException,
+      Class<L>... throwableClasses
   ) {
     try {
       voidSupplierCheckedException.execute();
@@ -214,9 +213,8 @@ public final class TryCatchesOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static Optional<RuntimeException> wrapCheckedException(
-      @NotNull VoidSupplierCheckedException voidSupplierCheckedException
+      VoidSupplierCheckedException voidSupplierCheckedException
   ) {
     return wrapCheckedException(voidSupplierCheckedException, RuntimeException.class);
   }
@@ -248,10 +246,9 @@ public final class TryCatchesOps {
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   @SafeVarargs
-  @NotNull
   public static <L extends Throwable, R> Either<L, R> wrapCheckedException(
-      @NotNull SupplierCheckedException<R> supplierCheckedException,
-      @NotNull Class<L>... throwableClasses
+      SupplierCheckedException<R> supplierCheckedException,
+      Class<L>... throwableClasses
   ) {
     try {
       return Either.right(supplierCheckedException.get());
@@ -294,9 +291,8 @@ public final class TryCatchesOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <R> Either<Exception, R> wrapCheckedException(
-      @NotNull SupplierCheckedException<R> supplierCheckedException
+      SupplierCheckedException<R> supplierCheckedException
   ) {
     return wrapCheckedException(supplierCheckedException, Exception.class);
   }

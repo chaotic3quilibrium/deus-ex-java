@@ -4,7 +4,7 @@ import org.deus_ex_java.lang.FatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.deus_ex_java.util.tuple.Tuple2;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.concurrent.Callable;
 import java.util.function.*;
@@ -19,6 +19,7 @@ import java.util.stream.Stream;
  * href="https://docs.google.com/spreadsheets/d/1Xljq5x9alDwSHZTY1nkBxDAwF4MKX5x2zy6XD-x2zVk/edit?usp=sharing">Java
  * Lambda Reference Table V2</a>
  */
+@NullMarked
 public final class FunctionsOps {
 
   private FunctionsOps() {
@@ -28,14 +29,12 @@ public final class FunctionsOps {
   /**
    * A universal and immutable FunctionalInterface instance of VoidSupplier.
    */
-  @NotNull
   public static final VoidSupplier NO_OP = () -> {
   };
 
   /**
    * A universal and immutable FunctionalInterface instance of VoidSupplierCheckedException.
    */
-  @NotNull
   public static final VoidSupplierCheckedException NO_OP_CHECKED_EXCEPTION = () -> {
   };
 
@@ -49,7 +48,7 @@ public final class FunctionsOps {
    */
   public static void executeSideEffectNTimes(
       int nTimes,
-      @NotNull VoidSupplierCheckedException justDoItWithNoInputParametersAndThenIgnoreTheResult
+      VoidSupplierCheckedException justDoItWithNoInputParametersAndThenIgnoreTheResult
   ) {
     Stream
         .generate(() -> true)
@@ -65,9 +64,8 @@ public final class FunctionsOps {
    * @return a {@link Runnable} wrapper around a {@link VoidSupplier} instance
    * @see VoidSupplier#of(Runnable) VoidSupplier.of(Runnable) for the inverted version of this method
    */
-  @NotNull
   public static Runnable to(
-      @NotNull VoidSupplier voidSupplier
+      VoidSupplier voidSupplier
   ) {
     return voidSupplier::execute;
   }
@@ -81,9 +79,8 @@ public final class FunctionsOps {
    * @see SupplierCheckedException#of(Callable) SupplierCheckedException.of(Callable) for the inverted version of this
    *     method
    */
-  @NotNull
   public static <R> Callable<R> to(
-      @NotNull SupplierCheckedException<? extends R> supplierCheckedException
+      SupplierCheckedException<? extends R> supplierCheckedException
   ) {
     return supplierCheckedException::get;
   }
@@ -98,9 +95,8 @@ public final class FunctionsOps {
    * @return a {@link BiFunction} wrapper around a {@link Function2} instance
    * @see Function2#of(BiFunction) Function2.of(BiFunction) for the inverted version of this method
    */
-  @NotNull
   public static <A, B, R> BiFunction<A, B, R> to(
-      @NotNull Function2<? super A, ? super B, ? extends R> function2
+      Function2<? super A, ? super B, ? extends R> function2
   ) {
     return function2::apply;
   }
@@ -117,9 +113,8 @@ public final class FunctionsOps {
    * @see Function2Checked#of(BiFunctionChecked) Function2Checked.of(BiFunctionChecked) for the inverted version of this
    *     method
    */
-  @NotNull
   public static <A, B, R, EX extends Exception> BiFunctionChecked<A, B, R, EX> to(
-      @NotNull Function2Checked<? super A, ? super B, ? extends R, ? extends EX> function2Checked
+      Function2Checked<? super A, ? super B, ? extends R, ? extends EX> function2Checked
   ) {
     return function2Checked::apply;
   }
@@ -135,9 +130,8 @@ public final class FunctionsOps {
    * @see Function2CheckedException#of(BiFunctionCheckedException)
    *     Function2CheckedException.of(BiFunctionCheckedException) for the inverted version of this method
    */
-  @NotNull
   public static <A, B, R> BiFunctionCheckedException<A, B, R> to(
-      @NotNull Function2CheckedException<? super A, ? super B, ? extends R> function2CheckedException
+      Function2CheckedException<? super A, ? super B, ? extends R> function2CheckedException
   ) {
     return function2CheckedException::apply;
   }
@@ -156,11 +150,10 @@ public final class FunctionsOps {
    *     computed value of type {@code R}, which was produced from one of the two supplied functions, {@code fThen} or
    *     {@code fElse}
    */
-  @NotNull
   public static <R> Supplier<Tuple2<Boolean, R>> ifThenElse(
-      @NotNull BooleanSupplier fIf,
-      @NotNull Supplier<R> fThen,
-      @NotNull Supplier<R> fElse
+      BooleanSupplier fIf,
+      Supplier<R> fThen,
+      Supplier<R> fElse
   ) {
     return () -> {
       var isThen = fIf.getAsBoolean();
@@ -187,11 +180,10 @@ public final class FunctionsOps {
    *     function and the computed value of type {@code R}, which was produced from one of the two supplied functions,
    *     {@code fceThen} or {@code fceElse}
    */
-  @NotNull
   public static <R> SupplierCheckedException<Tuple2<R, Boolean>> ifThenElseCheckedException(
-      @NotNull BooleanSupplierCheckedException fceIf,
-      @NotNull SupplierCheckedException<R> fceThen,
-      @NotNull SupplierCheckedException<R> fceElse
+      BooleanSupplierCheckedException fceIf,
+      SupplierCheckedException<R> fceThen,
+      SupplierCheckedException<R> fceElse
   ) {
     return () -> {
       var isThen = fceIf.getAsBoolean();
@@ -217,9 +209,8 @@ public final class FunctionsOps {
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    */
-  @NotNull
   public static <T, U> BiConsumer<T, U> wrapCheckedException(
-      @NotNull BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT
+      BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT
   ) {
     return wrapCheckedException(biConsumerCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -241,10 +232,9 @@ public final class FunctionsOps {
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
    */
-  @NotNull
   public static <EX extends RuntimeException, T, U> BiConsumer<T, U> wrapCheckedException(
-      @NotNull BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) -> {
       try {
@@ -271,9 +261,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T, U, R> BiFunction<T, U, R> wrapCheckedException(
-      @NotNull BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU
+      BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU
   ) {
     return wrapCheckedException(biFunctionCheckedExceptionTAndU, WrappedCheckedException::new);
   }
@@ -298,10 +287,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T, U, R> BiFunction<T, U, R> wrapCheckedException(
-      @NotNull BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -325,9 +313,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T> BinaryOperator<T> wrapCheckedException(
-      @NotNull BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT
+      BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT
   ) {
     return wrapCheckedException(binaryOperatorCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -351,10 +338,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T> BinaryOperator<T> wrapCheckedException(
-      @NotNull BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t1, t2) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -378,9 +364,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T, U> BiPredicate<T, U> wrapCheckedException(
-      @NotNull BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT
+      BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT
   ) {
     return wrapCheckedException(biPredicateCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -404,10 +389,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T, U> BiPredicate<T, U> wrapCheckedException(
-      @NotNull BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -430,9 +414,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T> Consumer<T> wrapCheckedException(
-      @NotNull ConsumerCheckedException<T> consumerCheckedExceptionT
+      ConsumerCheckedException<T> consumerCheckedExceptionT
   ) {
     return wrapCheckedException(consumerCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -455,10 +438,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T> Consumer<T> wrapCheckedException(
-      @NotNull ConsumerCheckedException<T> consumerCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      ConsumerCheckedException<T> consumerCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) -> {
       try {
@@ -484,9 +466,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T, R> Function<T, R> wrapCheckedException(
-      @NotNull FunctionCheckedException<T, R> functionCheckedExceptionT
+      FunctionCheckedException<T, R> functionCheckedExceptionT
   ) {
     return wrapCheckedException(functionCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -510,10 +491,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T, R> Function<T, R> wrapCheckedException(
-      @NotNull FunctionCheckedException<T, R> functionCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      FunctionCheckedException<T, R> functionCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -539,9 +519,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, R> Function2<A, B, R> wrapCheckedException(
-      @NotNull Function2CheckedException<A, B, R> function2CheckedException
+      Function2CheckedException<A, B, R> function2CheckedException
   ) {
     return wrapCheckedException(function2CheckedException, WrappedCheckedException::new);
   }
@@ -566,10 +545,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, R> Function2<A, B, R> wrapCheckedException(
-      @NotNull Function2CheckedException<A, B, R> function2CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function2CheckedException<A, B, R> function2CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -595,9 +573,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, R> Function3<A, B, C, R> wrapCheckedException(
-      @NotNull Function3CheckedException<A, B, C, R> function3CheckedException
+      Function3CheckedException<A, B, C, R> function3CheckedException
   ) {
     return wrapCheckedException(function3CheckedException, WrappedCheckedException::new);
   }
@@ -623,10 +600,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, R> Function3<A, B, C, R> wrapCheckedException(
-      @NotNull Function3CheckedException<A, B, C, R> function3CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function3CheckedException<A, B, C, R> function3CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -653,9 +629,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, R> Function4<A, B, C, D, R> wrapCheckedException(
-      @NotNull Function4CheckedException<A, B, C, D, R> function4CheckedException
+      Function4CheckedException<A, B, C, D, R> function4CheckedException
   ) {
     return wrapCheckedException(function4CheckedException, WrappedCheckedException::new);
   }
@@ -682,10 +657,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, R> Function4<A, B, C, D, R> wrapCheckedException(
-      @NotNull Function4CheckedException<A, B, C, D, R> function4CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function4CheckedException<A, B, C, D, R> function4CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -713,9 +687,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, E, R> Function5<A, B, C, D, E, R> wrapCheckedException(
-      @NotNull Function5CheckedException<A, B, C, D, E, R> function5CheckedException
+      Function5CheckedException<A, B, C, D, E, R> function5CheckedException
   ) {
     return wrapCheckedException(function5CheckedException, WrappedCheckedException::new);
   }
@@ -743,10 +716,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, R> Function5<A, B, C, D, E, R> wrapCheckedException(
-      @NotNull Function5CheckedException<A, B, C, D, E, R> function5CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function5CheckedException<A, B, C, D, E, R> function5CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -775,9 +747,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, E, F, R> Function6<A, B, C, D, E, F, R> wrapCheckedException(
-      @NotNull Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException
+      Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException
   ) {
     return wrapCheckedException(function6CheckedException, WrappedCheckedException::new);
   }
@@ -806,10 +777,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, R> Function6<A, B, C, D, E, F, R> wrapCheckedException(
-      @NotNull Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -839,9 +809,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, R> Function7<A, B, C, D, E, F, G, R> wrapCheckedException(
-      @NotNull Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException
+      Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException
   ) {
     return wrapCheckedException(function7CheckedException, WrappedCheckedException::new);
   }
@@ -871,10 +840,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, R> Function7<A, B, C, D, E, F, G, R> wrapCheckedException(
-      @NotNull Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -905,9 +873,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, R> Function8<A, B, C, D, E, F, G, H, R> wrapCheckedException(
-      @NotNull Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException
+      Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException
   ) {
     return wrapCheckedException(function8CheckedException, WrappedCheckedException::new);
   }
@@ -938,10 +905,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, R> Function8<A, B, C, D, E, F, G, H, R> wrapCheckedException(
-      @NotNull Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -973,9 +939,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I, R> Function9<A, B, C, D, E, F, G, H, I, R> wrapCheckedException(
-      @NotNull Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException
+      Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException
   ) {
     return wrapCheckedException(function9CheckedException, WrappedCheckedException::new);
   }
@@ -1007,10 +972,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, I, R> Function9<A, B, C, D, E, F, G, H, I, R> wrapCheckedException(
-      @NotNull Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h, i) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -1043,9 +1007,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I, J, R> Function10<A, B, C, D, E, F, G, H, I, J, R> wrapCheckedException(
-      @NotNull Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException
+      Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException
   ) {
     return wrapCheckedException(function10CheckedException, WrappedCheckedException::new);
   }
@@ -1078,10 +1041,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, I, J, R> Function10<A, B, C, D, E, F, G, H, I, J, R> wrapCheckedException(
-      @NotNull Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (a, b, c, d, e, f, g, h, i, j) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -1104,9 +1066,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T> Predicate<T> wrapCheckedException(
-      @NotNull PredicateCheckedException<T> predicateCheckedExceptionT
+      PredicateCheckedException<T> predicateCheckedExceptionT
   ) {
     return wrapCheckedException(predicateCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -1129,10 +1090,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T> Predicate<T> wrapCheckedException(
-      @NotNull PredicateCheckedException<T> predicateCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      PredicateCheckedException<T> predicateCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -1155,9 +1115,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T> Supplier<T> wrapCheckedException(
-      @NotNull SupplierCheckedException<T> supplierCheckedExceptionT
+      SupplierCheckedException<T> supplierCheckedExceptionT
   ) {
     return wrapCheckedException(supplierCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -1180,10 +1139,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T> Supplier<T> wrapCheckedException(
-      @NotNull SupplierCheckedException<T> supplierCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      SupplierCheckedException<T> supplierCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () ->
         TryCatchesOps.wrapCheckedException(supplierCheckedExceptionT)
@@ -1205,9 +1163,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <T> UnaryOperator<T> wrapCheckedException(
-      @NotNull UnaryOperatorCheckedException<T> unaryCheckedExceptionT
+      UnaryOperatorCheckedException<T> unaryCheckedExceptionT
   ) {
     return wrapCheckedException(unaryCheckedExceptionT, WrappedCheckedException::new);
   }
@@ -1230,10 +1187,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException, T> UnaryOperator<T> wrapCheckedException(
-      @NotNull UnaryOperatorCheckedException<T> unaryCheckedExceptionT,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      UnaryOperatorCheckedException<T> unaryCheckedExceptionT,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
         TryCatchesOps.wrapCheckedException(() ->
@@ -1255,9 +1211,8 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static VoidSupplier wrapCheckedException(
-      @NotNull VoidSupplierCheckedException voidSupplierCheckedException
+      VoidSupplierCheckedException voidSupplierCheckedException
   ) {
     return wrapCheckedException(voidSupplierCheckedException, WrappedCheckedException::new);
   }
@@ -1279,10 +1234,9 @@ public final class FunctionsOps {
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
    * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
-  @NotNull
   public static <EX extends RuntimeException> VoidSupplier wrapCheckedException(
-      @NotNull VoidSupplierCheckedException voidSupplierCheckedException,
-      @NotNull Function<Exception, EX> fRuntimeExceptionWrapper
+      VoidSupplierCheckedException voidSupplierCheckedException,
+      Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return () -> {
       try {
