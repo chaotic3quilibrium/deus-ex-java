@@ -53,9 +53,11 @@ public final class FatalThrowable extends RuntimeException {
     return !isFatalThrowable(throwable)
         ? Optional.empty()
         : Optional.of(new FatalThrowable(
-            "FatalThrowable.isFatalThrowable(throwable) must be false - %s - %s".formatted(
+            "FatalThrowable.isFatalThrowable(throwable) must be false - %s%s".formatted(
                 throwable.getClass().getName(),
-                throwable.getMessage()),
+                throwable.getMessage() == null
+                    ? ""
+                    : " - " + throwable.getMessage()),
             throwable));
   }
 

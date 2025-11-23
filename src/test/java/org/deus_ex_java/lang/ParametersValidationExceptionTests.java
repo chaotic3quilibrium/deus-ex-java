@@ -182,10 +182,46 @@ public class ParametersValidationExceptionTests {
         false,
         false,
         messages);
-    //noinspection SimplifiableAssertion,EqualsWithItself
+    //noinspection SimplifiableAssertion,ConstantValue
+    assertFalse(parametersValidationExceptionA.equals(null));
+    //noinspection SimplifiableAssertion,EqualsBetweenInconvertibleTypes
+    assertFalse(parametersValidationExceptionA.equals(cause));
+    //noinspection SimplifiableAssertion,EqualsBetweenInconvertibleTypes
+    assertFalse(cause.equals(parametersValidationExceptionA));
+    //noinspection EqualsWithItself,SimplifiableAssertion
     assertTrue(parametersValidationExceptionA.equals(parametersValidationExceptionA));
     assertEquals(parametersValidationExceptionA, parametersValidationExceptionB);
     assertEquals(parametersValidationExceptionB, parametersValidationExceptionA);
+    //noinspection EqualsWithItself,SimplifiableAssertion
+    assertTrue(parametersValidationExceptionB.equals(parametersValidationExceptionB));
     assertEquals(parametersValidationExceptionA.hashCode(), parametersValidationExceptionB.hashCode());
+    var parametersValidationExceptionC = new ParametersValidationException(
+        "test",
+        cause,
+        false,
+        false,
+        List.of());
+    //noinspection EqualsWithItself,SimplifiableAssertion
+    assertTrue(parametersValidationExceptionC.equals(parametersValidationExceptionC));
+    //noinspection SimplifiableAssertion
+    assertFalse(parametersValidationExceptionC.equals(parametersValidationExceptionA));
+    //noinspection SimplifiableAssertion
+    assertFalse(parametersValidationExceptionA.equals(parametersValidationExceptionC));
+    var parametersValidationExceptionD = new ParametersValidationException(
+        "testD",
+        cause,
+        false,
+        false,
+        messages);
+    //noinspection EqualsWithItself,SimplifiableAssertion
+    assertTrue(parametersValidationExceptionD.equals(parametersValidationExceptionD));
+    //noinspection SimplifiableAssertion
+    assertFalse(parametersValidationExceptionD.equals(parametersValidationExceptionA));
+    //noinspection SimplifiableAssertion
+    assertFalse(parametersValidationExceptionD.equals(parametersValidationExceptionC));
+    //noinspection SimplifiableAssertion
+    assertFalse(parametersValidationExceptionA.equals(parametersValidationExceptionD));
+    //noinspection SimplifiableAssertion
+    assertFalse(parametersValidationExceptionC.equals(parametersValidationExceptionD));
   }
 }

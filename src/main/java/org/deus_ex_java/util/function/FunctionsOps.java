@@ -45,6 +45,8 @@ public final class FunctionsOps {
    * @param nTimes                                              number of times to apply the side-effecting function
    * @param justDoItWithNoInputParametersAndThenIgnoreTheResult side-effecting(optionally checked-exception) function to
    *                                                            apply
+   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
+   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static void executeSideEffectNTimes(
       int nTimes,
@@ -208,6 +210,8 @@ public final class FunctionsOps {
    * @return a {@link BiConsumer} that wraps the checked exception lambda, {@code biConsumerCheckedExceptionT}, with a
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
+   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
+   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <T, U> BiConsumer<T, U> wrapCheckedException(
       BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT
@@ -284,8 +288,7 @@ public final class FunctionsOps {
    * @return a {@link BiFunction} that wraps the checked exception lambda, {@code biFunctionCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T, U, R> BiFunction<T, U, R> wrapCheckedException(
       BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU,
@@ -335,8 +338,7 @@ public final class FunctionsOps {
    * @return a {@link BinaryOperator} that wraps the checked exception lambda, {@code binaryOperatorCheckedExceptionT},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> BinaryOperator<T> wrapCheckedException(
       BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT,
@@ -386,8 +388,7 @@ public final class FunctionsOps {
    * @return a {@link BiPredicate} that wraps the checked exception lambda, {@code biPredicateCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T, U> BiPredicate<T, U> wrapCheckedException(
       BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT,
@@ -435,8 +436,7 @@ public final class FunctionsOps {
    * @return a {@link Consumer} that wraps the checked exception lambda, {@code consumerCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> Consumer<T> wrapCheckedException(
       ConsumerCheckedException<T> consumerCheckedExceptionT,
@@ -488,8 +488,7 @@ public final class FunctionsOps {
    * @return a {@link Function} that wraps the checked exception lambda, {@code functionCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T, R> Function<T, R> wrapCheckedException(
       FunctionCheckedException<T, R> functionCheckedExceptionT,
@@ -542,8 +541,7 @@ public final class FunctionsOps {
    * @return a {@link Function2} that wraps the checked exception lambda, {@code function2CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, R> Function2<A, B, R> wrapCheckedException(
       Function2CheckedException<A, B, R> function2CheckedException,
@@ -597,8 +595,7 @@ public final class FunctionsOps {
    * @return a {@link Function3} that wraps the checked exception lambda, {@code function3CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, R> Function3<A, B, C, R> wrapCheckedException(
       Function3CheckedException<A, B, C, R> function3CheckedException,
@@ -654,8 +651,7 @@ public final class FunctionsOps {
    * @return a {@link Function4} that wraps the checked exception lambda, {@code function4CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, R> Function4<A, B, C, D, R> wrapCheckedException(
       Function4CheckedException<A, B, C, D, R> function4CheckedException,
@@ -713,8 +709,7 @@ public final class FunctionsOps {
    * @return a {@link Function5} that wraps the checked exception lambda, {@code function5CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, E, R> Function5<A, B, C, D, E, R> wrapCheckedException(
       Function5CheckedException<A, B, C, D, E, R> function5CheckedException,
@@ -774,8 +769,7 @@ public final class FunctionsOps {
    * @return a {@link Function6} that wraps the checked exception lambda, {@code function6CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, E, F, R> Function6<A, B, C, D, E, F, R> wrapCheckedException(
       Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException,
@@ -837,8 +831,7 @@ public final class FunctionsOps {
    * @return a {@link Function7} that wraps the checked exception lambda, {@code function7CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, R> Function7<A, B, C, D, E, F, G, R> wrapCheckedException(
       Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException,
@@ -902,8 +895,7 @@ public final class FunctionsOps {
    * @return a {@link Function8} that wraps the checked exception lambda, {@code function8CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, R> Function8<A, B, C, D, E, F, G, H, R> wrapCheckedException(
       Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException,
@@ -969,8 +961,7 @@ public final class FunctionsOps {
    * @return a {@link Function9} that wraps the checked exception lambda, {@code function9CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, I, R> Function9<A, B, C, D, E, F, G, H, I, R> wrapCheckedException(
       Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException,
@@ -1038,8 +1029,7 @@ public final class FunctionsOps {
    * @return a {@link Function10} that wraps the checked exception lambda, {@code function10CheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, A, B, C, D, E, F, G, H, I, J, R> Function10<A, B, C, D, E, F, G, H, I, J, R> wrapCheckedException(
       Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException,
@@ -1087,8 +1077,7 @@ public final class FunctionsOps {
    * @return a {@link Predicate} that wraps the checked exception lambda, {@code predicateCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> Predicate<T> wrapCheckedException(
       PredicateCheckedException<T> predicateCheckedExceptionT,
@@ -1136,8 +1125,7 @@ public final class FunctionsOps {
    * @return a {@link Supplier} that wraps the checked exception lambda, {@code supplierCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> Supplier<T> wrapCheckedException(
       SupplierCheckedException<T> supplierCheckedExceptionT,
@@ -1184,8 +1172,7 @@ public final class FunctionsOps {
    * @return a {@link UnaryOperator} that wraps the checked exception lambda, {@code unaryCheckedExceptionT}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> UnaryOperator<T> wrapCheckedException(
       UnaryOperatorCheckedException<T> unaryCheckedExceptionT,
@@ -1231,8 +1218,7 @@ public final class FunctionsOps {
    * @return a {@link VoidSupplier} that wraps the checked exception lambda, {@code voidSupplierCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
+   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> VoidSupplier wrapCheckedException(
       VoidSupplierCheckedException voidSupplierCheckedException,
