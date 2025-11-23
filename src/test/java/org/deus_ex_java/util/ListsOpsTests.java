@@ -109,10 +109,13 @@ public class ListsOpsTests {
 
   @Test
   public void testReverse() {
+    assertEquals(List.of(), ListsOps.reverse(List.of()));
+    assertEquals(List.of(), ListsOps.reverse(Stream.empty()));
     var expectedListOrdered = List.of(1, 2, 3);
     var nullContainingListOrdered = Stream.of(null, 3, null, 2, null, 1, null).toList();
     assertEquals(expectedListOrdered, ListsOps.reverse(nullContainingListOrdered.stream()));
     assertEquals(expectedListOrdered, ListsOps.reverse(nullContainingListOrdered));
+    assertEquals(List.of(), ListsOps.reverse(List.of()));
   }
 
   @Test
@@ -145,26 +148,42 @@ public class ListsOpsTests {
 
   @Test
   public void testUnzipEithers() {
-    var eithers = Stream.<Either<String, Integer>>of(
+    var eithersStream = Stream.<Either<String, Integer>>of(
         Either.right(1),
         Either.left("b"),
         Either.left("c"),
         Either.right(4));
-    var tuple2 = ListsOps.unzipEithers(eithers);
-    assertEquals(List.of(Optional.empty(), Optional.of("b"), Optional.of("c"), Optional.empty()), tuple2._1());
-    assertEquals(List.of(Optional.of(1), Optional.empty(), Optional.empty(), Optional.of(4)), tuple2._2());
+    var tuple2Stream = ListsOps.unzipEithers(eithersStream);
+    assertEquals(List.of(Optional.empty(), Optional.of("b"), Optional.of("c"), Optional.empty()), tuple2Stream._1());
+    assertEquals(List.of(Optional.of(1), Optional.empty(), Optional.empty(), Optional.of(4)), tuple2Stream._2());
+    var eithersList = List.<Either<String, Integer>>of(
+        Either.right(1),
+        Either.left("b"),
+        Either.left("c"),
+        Either.right(4));
+    var tuple2List = ListsOps.unzipEithers(eithersList);
+    assertEquals(List.of(Optional.empty(), Optional.of("b"), Optional.of("c"), Optional.empty()), tuple2List._1());
+    assertEquals(List.of(Optional.of(1), Optional.empty(), Optional.empty(), Optional.of(4)), tuple2List._2());
   }
 
   @Test
   public void testUnzipAndFlattenEithers() {
-    var eithers = Stream.<Either<String, Integer>>of(
+    var eithersStream = Stream.<Either<String, Integer>>of(
         Either.right(1),
         Either.left("b"),
         Either.left("c"),
         Either.right(4));
-    var tuple2 = ListsOps.unzipAndFlattenEithers(eithers);
-    assertEquals(List.of("b", "c"), tuple2._1());
-    assertEquals(List.of(1, 4), tuple2._2());
+    var tuple2Stream = ListsOps.unzipAndFlattenEithers(eithersStream);
+    assertEquals(List.of("b", "c"), tuple2Stream._1());
+    assertEquals(List.of(1, 4), tuple2Stream._2());
+    var eithersList = List.<Either<String, Integer>>of(
+        Either.right(1),
+        Either.left("b"),
+        Either.left("c"),
+        Either.right(4));
+    var tuple2List = ListsOps.unzipAndFlattenEithers(eithersList);
+    assertEquals(List.of("b", "c"), tuple2List._1());
+    assertEquals(List.of(1, 4), tuple2List._2());
   }
 
   @Test
@@ -174,14 +193,27 @@ public class ListsOpsTests {
             List.of(),
             List.of()),
         ListsOps.unzip(Stream.empty()));
-    var tuple2s = Stream.of(
+    var tuple2sStream = Stream.of(
         new Tuple2<>("a", 1),
         new Tuple2<>("b", 2),
         new Tuple2<>("c", 3),
         new Tuple2<>("d", 4));
-    var tuple2 = ListsOps.unzip(tuple2s);
-    assertEquals(List.of("a", "b", "c", "d"), tuple2._1());
-    assertEquals(List.of(1, 2, 3, 4), tuple2._2());
+    var tuple2Stream = ListsOps.unzip(tuple2sStream);
+    assertEquals(List.of("a", "b", "c", "d"), tuple2Stream._1());
+    assertEquals(List.of(1, 2, 3, 4), tuple2Stream._2());
+    assertEquals(
+        new Tuple2<>(
+            List.of(),
+            List.of()),
+        ListsOps.unzip(List.of()));
+    var tuple2sList = List.of(
+        new Tuple2<>("a", 1),
+        new Tuple2<>("b", 2),
+        new Tuple2<>("c", 3),
+        new Tuple2<>("d", 4));
+    var tuple2List = ListsOps.unzip(tuple2sList);
+    assertEquals(List.of("a", "b", "c", "d"), tuple2List._1());
+    assertEquals(List.of(1, 2, 3, 4), tuple2List._2());
   }
 
   @Test
@@ -194,13 +226,13 @@ public class ListsOpsTests {
             Stream.empty(),
             t ->
                 Optional.empty()));
-    var tuple2s = Stream.of(
+    var tuple2sStream = Stream.of(
         new Tuple2<>("a", 1),
         new Tuple2<>("b", 2),
         new Tuple2<>("c", 3),
         new Tuple2<>("d", 4));
-    var tuple2 = ListsOps.unzipAndFlatten(
-        tuple2s,
+    var tuple2Stream = ListsOps.unzipAndFlatten(
+        tuple2sStream,
         stringAndInteger ->
             stringAndInteger._1().equals("c")
                 ? Optional.empty()
@@ -209,8 +241,33 @@ public class ListsOpsTests {
                     : stringAndInteger._1().equals("a")
                         ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
                         : Optional.of(new Tuple2<>(Optional.empty(), Optional.of(stringAndInteger._2()))));
-    assertEquals(List.of("a", "d"), tuple2._1());
-    assertEquals(List.of(2, 4), tuple2._2());
+    assertEquals(List.of("a", "d"), tuple2Stream._1());
+    assertEquals(List.of(2, 4), tuple2Stream._2());
+    assertEquals(
+        new Tuple2<>(
+            List.of(),
+            List.of()),
+        ListsOps.unzipAndFlatten(
+            List.of(),
+            t ->
+                Optional.empty()));
+    var tuple2sList = List.of(
+        new Tuple2<>("a", 1),
+        new Tuple2<>("b", 2),
+        new Tuple2<>("c", 3),
+        new Tuple2<>("d", 4));
+    var tuple2List = ListsOps.unzipAndFlatten(
+        tuple2sList,
+        stringAndInteger ->
+            stringAndInteger._1().equals("c")
+                ? Optional.empty()
+                : stringAndInteger._2() == 4
+                    ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
+                    : stringAndInteger._1().equals("a")
+                        ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
+                        : Optional.of(new Tuple2<>(Optional.empty(), Optional.of(stringAndInteger._2()))));
+    assertEquals(List.of("a", "d"), tuple2List._1());
+    assertEquals(List.of(2, 4), tuple2List._2());
   }
 
   @Test
