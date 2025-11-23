@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
@@ -164,6 +165,11 @@ public class MapsOpsTests {
 
   @Test
   public void testAddMaps() {
+    assertEquals(Map.of(), MapsOps.addMaps());
+    //noinspection DataFlowIssue
+    assertEquals(Map.of(), MapsOps.addMaps(null, Map.of(), null));
+    //noinspection DataFlowIssue
+    assertEquals(Map.of(1, "value"), MapsOps.addMaps(null, Map.of(), Map.of(1, "value"), Map.of(), null));
     var mapAddA = MapsOps.addMaps(Map.of(1, "x1", 2, "x2"), Map.of(2, "x2", 3, "x3"));
     assertTrue(CollectionsOps.isUnmodifiable(mapAddA));
     assertEquals(Map.of(1, "x1", 2, "x2", 3, "x3"), mapAddA);
@@ -180,6 +186,11 @@ public class MapsOpsTests {
 
   @Test
   public void testAppendMaps() {
+    assertEquals(Map.of(), MapsOps.appendMaps());
+    //noinspection DataFlowIssue
+    assertEquals(Map.of(), MapsOps.appendMaps(null, Map.of(), null));
+    //noinspection DataFlowIssue
+    assertEquals(Map.of(1, "value"), MapsOps.appendMaps(null, Map.of(), Map.of(1, "value"), Map.of(), null));
     var mapAppendA = MapsOps.appendMaps(Map.of(1, "x1"), Map.of(2, "x2"), Map.of(3, "x3"));
     assertTrue(CollectionsOps.isUnmodifiable(mapAppendA));
     assertEquals(
@@ -220,7 +231,7 @@ public class MapsOpsTests {
     var mapC = MapsOps.toMap(
         list.stream(),
         string -> {
-          if ((string != null) && (string.length() > 1)) {
+          if (string.length() > 1) {
             return Optional.of(entry(Integer.parseInt(string.substring(1, 2)), string));
           }
 
@@ -251,16 +262,23 @@ public class MapsOpsTests {
     list.add("x2");
     list.add("3");
     list.add("x3");
+    //intentionally duplicate key
+    list.add("x3");
     var mapC = MapsOps.toMap(
         list,
         string -> {
-          if ((string != null) && (string.length() > 1)) {
+          if (string.length() > 1) {
             return Optional.of(entry(Integer.parseInt(string.substring(1, 2)), string));
           }
 
           return Optional.empty();
         });
     assertEquals(Map.of(1, "x1", 2, "x2", 3, "x3"), mapC);
+  }
+
+  @Test
+  public void testToMap() {
+    assertEquals(Map.of(), MapsOps.toMap(Stream.empty(), t -> Optional.empty()));
   }
 
   @Test
@@ -285,10 +303,12 @@ public class MapsOpsTests {
     list.add("x2");
     list.add("3");
     list.add("x3");
+    //intentionally duplicate key
+    list.add("x3");
     var mapC = MapsOps.toMapOrdered(
         list.stream(),
         string -> {
-          if ((string != null) && (string.length() > 1)) {
+          if (string.length() > 1) {
             return Optional.of(entry(Integer.parseInt(string.substring(1, 2)), string));
           }
 
@@ -322,7 +342,7 @@ public class MapsOpsTests {
     var mapC = MapsOps.toMapOrdered(
         list,
         string -> {
-          if ((string != null) && (string.length() > 1)) {
+          if (string.length() > 1) {
             return Optional.of(entry(Integer.parseInt(string.substring(1, 2)), string));
           }
 
@@ -333,18 +353,22 @@ public class MapsOpsTests {
 
   @Test
   public void testSwap() {
+    assertEquals(Map.of(), MapsOps.swap(Map.of()));
     var map = MapsOps.swap(Map.of(1, "x1", 2, "x2", 3, "x3"));
     assertEquals(Map.of("x1", 1, "x2", 2, "x3", 3), map);
   }
 
   @Test
   public void testSwapOrdered() {
+    assertEquals(Map.of(), MapsOps.swapOrdered(Map.of()));
     var map = MapsOps.swap(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3"));
     assertEquals(MapsOps.ofOrdered("x1", 1, "x2", 2, "x3", 3), map);
   }
 
   @Test
   public void testReverse() {
+    assertEquals(Map.of(), MapsOps.reverse(Map.of()));
+    assertEquals(Map.of(), MapsOps.reverse(Stream.empty()));
     var expectedMapOrdered = MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3");
     var nullContainingMapOrdered = new LinkedHashMap<Integer, String>();
     nullContainingMapOrdered.put(null, "xnull");
@@ -358,10 +382,41 @@ public class MapsOpsTests {
     assertEquals(expectedMapOrdered, MapsOps.reverse(nullContainingMapOrdered));
   }
 
+  private static final Map.Entry<Integer, String> ENTRY_NULL_NULL =
+      new Map.Entry<>() {
+        @Override
+        public Integer getKey() {
+          return null;
+        }
+
+        @Override
+        public String getValue() {
+          return null;
+        }
+
+        @Override
+        public String setValue(String value) {
+          return null;
+        }
+      };
+
   @Test
   public void testOfEntriesOrdered() {
     var mapNoArg = MapsOps.ofEntriesOrdered();
     assertTrue(mapNoArg.isEmpty());
+    assertEquals(Map.of(), MapsOps.ofEntriesOrdered(null, ENTRY_NULL_NULL, null));
+    assertEquals(Map.of(1, "test"), MapsOps.ofEntriesOrdered(null, entry(1, "test"), ENTRY_NULL_NULL, null));
+    var illegalArgumentException = assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            MapsOps.ofEntriesOrdered(
+                entry(1, "test 1"),
+                entry(2, "test 2"),
+                entry(1, "test 1 oopsie"),
+                entry(3, "test 3"),
+                entry(4, "test 4"),
+                entry(3, "test 3 oopsie")));
+    assertEquals("duplicate keys encountered - 1,3", illegalArgumentException.getMessage());
     var map = MapsOps.ofEntriesOrdered(
         entry(1, "x"));
     assertNotNull(map);
