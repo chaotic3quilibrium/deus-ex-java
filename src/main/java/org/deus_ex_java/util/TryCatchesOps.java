@@ -61,6 +61,8 @@ public final class TryCatchesOps {
       voidSupplier.execute();
 
       return Optional.empty();
+    } catch (FatalThrowable fatalThrowable) {
+      throw fatalThrowable;
     } catch (Throwable throwable) {
       FatalThrowable.filterToFatalThrowable(throwable)
           .ifPresent(fatalThrowable -> {
@@ -133,6 +135,8 @@ public final class TryCatchesOps {
   ) {
     try {
       return Either.right(supplier.get());
+    } catch (FatalThrowable fatalThrowable) {
+      throw fatalThrowable;
     } catch (Throwable throwable) {
       FatalThrowable.filterToFatalThrowable(throwable)
           .ifPresent(fatalThrowable -> {
@@ -240,6 +244,8 @@ public final class TryCatchesOps {
       voidSupplierCheckedException.execute();
 
       return Optional.empty();
+    } catch (FatalThrowable fatalThrowable) {
+      throw fatalThrowable;
     } catch (Throwable throwable) {
       return Optional.of(resolveCatchThrowableWrappedCheckedException(throwable, "VoidSupplierCheckedException", throwableClasses));
     }
@@ -304,6 +310,8 @@ public final class TryCatchesOps {
   ) {
     try {
       return Either.right(supplierCheckedException.get());
+    } catch (FatalThrowable fatalThrowable) {
+      throw fatalThrowable;
     } catch (Throwable throwable) {
 
       return Either.left(resolveCatchThrowableWrappedCheckedException(throwable, "SupplierCheckedException", throwableClasses));
