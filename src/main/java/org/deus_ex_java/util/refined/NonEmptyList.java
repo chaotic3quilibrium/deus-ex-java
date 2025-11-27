@@ -6,18 +6,24 @@ import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
- * A validation wrapper restricting an {@link List} to be non-empty and unmodifiable.
+ * A validation encapsulation record ensuring the wrapped {@link List} is both non-empty and unmodifiable. This enables
+ * use of both the <em>error-by-return-value</em> pattern and the <em>error-by-throw-exception</em> pattern.
  * <p>
- * The default {@code new NonEmptyList(...)} constructor implements enforced validation; i.e. throws a
- * {@link ParametersValidationException} within any attempt to instantiate with a value which returns a non-empty
- * {@link Optional} from the {@link NonEmptyList#validate} method.
+ * The <em>error-by-return-value</em> pattern is implemented via the static factory methods,
+ * {@link NonEmptyList#wrap(List)}, {@link NonEmptyList#from(Collection)}, and {@link NonEmptyList#from(Stream)}.
+ * <p>
+ * The default {@code new NonEmptyList(...)} constructor implements the forced validation via the
+ * <em>error-by-throw-exception</em> pattern; i.e. throws a {@link ParametersValidationException} within any attempt to
+ * instantiate with a {@code list} which returns a non-empty {@link Optional} from the {@link NonEmptyList#invalidate}
+ * method.
  *
- * @param list a {@link List} that is non-empty and unmodifiable
+ * @param list a {@link List} that is both non-empty and unmodifiable
  */
 @NullMarked
 public record NonEmptyList<T>(List<T> list) {
@@ -32,11 +38,11 @@ public record NonEmptyList<T>(List<T> list) {
    * <li>{@code list} must be unmodifiable</li>
    * </ul>
    *
-   * @param list a {@link List} that is non-empty and unmodifiable
+   * @param list a {@link List} that is both non-empty and unmodifiable
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  public static <T> Optional<ParametersValidationException> validate(
+  public static <T> Optional<ParametersValidationException> invalidate(
       List<T> list
   ) {
     var preconditionFailureMessages = Stream.of(
@@ -52,7 +58,7 @@ public record NonEmptyList<T>(List<T> list) {
     if (!preconditionFailureMessages.isEmpty()) {
 
       return Optional.of(new ParametersValidationException(
-          "NonEmptyList<T> invalid parameter(s)",
+          "NonEmptyList<T> invalidated parameter(s)",
           preconditionFailureMessages));
     }
 
@@ -60,16 +66,18 @@ public record NonEmptyList<T>(List<T> list) {
   }
 
   /**
-   * Returns, via the error-by-value pattern, an {@link Either} where an {@link Either#right} contains the validated
-   * wrapped instance, otherwise an {@link Either#left} contains the returned {@link ParametersValidationException}
-   * instance from the call to the {@link #validate(List)} method.
+   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyList}
+   * wrapping the uncopied and validated {@code list}, otherwise an {@link Either#left} with a
+   * {@link ParametersValidationException} is returned containing the non-empty result from the
+   * {@link #invalidate(List)} method.
    *
-   * @param list a {@link List} that is non-empty and unmodifiable
-   * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an
-   *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
-   *     {@link #validate(List)} method
+   * @param list a {@link List} source to be wrapped that must be both non-empty and unmodifiable
+   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyList}
+   *     wrapping the uncopied and validated {@code list}, otherwise an {@link Either#left} with a
+   *     {@link ParametersValidationException} is returned containing the non-empty result from the
+   *     {@link #invalidate(List)} method
    */
-  public static <T> Either<ParametersValidationException, NonEmptyList<T>> from(
+  public static <T> Either<ParametersValidationException, NonEmptyList<T>> wrap(
       List<T> list
   ) {
     return TryCatchesOps.wrap(
@@ -78,15 +86,52 @@ public record NonEmptyList<T>(List<T> list) {
         ParametersValidationException.class);
   }
 
+
+  /**
+   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyList}
+   * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   * {@link ParametersValidationException} is returned containing the non-empty result from the
+   * {@link #invalidate(List)} method.
+   *
+   * @param collection a source from which the elements are defensively copied
+   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyList}
+   *     wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   *     {@link ParametersValidationException} is returned containing the non-empty result from the
+   *     {@link #invalidate(List)} method
+   */
+  public static <T> Either<ParametersValidationException, NonEmptyList<T>> from(
+      Collection<T> collection
+  ) {
+    return from(collection.stream());
+  }
+
+  /**
+   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyList}
+   * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   * {@link ParametersValidationException} is returned containing the non-empty result from the
+   * {@link #invalidate(List)} method.
+   *
+   * @param stream a source from which the elements are defensively copied
+   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyList}
+   *     wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   *     {@link ParametersValidationException} is returned containing the non-empty result from the
+   *     {@link #invalidate(List)} method
+   */
+  public static <T> Either<ParametersValidationException, NonEmptyList<T>> from(
+      Stream<T> stream
+  ) {
+    return wrap(stream.toList());
+  }
+
   /**
    * Default constructor ensuring the preconditions are validated before wrapping the value.
    *
-   * @param list a {@link List} that is non-empty and unmodifiable
-   * @throws ParametersValidationException when the call to the {@link #validate(List)} method returns a non-empty
+   * @param list a {@link List} that is both non-empty and unmodifiable
+   * @throws ParametersValidationException when the call to the {@link #invalidate(List)} method returns a non-empty
    *                                       {@link Optional}.
    */
   public NonEmptyList {
-    validate(list).ifPresent(parametersValidationException -> {
+    invalidate(list).ifPresent(parametersValidationException -> {
       throw parametersValidationException;
     });
   }
