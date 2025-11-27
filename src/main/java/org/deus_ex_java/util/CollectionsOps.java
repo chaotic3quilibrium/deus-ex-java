@@ -3,7 +3,7 @@ package org.deus_ex_java.util;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,15 +18,15 @@ public final class CollectionsOps {
 
   /**
    * Returns {@code true} if the {@link Collection} throws an {@link UnsupportedOperationException} when calling
-   * {@link Collection#addAll} with {@link Collections#emptyList}, false otherwise.
+   * {@link Collection#addAll} with an empty {@link List#of}, false otherwise.
    *
    * @param collection instance being tested for being unmodifiable
    * @return {@code true} if the {@link Collection} throws an {@link UnsupportedOperationException} when calling
-   *     {@link Collection#addAll} with {@link Collections#emptyList}, false otherwise
+   *     {@link Collection#addAll} with an empty {@link List#of}, false otherwise
    */
   public static boolean isUnmodifiable(Collection<?> collection) {
     try {
-      collection.addAll(Collections.emptyList());
+      collection.addAll(List.of());
 
       return false;
     } catch (UnsupportedOperationException UnsupportedOperationException) {

@@ -6,18 +6,25 @@ import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A validation wrapper restricting an {@link Set} to be non-empty and unmodifiable.
+ * A validation encapsulation record ensuring the wrapped {@link Set} is both non-empty and unmodifiable. This enables
+ * use of both the <em>error-by-return-value</em> pattern and the <em>error-by-throw-exception</em> pattern.
  * <p>
- * The default {@code new NonEmptySet(...)} constructor implements enforced validation; i.e. throws a
- * {@link ParametersValidationException} within any attempt to instantiate with a value which returns a non-empty
- * {@link Optional} from the {@link NonEmptySet#validate} method.
+ * The <em>error-by-return-value</em> pattern is implemented via the static factory methods,
+ * {@link NonEmptySet#wrap(Set)}, {@link NonEmptySet#from(Collection)}, and {@link NonEmptySet#from(Stream)}.
+ * <p>
+ * The default {@code new NonEmptySet(...)} constructor implements the forced validation via the
+ * <em>error-by-throw-exception</em> pattern; i.e. throws a {@link ParametersValidationException} within any attempt to
+ * instantiate with a {@code set} which returns a non-empty {@link Optional} from the {@link NonEmptySet#invalidate}
+ * method.
  *
- * @param set a {@link Set} that is non-empty and unmodifiable
+ * @param set a {@link Set} that is both non-empty and unmodifiable
  */
 @NullMarked
 public record NonEmptySet<T>(Set<T> set) {
@@ -32,11 +39,11 @@ public record NonEmptySet<T>(Set<T> set) {
    * <li>{@code set} must be unmodifiable</li>
    * </ul>
    *
-   * @param set a {@link Set} that is non-empty and unmodifiable
+   * @param set a {@link Set} that is both non-empty and unmodifiable
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  public static <T> Optional<ParametersValidationException> validate(
+  public static <T> Optional<ParametersValidationException> invalidate(
       Set<T> set
   ) {
     var preconditionFailureMessages = Stream.of(
@@ -52,7 +59,7 @@ public record NonEmptySet<T>(Set<T> set) {
     if (!preconditionFailureMessages.isEmpty()) {
 
       return Optional.of(new ParametersValidationException(
-          "NonEmptySet<T> invalid parameter(s)",
+          "NonEmptySet<T> invalidated parameter(s)",
           preconditionFailureMessages));
     }
 
@@ -60,16 +67,18 @@ public record NonEmptySet<T>(Set<T> set) {
   }
 
   /**
-   * Returns, via the error-by-value pattern, an {@link Either} where an {@link Either#right} contains the validated
-   * wrapped instance, otherwise an {@link Either#left} contains the returned {@link ParametersValidationException}
-   * instance from the call to the {@link #validate(Set)} method.
+   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
+   * wrapping the uncopied and validated {@code set}, otherwise an {@link Either#left} with a
+   * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Set)}
+   * method.
    *
-   * @param set a {@link Set} that is non-empty and unmodifiable
-   * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an
-   *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
-   *     {@link #validate(Set)} method
+   * @param set a {@link Set} that is both non-empty and unmodifiable
+   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
+   *     the uncopied and validated {@code set}, otherwise an {@link Either#left} with a
+   *     {@link ParametersValidationException} is returned containing the non-empty result from the
+   *     {@link #invalidate(Set)} method
    */
-  public static <T> Either<ParametersValidationException, NonEmptySet<T>> from(
+  public static <T> Either<ParametersValidationException, NonEmptySet<T>> wrap(
       Set<T> set
   ) {
     return TryCatchesOps.wrap(
@@ -79,14 +88,50 @@ public record NonEmptySet<T>(Set<T> set) {
   }
 
   /**
+   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
+   * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Set)}
+   * method.
+   *
+   * @param collection a source from which the elements are defensively copied
+   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
+   *     a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   *     {@link ParametersValidationException} is returned containing the non-empty result from the
+   *     {@link #invalidate(Set)} method
+   */
+  public static <T> Either<ParametersValidationException, NonEmptySet<T>> from(
+      Collection<T> collection
+  ) {
+    return from(collection.stream());
+  }
+
+  /**
+   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
+   * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Set)}
+   * method.
+   *
+   * @param stream a source from which the elements are defensively copied
+   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
+   *     a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
+   *     {@link ParametersValidationException} is returned containing the non-empty result from the
+   *     {@link #invalidate(Set)} method
+   */
+  public static <T> Either<ParametersValidationException, NonEmptySet<T>> from(
+      Stream<T> stream
+  ) {
+    return wrap(stream.collect(Collectors.toUnmodifiableSet()));
+  }
+
+  /**
    * Default constructor ensuring the preconditions are validated before wrapping the value.
    *
-   * @param set a {@link Set} that is non-empty and unmodifiable
-   * @throws ParametersValidationException when the call to the {@link #validate(Set)} method returns a non-empty
+   * @param set a {@link Set} that is both non-empty and unmodifiable
+   * @throws ParametersValidationException when the call to the {@link #invalidate(Set)} method returns a non-empty
    *                                       {@link Optional}.
    */
   public NonEmptySet {
-    validate(set).ifPresent(parametersValidationException -> {
+    invalidate(set).ifPresent(parametersValidationException -> {
       throw parametersValidationException;
     });
   }

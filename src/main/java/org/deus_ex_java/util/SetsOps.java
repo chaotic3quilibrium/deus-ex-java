@@ -558,9 +558,7 @@ public final class SetsOps {
                       .toList())));
         }
 
-        return !result.isEmpty()
-            ? Collections.unmodifiableSet(result)
-            : Set.of();
+        return Collections.unmodifiableSet(result);
       }
     }
 
