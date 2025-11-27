@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.LongConsumer;
 
@@ -8,6 +8,7 @@ import java.util.function.LongConsumer;
  * Enables the providing of a {@link LongConsumer} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface LongConsumerChecked<EX extends Exception> {
 
   /**
@@ -26,9 +27,8 @@ public interface LongConsumerChecked<EX extends Exception> {
    * @return a composed {@code LongConsumer} that performs in sequence this operation followed by the {@code after}
    *     operation
    */
-  @NotNull
   default LongConsumerChecked<EX> andThen(
-      @NotNull LongConsumerChecked<? extends EX> after
+      LongConsumerChecked<? extends EX> after
   ) {
     return (long t) -> {
       accept(t);

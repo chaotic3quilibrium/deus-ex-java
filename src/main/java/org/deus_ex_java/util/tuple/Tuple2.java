@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.tuple;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map.Entry;
@@ -17,9 +17,10 @@ import static java.util.Map.entry;
  * @param <T1> the type of the value contained in the first element
  * @param <T2> the type of the value contained in the second element
  */
+@NullMarked
 public record Tuple2<T1, T2>(
-    @NotNull T1 _1,
-    @NotNull T2 _2
+    T1 _1,
+    T2 _2
 ) implements Tuple {
   @Override
   public int arity() {
@@ -38,7 +39,6 @@ public record Tuple2<T1, T2>(
    * @return a conversion to as {@link Entry}
    * @see TuplesOps#from(Entry) TuplesOps.from(Entry) for the inverted version of this method
    */
-  @NotNull
   public Entry<T1, T2> to() {
     return entry(_1, _2);
   }
@@ -50,7 +50,6 @@ public record Tuple2<T1, T2>(
    * @see TuplesOps#from(SimpleImmutableEntry) TuplesOps.from(SimpleImmutableEntry) for the inverted version of this
    *     method
    */
-  @NotNull
   public SimpleImmutableEntry<T1, T2> toSimpleImmutableEntry() {
     return new SimpleImmutableEntry<>(_1, _2);
   }

@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -10,6 +10,7 @@ import java.util.function.Supplier;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface SupplierCheckedException<R> extends SupplierChecked<R, Exception> {
 
   /**
@@ -18,11 +19,11 @@ public interface SupplierCheckedException<R> extends SupplierChecked<R, Exceptio
    * @param callable the target function instance to wrap
    * @param <R>      the type of the result of the function
    * @return a {@link SupplierCheckedException} wrapper around a {@link Callable} instance
-   * @see FunctionsOps#to(SupplierCheckedException) FunctionsOps.to(SupplierCheckedException) for the inverted version of this method
+   * @see FunctionsOps#to(SupplierCheckedException) FunctionsOps.to(SupplierCheckedException) for the inverted version
+   *     of this method
    */
-  @NotNull
   static <R> SupplierCheckedException<R> of(
-      @NotNull Callable<? extends R> callable
+      Callable<? extends R> callable
   ) {
     return callable::call;
   }

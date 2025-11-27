@@ -4,7 +4,7 @@ import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.CollectionsOps;
 import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +19,7 @@ import java.util.stream.Stream;
  *
  * @param map a {@link Map} that is non-empty and unmodifiable
  */
+@NullMarked
 public record NonEmptyMap<K, V>(Map<K, V> map) {
 
   /**
@@ -35,9 +36,8 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  @NotNull
   public static <K, V> Optional<ParametersValidationException> validate(
-      @NotNull Map<K, V> map
+      Map<K, V> map
   ) {
     var preconditionFailureMessages = Stream.of(
             map.isEmpty()
@@ -69,9 +69,8 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
    *     {@link #validate(Map)} method
    */
-  @NotNull
   public static <K, V> Either<ParametersValidationException, NonEmptyMap<K, V>> from(
-      @NotNull Map<K, V> map
+      Map<K, V> map
   ) {
     return TryCatchesOps.wrap(
         () ->

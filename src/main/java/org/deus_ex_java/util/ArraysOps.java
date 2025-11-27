@@ -1,6 +1,6 @@
 package org.deus_ex_java.util;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
 import java.util.function.ToIntFunction;
@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create and work with array instances.
  */
+@NullMarked
 public final class ArraysOps {
 
   private ArraysOps() {
@@ -52,7 +53,7 @@ public final class ArraysOps {
    * @return a new {@code int} array from a source of {@link Integer}s
    */
   public static int[] toDistinctSortedArrayInt(
-      @NotNull Collection<Integer> collection
+      Collection<Integer> collection
   ) {
     return toDistinctSortedArrayInt(collection.stream());
   }
@@ -64,7 +65,7 @@ public final class ArraysOps {
    * @return a new {@code int} array from a source of {@link Integer}s
    */
   public static int[] toDistinctSortedArrayInt(
-      @NotNull Stream<Integer> stream
+      Stream<Integer> stream
   ) {
     return toDistinctSortedArrayInt(stream, Integer::intValue);
   }
@@ -79,8 +80,8 @@ public final class ArraysOps {
    *     {@code fTToId}
    */
   public static <T> int[] toDistinctSortedArrayInt(
-      @NotNull Collection<T> collection,
-      @NotNull ToIntFunction<T> fTToId
+      Collection<T> collection,
+      ToIntFunction<T> fTToId
   ) {
     return toDistinctSortedArrayInt(collection.stream(), fTToId);
   }
@@ -96,8 +97,8 @@ public final class ArraysOps {
    *     {@code fTToId}
    */
   public static <T> int[] toDistinctSortedArrayInt(
-      @NotNull Stream<T> stream,
-      @NotNull ToIntFunction<T> fTToId
+      Stream<T> stream,
+      ToIntFunction<T> fTToId
   ) {
     return stream
         .mapToInt(fTToId)

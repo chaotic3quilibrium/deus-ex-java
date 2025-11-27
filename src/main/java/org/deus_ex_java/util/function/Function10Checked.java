@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple10;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function10} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX extends Exception> {
 
   /**
@@ -26,17 +27,17 @@ public interface Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX extends E
    * @param j the tenth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e,
-      @NotNull F f,
-      @NotNull G g,
-      @NotNull H h,
-      @NotNull I i,
-      @NotNull J j) throws EX;
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e,
+      F f,
+      G g,
+      H h,
+      I i,
+      J j) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -47,21 +48,20 @@ public interface Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX extends E
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function10Checked<A, B, C, D, E, F, G, H, I, J, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h,
-        @NotNull I i,
-        @NotNull J j) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h,
+        I i,
+        J j) ->
         after.apply(apply(a, b, c, d, e, f, g, h, i, j));
   }
 
@@ -73,9 +73,8 @@ public interface Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX extends E
    * @return a {@link Function10Checked} where the input parameters are extracted from a {@link FunctionChecked} which
    *     accepts a {@link Tuple10}
    */
-  @NotNull
   default Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple10<
               ? super A,
               ? super B,
@@ -91,16 +90,16 @@ public interface Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX extends E
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h,
-        @NotNull I i,
-        @NotNull J j) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h,
+        I i,
+        J j) ->
         function.apply(
             new Tuple10<>(a, b, c, d, e, f, g, h, i, j));
   }
@@ -110,9 +109,8 @@ public interface Function10Checked<A, B, C, D, E, F, G, H, I, J, R, EX extends E
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple10} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple10<A, B, C, D, E, F, G, H, I, J>, R, EX> tupled() {
-    return (@NotNull Tuple10<A, B, C, D, E, F, G, H, I, J> tuple10) ->
+    return (Tuple10<A, B, C, D, E, F, G, H, I, J> tuple10) ->
         apply(
             tuple10._1(),
             tuple10._2(),

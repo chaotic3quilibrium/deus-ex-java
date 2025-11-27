@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.LongUnaryOperator;
 
@@ -8,6 +8,7 @@ import java.util.function.LongUnaryOperator;
  * Enables the providing of a {@link LongUnaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface LongUnaryOperatorChecked<EX extends Exception> {
 
   /**
@@ -27,9 +28,8 @@ public interface LongUnaryOperatorChecked<EX extends Exception> {
    * @return a composed operator that first applies the {@code before} operator and then applies this operator
    * @see #andThen(LongUnaryOperatorChecked)
    */
-  @NotNull
   default LongUnaryOperatorChecked<EX> compose(
-      @NotNull LongUnaryOperatorChecked<? extends EX> before
+      LongUnaryOperatorChecked<? extends EX> before
   ) {
     return (long v) ->
         applyAsLong(before.applyAsLong(v));
@@ -44,9 +44,8 @@ public interface LongUnaryOperatorChecked<EX extends Exception> {
    * @return a composed operator that first applies this operator and then applies the {@code after} operator
    * @see #compose(LongUnaryOperatorChecked)
    */
-  @NotNull
   default LongUnaryOperatorChecked<EX> andThen(
-      @NotNull LongUnaryOperatorChecked<? extends EX> after
+      LongUnaryOperatorChecked<? extends EX> after
   ) {
     return (long t) ->
         after.applyAsLong(applyAsLong(t));

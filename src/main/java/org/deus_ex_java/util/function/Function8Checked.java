@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple8;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function8} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function8Checked<A, B, C, D, E, F, G, H, R, EX extends Exception> {
 
   /**
@@ -24,15 +25,15 @@ public interface Function8Checked<A, B, C, D, E, F, G, H, R, EX extends Exceptio
    * @param h the eighth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e,
-      @NotNull F f,
-      @NotNull G g,
-      @NotNull H h) throws EX;
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e,
+      F f,
+      G g,
+      H h) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -43,19 +44,18 @@ public interface Function8Checked<A, B, C, D, E, F, G, H, R, EX extends Exceptio
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function8Checked<A, B, C, D, E, F, G, H, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h) ->
         after.apply(apply(a, b, c, d, e, f, g, h));
   }
 
@@ -67,9 +67,8 @@ public interface Function8Checked<A, B, C, D, E, F, G, H, R, EX extends Exceptio
    * @return a {@link Function8Checked} where the input parameters are extracted from a {@link FunctionChecked} which
    *     accepts a {@link Tuple8}
    */
-  @NotNull
   default Function8Checked<A, B, C, D, E, F, G, H, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple8<
               ? super A,
               ? super B,
@@ -83,14 +82,14 @@ public interface Function8Checked<A, B, C, D, E, F, G, H, R, EX extends Exceptio
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h) ->
         function.apply(
             new Tuple8<>(a, b, c, d, e, f, g, h));
   }
@@ -100,9 +99,8 @@ public interface Function8Checked<A, B, C, D, E, F, G, H, R, EX extends Exceptio
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple8} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple8<A, B, C, D, E, F, G, H>, R, EX> tupled() {
-    return (@NotNull Tuple8<A, B, C, D, E, F, G, H> tuple8) ->
+    return (Tuple8<A, B, C, D, E, F, G, H> tuple8) ->
         apply(
             tuple8._1(),
             tuple8._2(),

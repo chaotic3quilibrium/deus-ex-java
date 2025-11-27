@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple10;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -23,6 +23,7 @@ import java.util.function.Function;
  * @param <R> the type of the result of the function
  */
 @FunctionalInterface
+@NullMarked
 public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {
 
   /**
@@ -40,17 +41,17 @@ public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {
    * @param j the tenth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e,
-      @NotNull F f,
-      @NotNull G g,
-      @NotNull H h,
-      @NotNull I i,
-      @NotNull J j);
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e,
+      F f,
+      G g,
+      H h,
+      I i,
+      J j);
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -61,21 +62,20 @@ public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function10<A, B, C, D, E, F, G, H, I, J, V> andThen(
-      @NotNull Function<? super R, ? extends V> after
+      Function<? super R, ? extends V> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h,
-        @NotNull I i,
-        @NotNull J j) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h,
+        I i,
+        J j) ->
         after.apply(apply(a, b, c, d, e, f, g, h, i, j));
   }
 
@@ -87,9 +87,8 @@ public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {
    * @return a {@link Function10} where the input parameters are extracted from a {@link Function} which accepts a
    *     {@link Tuple10}
    */
-  @NotNull
   default Function10<A, B, C, D, E, F, G, H, I, J, R> untupled(
-      @NotNull Function<
+      Function<
           Tuple10<
               ? super A,
               ? super B,
@@ -105,16 +104,16 @@ public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h,
-        @NotNull I i,
-        @NotNull J j) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h,
+        I i,
+        J j) ->
         function.apply(
             new Tuple10<>(a, b, c, d, e, f, g, h, i, j));
   }
@@ -124,9 +123,8 @@ public interface Function10<A, B, C, D, E, F, G, H, I, J, R> {
    *
    * @return a {@link Function} accepting a {@link Tuple10} of the original input parameters
    */
-  @NotNull
   default Function<Tuple10<A, B, C, D, E, F, G, H, I, J>, R> tupled() {
-    return (@NotNull Tuple10<A, B, C, D, E, F, G, H, I, J> tuple10) ->
+    return (Tuple10<A, B, C, D, E, F, G, H, I, J> tuple10) ->
         apply(
             tuple10._1(),
             tuple10._2(),

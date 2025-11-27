@@ -1,11 +1,14 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.DoubleToIntFunction;
 
 /**
  * Enables the providing of a {@link DoubleToIntFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface DoubleToIntFunctionChecked<EX extends Exception> {
 
   /**

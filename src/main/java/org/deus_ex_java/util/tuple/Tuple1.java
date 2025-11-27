@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.tuple;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.stream.Stream;
 
@@ -10,8 +10,9 @@ import java.util.stream.Stream;
  * @param _1   the value contained in the first element
  * @param <T1> the type of the value contained in the first element
  */
+@NullMarked
 public record Tuple1<T1>(
-    @NotNull T1 _1
+    T1 _1
 ) implements Tuple {
   @Override
   public int arity() {

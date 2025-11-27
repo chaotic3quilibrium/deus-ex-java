@@ -3,7 +3,7 @@ package org.deus_ex_java.lang.refined;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.Optional;
 
@@ -16,6 +16,7 @@ import java.util.Optional;
  *
  * @param value an {@code int} value greater than {@code 0}
  */
+@NullMarked
 public record PosInt(int value) implements Comparable<PosInt> {
 
   /**
@@ -31,7 +32,6 @@ public record PosInt(int value) implements Comparable<PosInt> {
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  @NotNull
   public static Optional<ParametersValidationException> validate(
       int value
   ) {
@@ -54,7 +54,6 @@ public record PosInt(int value) implements Comparable<PosInt> {
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
    *     {@link #validate(int)} method
    */
-  @NotNull
   public static Either<ParametersValidationException, PosInt> from(
       int value
   ) {
@@ -91,7 +90,7 @@ public record PosInt(int value) implements Comparable<PosInt> {
    *     {@code that.value} (signed comparison)
    */
   @Override
-  public int compareTo(@NotNull PosInt that) {
+  public int compareTo(PosInt that) {
     return Integer.compare(this.value, that.value);
   }
 }

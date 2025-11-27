@@ -1,8 +1,8 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.util.refined.NonEmptySet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Set} instances.
  */
+@NullMarked
 public final class SetsOps {
 
   private SetsOps() {
@@ -28,7 +29,6 @@ public final class SetsOps {
    * @param <T> the type of instances contained in the {@link Set}
    * @return an empty {@link Set} using {@link Set#of}, if {@code ts} is {@code null}, otherwise returns {@code ts}
    */
-  @NotNull
   public static <T> Set<T> nullToEmpty(@Nullable Set<T> ts) {
     return ts != null
         ? ts
@@ -43,10 +43,9 @@ public final class SetsOps {
    * @param <T>   the type of instances contained in the set
    * @return an unmodifiable unordered set with the {@code value} added
    */
-  @NotNull
   public static <T> Set<T> addItem(
-      @NotNull Set<T> set,
-      @NotNull T value
+      Set<T> set,
+      T value
   ) {
     if (!set.isEmpty()) {
       var result = new HashSet<>(set);
@@ -66,10 +65,9 @@ public final class SetsOps {
    * @param <T>   the type of instances contained in the set
    * @return an unmodifiable <u><i>ordered</i></u> set with the {@code value} appended
    */
-  @NotNull
   public static <T> Set<T> appendItem(
-      @NotNull Set<T> set,
-      @NotNull T value
+      Set<T> set,
+      T value
   ) {
     if (!set.isEmpty()) {
       var result = new LinkedHashSet<>(set);
@@ -89,10 +87,9 @@ public final class SetsOps {
    * @return unmodifiable unordered set consisting of each set (filtered to non-null) from sets added together
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <T> Set<T> addSets(
-      @NotNull Set<T>... sets
+      Set<T>... sets
   ) {
     if (sets.length > 0) {
       var result = new HashSet<T>();
@@ -128,10 +125,9 @@ public final class SetsOps {
    *     together
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <T> Set<T> appendSets(
-      @NotNull Set<T>... sets
+      Set<T>... sets
   ) {
     if (sets.length > 0) {
       var result = new LinkedHashSet<T>();
@@ -161,9 +157,8 @@ public final class SetsOps {
    * @param <T>        the type of the instances
    * @return an unmodifiable unordered {@link Set} filtered of {@code null}s
    */
-  @NotNull
   public static <T> Set<T> nullSanitize(
-      @NotNull Collection<T> collection
+      Collection<@Nullable T> collection
   ) {
     return nullSanitize(collection.stream());
   }
@@ -175,9 +170,8 @@ public final class SetsOps {
    * @param <T>    the type of the instances
    * @return an unmodifiable unordered {@link Set} filtered of {@code null}s
    */
-  @NotNull
   public static <T> Set<T> nullSanitize(
-      @NotNull Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
     return stream
         .filter(t ->
@@ -192,9 +186,8 @@ public final class SetsOps {
    * @param <T>        the type of the instances
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s.
    */
-  @NotNull
   public static <T> Set<T> toSetOrdered(
-      @NotNull Collection<T> collection
+      Collection<@Nullable T> collection
   ) {
     return toSetOrdered(collection.stream());
   }
@@ -206,13 +199,15 @@ public final class SetsOps {
    * @param <T>    the type of the instances
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} filtered of {@code null}s
    */
-  @NotNull
   public static <T> Set<T> toSetOrdered(
-      @NotNull Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
+    //noinspection RedundantCast
     var set = stream
         .filter(t ->
             !Objects.isNull(t))
+        .map(t ->
+            (T) t)
         .collect(Collectors.toCollection(LinkedHashSet::new));
 
     return !set.isEmpty()
@@ -229,9 +224,8 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <T> Set<T> reverse(
-      Set<T> ts
+      Set<@Nullable T> ts
   ) {
     if (!ts.isEmpty()) {
 
@@ -250,9 +244,8 @@ public final class SetsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@link Set} of the source's elements in reverse order filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <T> Set<T> reverse(
-      Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
     var mutableList = stream
         .filter(t ->
@@ -265,6 +258,25 @@ public final class SetsOps {
     }
 
     return Set.of();
+  }
+
+  /**
+   * Returns {@code true} if any of the elements within {@code leftTs} are contained within {@code rightTs}, otherwise
+   * {@code false}.
+   *
+   * @param leftTs  the first source of the T elements
+   * @param rightTs the second source of the T elements
+   * @param <T>     the type of instances contained in the source
+   * @return {@code true} if any of the elements within {@code leftTs} are contained within {@code rightTs}, otherwise
+   *     {@code false}
+   */
+  public static <T> boolean containsAny(
+      Set<T> leftTs,
+      Set<T> rightTs
+  ) {
+    return (leftTs.size() < rightTs.size())
+        ? leftTs.stream().anyMatch(rightTs::contains)
+        : rightTs.stream().anyMatch(leftTs::contains);
   }
 
   /**
@@ -412,10 +424,9 @@ public final class SetsOps {
    * @throws NullPointerException if {@code leftTs} or {@code rightTs} contains any {@code null}s
    */
   @SuppressWarnings("unchecked")
-  @NotNull
   public static <T> Map<SetPairViewKey, Set<T>> contrastSetPair(
-      @NotNull Set<T> leftTs,
-      @NotNull Set<T> rightTs
+      Set<T> leftTs,
+      Set<T> rightTs
   ) {
     if (!leftTs.isEmpty()) {
       if (!rightTs.isEmpty()) {
@@ -509,349 +520,50 @@ public final class SetsOps {
   }
 
   /**
-   * Returns the passed in <u><i>mutable</i></u> {@code Set}, if a value was successfully added/appended without the
-   * value pre-existing, otherwise throws an {@link IllegalArgumentException} that identifies the {@code value} causing
-   * the collision.
-   * <p>
-   * ---
-   * <p>
-   * <b>WARNING:</b> This is a <b>SIDE-EFFECTING</b> method in that it modifies the {@code mutableSet} parameter.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing the (filtered to non-null) elements.
    *
-   * @param mutableSet the map into which the entry will be added/appended - SIDE EFFECTING
-   * @param t          the value to add/append
-   * @param <T>        the type of instances contained in the set
-   * @return the passed in <u><i>mutable</i></u> {@code Set}, if a value was successfully added/appended without the
-   *     value pre-existing, otherwise throws an {@link IllegalArgumentException} that identifies the {@code value}
-   *     causing the collision
+   * @param ts  the source of the values
+   * @param <T> the type of instances contained in the source
+   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing the (filtered to non-null) elements
+   * @throws IllegalArgumentException if any t instance is duplicated; i.e. all ts must be unique, and identifies the
+   *                                  {@code key}(s) causing the collision
    */
-  @SuppressWarnings("UnusedReturnValue")
-  private static <T> Set<T> add(
-      Set<T> mutableSet,
-      T t
+  @SuppressWarnings("ConstantValue")
+  @SafeVarargs
+  public static <T> Set<T> ofOrdered(
+      T... ts
   ) {
-    if (!mutableSet.add(t)) {
-      throw new IllegalArgumentException("duplicate element: " + t);
+    if (ts.length > 0) {
+      var tsSansNulls = Arrays.stream(ts)
+          .filter(Objects::nonNull)
+          .toList();
+      if (!tsSansNulls.isEmpty()) {
+        var result = new LinkedHashSet<T>();
+        var duplicates = new ArrayList<T>();
+        //noinspection SimplifyStreamApiCallChains
+        tsSansNulls
+            .stream()
+            .forEachOrdered(t -> {
+              if (!result.add(t)) {
+                duplicates.add(t);
+              }
+            });
+        if (!duplicates.isEmpty()) {
+          throw new IllegalArgumentException("duplicate elements encountered - %s".formatted(
+              String.join(
+                  ", ",
+                  duplicates
+                      .stream()
+                      .map(Object::toString)
+                      .toList())));
+        }
+
+        return !result.isEmpty()
+            ? Collections.unmodifiableSet(result)
+            : Set.of();
+      }
     }
 
-    return mutableSet;
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing a single element.
-   *
-   * @param t1  the element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing a single element
-   */
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param t5  the fifth element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4,
-      @NotNull T t5
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-    add(result, t5);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param t5  the fifth element
-   * @param t6  the sixth element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @SuppressWarnings("DuplicatedCode")
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4,
-      @NotNull T t5,
-      @NotNull T t6
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-    add(result, t5);
-    add(result, t6);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param t5  the fifth element
-   * @param t6  the sixth element
-   * @param t7  the seventh element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @SuppressWarnings("DuplicatedCode")
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4,
-      @NotNull T t5,
-      @NotNull T t6,
-      @NotNull T t7
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-    add(result, t5);
-    add(result, t6);
-    add(result, t7);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param t5  the fifth element
-   * @param t6  the sixth element
-   * @param t7  the seventh element
-   * @param t8  the eighth element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @SuppressWarnings("DuplicatedCode")
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4,
-      @NotNull T t5,
-      @NotNull T t6,
-      @NotNull T t7,
-      @NotNull T t8
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-    add(result, t5);
-    add(result, t6);
-    add(result, t7);
-    add(result, t8);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param t5  the fifth element
-   * @param t6  the sixth element
-   * @param t7  the seventh element
-   * @param t8  the eighth element
-   * @param t9  the ninth element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @SuppressWarnings("DuplicatedCode")
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4,
-      @NotNull T t5,
-      @NotNull T t6,
-      @NotNull T t7,
-      @NotNull T t8,
-      @NotNull T t9
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-    add(result, t5);
-    add(result, t6);
-    add(result, t7);
-    add(result, t8);
-    add(result, t9);
-
-    return Collections.unmodifiableSet(result);
-  }
-
-  /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements.
-   *
-   * @param t1  the first element
-   * @param t2  the second element
-   * @param t3  the third element
-   * @param t4  the fourth element
-   * @param t5  the fifth element
-   * @param t6  the sixth element
-   * @param t7  the seventh element
-   * @param t8  the eighth element
-   * @param t9  the ninth element
-   * @param t10 the tenth element
-   * @param <T> the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@code Set} containing ten elements
-   * @throws IllegalArgumentException if the values are not unique
-   */
-  @SuppressWarnings("DuplicatedCode")
-  @NotNull
-  public static <T> Set<T> ofOrdered(
-      @NotNull T t1,
-      @NotNull T t2,
-      @NotNull T t3,
-      @NotNull T t4,
-      @NotNull T t5,
-      @NotNull T t6,
-      @NotNull T t7,
-      @NotNull T t8,
-      @NotNull T t9,
-      @NotNull T t10
-  ) {
-    var result = new LinkedHashSet<T>();
-    result.add(t1);
-    add(result, t2);
-    add(result, t3);
-    add(result, t4);
-    add(result, t5);
-    add(result, t6);
-    add(result, t7);
-    add(result, t8);
-    add(result, t9);
-    add(result, t10);
-
-    return Collections.unmodifiableSet(result);
+    return Set.of();
   }
 }

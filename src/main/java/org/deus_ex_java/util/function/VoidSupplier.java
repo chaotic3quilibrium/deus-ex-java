@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * Represents an action to execute without having to unnecessarily specify an input argument, and unnecessarily supply a
@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * whose functional method is {@link #execute()}.
  */
 @FunctionalInterface
+@NullMarked
 public interface VoidSupplier {
 
   /**
@@ -23,9 +24,8 @@ public interface VoidSupplier {
    * @return a {@link VoidSupplier} wrapper around a {@link Runnable} instance.
    * @see FunctionsOps#to(VoidSupplier) FunctionsOps.to(VoidSupplier) for the inverted version of this method
    */
-  @NotNull
   static <R> VoidSupplier of(
-      @NotNull Runnable runnable
+      Runnable runnable
   ) {
     return runnable::run;
   }

@@ -129,6 +129,35 @@ public class SetsOpsTests {
     assertEquals(expectedSetOrdered, SetsOps.reverse(nullContainingSetOrdered));
   }
 
+  @Test
+  public void testContainsAny() {
+    //containsAny
+    var leftTsEmpty = Set.<Integer>of();
+    var rightTsEmpty = Set.<Integer>of();
+    assertFalse(SetsOps.containsAny(leftTsEmpty, rightTsEmpty));
+    var leftTs1 = Set.of(1);
+    var rightTs1 = Set.of(1);
+    assertFalse(SetsOps.containsAny(leftTsEmpty, rightTs1));
+    assertFalse(SetsOps.containsAny(leftTs1, rightTsEmpty));
+    assertTrue(SetsOps.containsAny(leftTs1, rightTs1));
+    var leftTs2 = Set.of(2);
+    var rightTs2 = Set.of(2);
+    assertFalse(SetsOps.containsAny(leftTsEmpty, rightTs2));
+    assertFalse(SetsOps.containsAny(leftTs2, rightTsEmpty));
+    assertFalse(SetsOps.containsAny(leftTs1, rightTs2));
+    assertFalse(SetsOps.containsAny(leftTs2, rightTs1));
+    assertTrue(SetsOps.containsAny(leftTs2, rightTs2));
+    var leftTs12 = Set.of(1, 2);
+    var rightTs12 = Set.of(1, 2);
+    assertFalse(SetsOps.containsAny(leftTsEmpty, rightTs12));
+    assertFalse(SetsOps.containsAny(leftTs12, rightTsEmpty));
+    assertTrue(SetsOps.containsAny(leftTs1, rightTs12));
+    assertTrue(SetsOps.containsAny(leftTs12, rightTs1));
+    assertTrue(SetsOps.containsAny(leftTs2, rightTs12));
+    assertTrue(SetsOps.containsAny(leftTs12, rightTs2));
+    assertTrue(SetsOps.containsAny(leftTs12, rightTs12));
+  }
+
   private <T> void validateContrastSetPairMap(
       Map<SetPairViewKey, Set<T>> expectedTsBySetPairViewKey,
       Map<SetPairViewKey, Set<T>> actualTsBySetPairViewKey
@@ -194,6 +223,21 @@ public class SetsOpsTests {
             SetPairViewKey.RIGHT_DIFFERENCE, Set.of(1),
             SetPairViewKey.DIFFERENCE, Set.of(1, 4)),
         SetsOps.contrastSetPair(setB, setA));
+  }
+
+  @Test
+  public void testOfOrdered() {
+    var set = SetsOps.ofOrdered();
+    assertNotNull(set);
+    assertTrue(set.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(set));
+    var set2 = new LinkedHashSet<Integer>();
+    assertEquals(set2, set);
+    var set3 = SetsOps.ofOrdered(1, 3, 2, 4);
+    assertNotNull(set3);
+    assertFalse(set3.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(set3));
+    assertEquals(List.of(1, 3, 2, 4), set3.stream().toList());
   }
 
   @Test

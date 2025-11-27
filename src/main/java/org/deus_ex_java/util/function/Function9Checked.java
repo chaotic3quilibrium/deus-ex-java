@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple9;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function9} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function9Checked<A, B, C, D, E, F, G, H, I, R, EX extends Exception> {
 
   /**
@@ -25,16 +26,16 @@ public interface Function9Checked<A, B, C, D, E, F, G, H, I, R, EX extends Excep
    * @param i the ninth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e,
-      @NotNull F f,
-      @NotNull G g,
-      @NotNull H h,
-      @NotNull I i) throws EX;
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e,
+      F f,
+      G g,
+      H h,
+      I i) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -45,20 +46,19 @@ public interface Function9Checked<A, B, C, D, E, F, G, H, I, R, EX extends Excep
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function9Checked<A, B, C, D, E, F, G, H, I, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h,
-        @NotNull I i) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h,
+        I i) ->
         after.apply(apply(a, b, c, d, e, f, g, h, i));
   }
 
@@ -70,9 +70,8 @@ public interface Function9Checked<A, B, C, D, E, F, G, H, I, R, EX extends Excep
    * @return a {@link Function9Checked} where the input parameters are extracted from a {@link FunctionChecked} which
    *     accepts a {@link Tuple9}
    */
-  @NotNull
   default Function9Checked<A, B, C, D, E, F, G, H, I, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple9<
               ? super A,
               ? super B,
@@ -87,15 +86,15 @@ public interface Function9Checked<A, B, C, D, E, F, G, H, I, R, EX extends Excep
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g,
-        @NotNull H h,
-        @NotNull I i) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g,
+        H h,
+        I i) ->
         function.apply(
             new Tuple9<>(a, b, c, d, e, f, g, h, i));
   }
@@ -105,9 +104,8 @@ public interface Function9Checked<A, B, C, D, E, F, G, H, I, R, EX extends Excep
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple9} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple9<A, B, C, D, E, F, G, H, I>, R, EX> tupled() {
-    return (@NotNull Tuple9<A, B, C, D, E, F, G, H, I> tuple9) ->
+    return (Tuple9<A, B, C, D, E, F, G, H, I> tuple9) ->
         apply(
             tuple9._1(),
             tuple9._2(),

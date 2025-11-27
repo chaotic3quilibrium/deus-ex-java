@@ -1,7 +1,7 @@
 package org.deus_ex_java.util;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -42,6 +42,7 @@ import java.util.stream.Stream;
  * {@link java.lang.NullPointerException} when passed to any methods.
  **/
 @SuppressWarnings("ClassCanBeRecord")
+@NullMarked
 public final class Either<L, R> {
 
   /**
@@ -58,10 +59,9 @@ public final class Either<L, R> {
    * @throws IllegalArgumentException if both, return the same value for {@link Optional#isEmpty}
    */
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @NotNull
   public static <L, R> Either<L, R> from(
-      @NotNull Optional<L> leftOptional,
-      @NotNull Optional<R> rightOptional
+      Optional<L> leftOptional,
+      Optional<R> rightOptional
   ) {
     if (leftOptional.isEmpty() == rightOptional.isEmpty()) {
       throw new IllegalArgumentException("leftOptional.isEmpty() must not be equal to rightOptional.isEmpty()");
@@ -83,8 +83,7 @@ public final class Either<L, R> {
    * @return an instance of {@link Either} well-defined for the right side
    * @throws NullPointerException if value is {@code null}
    */
-  @NotNull
-  public static <L, R> Either<L, R> right(@NotNull R value) {
+  public static <L, R> Either<L, R> right(R value) {
     return Either.from(Optional.empty(), Optional.of(value));
   }
 
@@ -97,8 +96,7 @@ public final class Either<L, R> {
    * @return an instance of {@link Either} well-defined for the left side
    * @throws NullPointerException if value is {@code null}
    */
-  @NotNull
-  public static <L, R> Either<L, R> left(@NotNull L value) {
+  public static <L, R> Either<L, R> left(L value) {
     return Either.from(Optional.of(value), Optional.empty());
   }
 
@@ -116,10 +114,9 @@ public final class Either<L, R> {
    *                              extracted, is {@code null}
    */
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-  @NotNull
   public static <L, R> Either<L, R> from(
-      @NotNull Supplier<L> leftSupplier,
-      @NotNull Optional<R> rightOptional
+      Supplier<L> leftSupplier,
+      Optional<R> rightOptional
   ) {
     return rightOptional
         .map(Either::<L, R>right)
@@ -185,7 +182,6 @@ public final class Either<L, R> {
    * @throws NoSuchElementException if the right side of this {@link Either} is not defined
    */
   @SuppressWarnings("OptionalGetWithoutIsPresent")
-  @NotNull
   public R getRight() {
     return toOptionalRight().get();
   }
@@ -198,7 +194,6 @@ public final class Either<L, R> {
    * @throws NoSuchElementException if the left side of this {@link Either} is not defined
    */
   @SuppressWarnings("OptionalGetWithoutIsPresent")
-  @NotNull
   public L getLeft() {
     return toOptionalLeft().get();
   }
@@ -209,7 +204,6 @@ public final class Either<L, R> {
    *
    * @return an {@link Optional} containing the right side if defined, or else returns {@link Optional#empty}
    */
-  @NotNull
   public Optional<R> toOptional() {
     return toOptionalRight();
   }
@@ -219,7 +213,6 @@ public final class Either<L, R> {
    *
    * @return a stream from forwarding the call to {@link Either#toOptionalRight}
    */
-  @NotNull
   public Stream<R> stream() {
     return toOptional().stream();
   }
@@ -231,7 +224,6 @@ public final class Either<L, R> {
    * @return an {@link Optional} containing the right side if defined, or else returns {@link Optional#empty}
    */
   @SuppressWarnings("unchecked")
-  @NotNull
   public Optional<R> toOptionalRight() {
     return this.isRight()
         ? ((Optional<R>) this.untypedOptionalValue)
@@ -245,7 +237,6 @@ public final class Either<L, R> {
    * @return an {@link Optional} containing the left side if defined, or else returns {@link Optional#empty}
    */
   @SuppressWarnings("unchecked")
-  @NotNull
   public Optional<L> toOptionalLeft() {
     return !this.isRight()
         ? ((Optional<L>) this.untypedOptionalValue)
@@ -259,8 +250,7 @@ public final class Either<L, R> {
    * @param <T>           target type to which R is translated
    * @return result of the function translation, replacing type R with type T
    */
-  @NotNull
-  public <T> Either<L, T> map(@NotNull Function<? super R, ? extends T> rightFunction) {
+  public <T> Either<L, T> map(Function<? super R, ? extends T> rightFunction) {
     return mapRight(rightFunction);
   }
 
@@ -272,9 +262,8 @@ public final class Either<L, R> {
    * @param <T>           target type to which R is translated
    * @return result of the function translation, replacing type R with type T
    */
-  @NotNull
   public <T> Either<L, T> flatMap(
-      @NotNull Function<? super R, ? extends Either<L, ? extends T>> rightFunction
+      Function<? super R, ? extends Either<L, ? extends T>> rightFunction
   ) {
     return flatMapRight(rightFunction);
   }
@@ -290,10 +279,9 @@ public final class Either<L, R> {
    * @return {@link Either#left} when {@link Either#isLeft} is {@code true}, or returns {@link Either#right} when
    *     {@link Either#isRight} is {@code true} and {@code retainingRight} returns {@code true}
    */
-  @NotNull
   public Either<L, R> filterOrElse(
-      @NotNull Predicate<R> retainingRight,
-      @NotNull Supplier<L> leftFunction
+      Predicate<R> retainingRight,
+      Supplier<L> leftFunction
   ) {
     return filterOrElseRight(retainingRight, leftFunction);
   }
@@ -306,8 +294,7 @@ public final class Either<L, R> {
    * @return result of the function translation, replacing type L with type T
    * @throws NullPointerException if leftFunction or the value it returns is {@code null}
    */
-  @NotNull
-  public <T> Either<T, R> mapLeft(@NotNull Function<? super L, ? extends T> leftFunction) {
+  public <T> Either<T, R> mapLeft(Function<? super L, ? extends T> leftFunction) {
     //noinspection unchecked
     return isLeft()
         //@formatter:off
@@ -327,8 +314,7 @@ public final class Either<L, R> {
    * @return result of the function translation, replacing type R with type T
    * @throws NullPointerException if rightFunction or the value it returns is {@code null}
    */
-  @NotNull
-  public <T> Either<L, T> mapRight(@NotNull Function<? super R, ? extends T> rightFunction) {
+  public <T> Either<L, T> mapRight(Function<? super R, ? extends T> rightFunction) {
     //noinspection unchecked
     return isRight()
         //@formatter:off
@@ -348,9 +334,8 @@ public final class Either<L, R> {
    * @return result of the function translation, replacing type L with type T
    * @throws NullPointerException if leftFunction or the value it returns is {@code null}
    */
-  @NotNull
   public <T> Either<T, R> flatMapLeft(
-      @NotNull Function<? super L, ? extends Either<? extends T, R>> leftFunction
+      Function<? super L, ? extends Either<? extends T, R>> leftFunction
   ) {
     //noinspection unchecked
     return this.toOptionalLeft()
@@ -368,9 +353,8 @@ public final class Either<L, R> {
    * @return result of the function translation, replacing type R with type T
    * @throws NullPointerException if rightFunction or the value it returns is {@code null}
    */
-  @NotNull
   public <T> Either<L, T> flatMapRight(
-      @NotNull Function<? super R, ? extends Either<L, ? extends T>> rightFunction
+      Function<? super R, ? extends Either<L, ? extends T>> rightFunction
   ) {
     //noinspection unchecked
     return this.toOptionalRight()
@@ -392,10 +376,9 @@ public final class Either<L, R> {
    * {@link Either#isLeft} is {@code true} and {@code retainingLeft} returns {@code true}, or returns the value
    * returned by {@code rightFunction} within {@link Either#right}
    */
-  @NotNull
   public Either<L, R> filterOrElseLeft(
-      @NotNull Predicate<L> retainingLeft,
-      @NotNull Supplier<R> rightFunction
+      Predicate<L> retainingLeft,
+      Supplier<R> rightFunction
   ) {
     return this.toOptionalLeft()
         .<Either<L, R>>map(l ->
@@ -416,10 +399,9 @@ public final class Either<L, R> {
    * @return {@link Either#left} when {@link Either#isLeft} is {@code true}, or returns {@link Either#right} when
    * {@link Either#isRight} is {@code true} and {@code retainingRight} returns {@code true}
    */
-  @NotNull
   public Either<L, R> filterOrElseRight(
-      @NotNull Predicate<R> retainingRight,
-      @NotNull Supplier<L> leftFunction
+      Predicate<R> retainingRight,
+      Supplier<L> leftFunction
   ) {
     return this.toOptionalRight()
         .<Either<L, R>>map(r ->
@@ -436,7 +418,6 @@ public final class Either<L, R> {
    * @return reversed type such that if this is a {@link Either#left}, then return the {@link Either#left} value in
    * {@link Either#right} or vice versa
    */
-  @NotNull
   public Either<R, L> swap() {
     return new Either<>(!this.isRight, this.untypedOptionalValue);
   }
@@ -451,10 +432,9 @@ public final class Either<L, R> {
    * @throws NullPointerException if leftFunction, the value it returns, rightFunction, or the value it returns is
    *                              {@code null}
    */
-  @NotNull
   public <T> T converge(
-      @NotNull Function<? super L, ? extends T> leftFunction,
-      @NotNull Function<? super R, ? extends T> rightFunction
+      Function<? super L, ? extends T> leftFunction,
+      Function<? super R, ? extends T> rightFunction
   ) {
     return this.toOptionalRight()
         .<T>map(r ->
@@ -495,7 +475,6 @@ public final class Either<L, R> {
    * @return an instance of T
    */
   @SuppressWarnings("unchecked")
-  @NotNull
   public <T> T converge() {
     return (T) converge(this);
   }
@@ -514,8 +493,7 @@ public final class Either<L, R> {
    * @return an instance of T
    */
   @SuppressWarnings("OptionalGetWithoutIsPresent")
-  @NotNull
-  public static <T> T converge(@NotNull Either<? extends T, ? extends T> either) {
+  public static <T> T converge(Either<? extends T, ? extends T> either) {
     return either.toOptionalRight().isPresent()
         ? either.toOptionalRight().get()
         : either.toOptionalLeft().get();
@@ -532,7 +510,6 @@ public final class Either<L, R> {
    * directly thrown, otherwise when {@link L} is a {@link Throwable}, {@link L} is wrapped in the
    * {@link IllegalStateException}, otherwise nothing is wrapped in the thrown {@link IllegalStateException}
    */
-  @NotNull
   public R getRightOrThrowLeft() {
     if (this.isLeft()) {
       if (this.getLeft() instanceof RuntimeException runtimeException) {
@@ -560,7 +537,6 @@ public final class Either<L, R> {
    * {@link Throwable}, which, if {@link L} is an instance of a {@link Throwable}, then {@link L} is directly
    * thrown, otherwise nothing is wrapped in the thrown {@link IllegalStateException}
    */
-  @NotNull
   public R getRightOrThrowLeftCheckedException() throws Throwable {
     if (this.isLeft()) {
       if (this.getLeft() instanceof Throwable throwable) {
@@ -583,8 +559,8 @@ public final class Either<L, R> {
    * @param rightAction given function is only executed if right is defined
    */
   public void forEach(
-      @NotNull Consumer<? super L> leftAction,
-      @NotNull Consumer<? super R> rightAction
+      Consumer<? super L> leftAction,
+      Consumer<? super R> rightAction
   ) {
     this.toOptionalRight().ifPresent(rightAction);
     this.toOptionalLeft().ifPresent(leftAction);

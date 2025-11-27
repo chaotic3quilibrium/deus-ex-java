@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.ObjIntConsumer;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.ObjIntConsumer;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface ObjIntConsumerCheckedException<T> extends ObjIntConsumerChecked<T, Exception> {
 
 }

@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.LongFunction;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.LongFunction;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface LongFunctionCheckedException<R> extends LongFunctionChecked<R, Exception> {
 
 }

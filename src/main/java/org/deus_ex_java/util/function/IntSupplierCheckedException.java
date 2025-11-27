@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.IntSupplier;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.IntSupplier;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface IntSupplierCheckedException extends IntSupplierChecked<Exception> {
 
 }

@@ -5,6 +5,7 @@ import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -315,6 +316,24 @@ public class EnumAndIdsOpsTests {
             entry(TrafficLightWithIdG.SYELLOW, "sYELLOw"),
             entry(TrafficLightWithIdG.SRED, "SRed")),
         tlwix.stream().toList());
+  }
+
+  @Test
+  public void testJoinDirectly() {
+    var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
+    assertEquals(
+        "SGREEN(0), SYELLOW(1), SRED(2)",
+        tlwixoo
+            .joinOnIds());
+    assertEquals(
+        "SGREEN(0), SRED(2)",
+        tlwixoo
+            .joinOnIds(
+                tlwixoo
+                    .stream()
+                    .filter(trafficLightBasedWithIdAAndId ->
+                        trafficLightBasedWithIdAAndId.toString().contains("R"))
+                    .map(Map.Entry::getValue)));
   }
 
   @Test

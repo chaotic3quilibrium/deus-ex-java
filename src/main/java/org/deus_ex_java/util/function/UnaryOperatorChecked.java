@@ -1,11 +1,14 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.UnaryOperator;
 
 /**
  * Enables the providing of a {@link UnaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface UnaryOperatorChecked<T, EX extends Exception> extends FunctionChecked<T, T, EX> {
 
   /**

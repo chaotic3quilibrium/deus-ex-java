@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple7;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function7} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function7Checked<A, B, C, D, E, F, G, R, EX extends Exception> {
 
   /**
@@ -23,14 +24,14 @@ public interface Function7Checked<A, B, C, D, E, F, G, R, EX extends Exception> 
    * @param g the seventh function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e,
-      @NotNull F f,
-      @NotNull G g) throws EX;
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e,
+      F f,
+      G g) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -41,18 +42,17 @@ public interface Function7Checked<A, B, C, D, E, F, G, R, EX extends Exception> 
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function7Checked<A, B, C, D, E, F, G, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g) ->
         after.apply(apply(a, b, c, d, e, f, g));
   }
 
@@ -64,9 +64,8 @@ public interface Function7Checked<A, B, C, D, E, F, G, R, EX extends Exception> 
    * @return a {@link Function7Checked} where the input parameters are extracted from a {@link FunctionChecked} which
    *     accepts a {@link Tuple7}
    */
-  @NotNull
   default Function7Checked<A, B, C, D, E, F, G, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple7<
               ? super A,
               ? super B,
@@ -79,13 +78,13 @@ public interface Function7Checked<A, B, C, D, E, F, G, R, EX extends Exception> 
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e,
-        @NotNull F f,
-        @NotNull G g) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e,
+        F f,
+        G g) ->
         function.apply(
             new Tuple7<>(a, b, c, d, e, f, g));
   }
@@ -95,9 +94,8 @@ public interface Function7Checked<A, B, C, D, E, F, G, R, EX extends Exception> 
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple7} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple7<A, B, C, D, E, F, G>, R, EX> tupled() {
-    return (@NotNull Tuple7<A, B, C, D, E, F, G> tuple7) ->
+    return (Tuple7<A, B, C, D, E, F, G> tuple7) ->
         apply(
             tuple7._1(),
             tuple7._2(),

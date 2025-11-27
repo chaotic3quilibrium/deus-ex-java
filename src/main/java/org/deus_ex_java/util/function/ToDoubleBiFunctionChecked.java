@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.ToDoubleBiFunction;
 
@@ -8,6 +8,7 @@ import java.util.function.ToDoubleBiFunction;
  * Enables the providing of a {@link ToDoubleBiFunction} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface ToDoubleBiFunctionChecked<T, U, EX extends Exception> {
 
   /**
@@ -17,5 +18,5 @@ public interface ToDoubleBiFunctionChecked<T, U, EX extends Exception> {
    * @param u the second function argument
    * @return the function result
    */
-  double applyAsDouble(@NotNull T t, @NotNull U u) throws EX;
+  double applyAsDouble(T t, U u) throws EX;
 }

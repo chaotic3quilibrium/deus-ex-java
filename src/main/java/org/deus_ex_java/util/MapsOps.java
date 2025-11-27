@@ -2,8 +2,8 @@ package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.util.refined.NonEmptyMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Map} instances.
  */
+@NullMarked
 public final class MapsOps {
 
   private MapsOps() {
@@ -34,7 +35,6 @@ public final class MapsOps {
    * @return an empty {@link Map} using {@link Map#of}, if {@code mapKv} is {@code null}, otherwise returns
    *     {@code mapKv}.
    */
-  @NotNull
   public static <K, V> Map<K, V> nullToEmpty(@Nullable Map<K, V> mapKv) {
     return mapKv != null
         ? mapKv
@@ -50,7 +50,7 @@ public final class MapsOps {
    * @return {@code true} if both the key and the value are non-{@code null}, otherwise {@code false}
    */
   public static <K, V> boolean isNonNulls(
-      @NotNull Entry<K, V> entry
+      Entry<@Nullable K, @Nullable V> entry
   ) {
     return (entry.getKey() != null) && (entry.getValue() != null);
   }
@@ -73,7 +73,7 @@ public final class MapsOps {
    *     the validation preconditions which failed, otherwise an {@link Optional#empty()}
    */
   public static <K, V> Optional<ParametersValidationException> validate(
-      @NotNull Entry<K, V> entry
+      Entry<@Nullable K, @Nullable V> entry
   ) {
     return !isNonNulls(entry)
         //@formatter:off
@@ -103,7 +103,7 @@ public final class MapsOps {
    *     {@code entrySet} where either the key or the value is {@code null}
    */
   public static <K, V> Map<K, V> nullSanitize(
-      @NotNull Map<K, V> map
+      Map<@Nullable K, @Nullable V> map
   ) {
     return map
         .entrySet()
@@ -122,10 +122,9 @@ public final class MapsOps {
    * @return a new unmodifiable unordered {@link Map} from an existing {@code map}, adding/updating an {@link Entry}
    * @throws NullPointerException if the provided {@link Entry} contains {@code null} in either its key or value.
    */
-  @NotNull
   public static <K, V> Map<K, V> addEntry(
-      @NotNull Map<K, V> map,
-      @NotNull Entry<K, V> entry
+      Map<K, V> map,
+      Entry<K, V> entry
   ) {
     validate(entry)
         .ifPresent(parametersValidationException -> {
@@ -147,11 +146,10 @@ public final class MapsOps {
    * @return a new unmodifiable unordered {@link Map} from an existing {@code map}, adding/updating a {@code key} and
    *     its associated {@code value}
    */
-  @NotNull
   public static <K, V> Map<K, V> addKeyAndValue(
-      @NotNull Map<K, V> map,
-      @NotNull K key,
-      @NotNull V value
+      Map<K, V> map,
+      K key,
+      V value
   ) {
     var result = new HashMap<>(map);
     result.put(key, value);
@@ -172,10 +170,9 @@ public final class MapsOps {
    *     is already present, updating) an {@link Entry}
    * @throws NullPointerException if the provided {@link Entry} contains {@code null} in either its key or value.
    */
-  @NotNull
   public static <K, V> Map<K, V> appendEntry(
-      @NotNull Map<K, V> map,
-      @NotNull Entry<K, V> entry
+      Map<K, V> map,
+      Entry<K, V> entry
   ) {
     validate(entry)
         .ifPresent(parametersValidationException -> {
@@ -198,9 +195,9 @@ public final class MapsOps {
    *     is already present, updating) a {@code key} and its associated {@code value}
    */
   public static <K, V> Map<K, V> appendKeyAndValue(
-      @NotNull Map<K, V> map,
-      @NotNull K key,
-      @NotNull V value
+      Map<K, V> map,
+      K key,
+      V value
   ) {
     if (!map.isEmpty()) {
       var result = new LinkedHashMap<>(map);
@@ -223,10 +220,9 @@ public final class MapsOps {
    *     from maps added together
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <K, V> Map<K, V> addMaps(
-      @NotNull Map<K, V>... maps
+      Map<K, V>... maps
   ) {
     if (maps.length > 0) {
       var result = new HashMap<K, V>();
@@ -260,10 +256,9 @@ public final class MapsOps {
    *     the values, from maps appended together
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
   public static <K, V> Map<K, V> appendMaps(
-      @NotNull Map<K, V>... maps
+      Map<K, V>... maps
   ) {
     if (maps.length > 0) {
       var result = new LinkedHashMap<K, V>();
@@ -298,9 +293,8 @@ public final class MapsOps {
    *     filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if
    *     the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <K, V> Map<K, V> nullSanitize(
-      @NotNull Collection<Entry<K, V>> collection
+      Collection<@Nullable Entry<K, V>> collection
   ) {
     return nullSanitize(collection.stream());
   }
@@ -317,9 +311,8 @@ public final class MapsOps {
    *     filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if
    *     the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <K, V> Map<K, V> nullSanitize(
-      @NotNull Stream<Entry<K, V>> kAndVs
+      Stream<@Nullable Entry<K, V>> kAndVs
   ) {
     return toMap(kAndVs, Optional::of);
   }
@@ -340,10 +333,9 @@ public final class MapsOps {
    *     and then filtering the {@link Optional} out where either the contained entry's key and/or the value are
    *     {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <T, K, V> Map<K, V> toMap(
-      @NotNull Collection<T> collection,
-      @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
+      Collection<@Nullable T> collection,
+      Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
     return toMap(collection.stream(), fTtoOptionalEntry);
   }
@@ -364,10 +356,9 @@ public final class MapsOps {
    *     and then filtering the {@link Optional} out where either the contained entry's key and/or the value are
    *     {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <T, K, V> Map<K, V> toMap(
-      @NotNull Stream<T> ts,
-      @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
+      Stream<@Nullable T> ts,
+      Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
     var map = ts
         .filter(t ->
@@ -400,9 +391,8 @@ public final class MapsOps {
    *     otherwise filtering the entry out where either the contained entry's key and/or the value are {@code null}, and
    *     then if the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <K, V> Map<K, V> toMapOrdered(
-      @NotNull Collection<Entry<K, V>> collection
+      Collection<@Nullable Entry<K, V>> collection
   ) {
     return toMapOrdered(collection.stream(), Optional::of);
   }
@@ -419,9 +409,8 @@ public final class MapsOps {
    *     otherwise filtering the entry out where either the contained entry's key and/or the value are {@code null}, and
    *     then if the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <K, V> Map<K, V> toMapOrdered(
-      @NotNull Stream<Entry<K, V>> stream
+      Stream<@Nullable Entry<K, V>> stream
   ) {
     return toMapOrdered(stream, Optional::of);
   }
@@ -442,10 +431,9 @@ public final class MapsOps {
    *     {@link Entry}, and then filtering the {@link Optional} out where either the contained entry's key and/or the
    *     value are {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <T, K, V> Map<K, V> toMapOrdered(
-      @NotNull Collection<T> collection,
-      @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
+      Collection<@Nullable T> collection,
+      Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
     return toMapOrdered(collection.stream(), fTtoOptionalEntry);
   }
@@ -466,10 +454,9 @@ public final class MapsOps {
    *     {@link Entry}, and then filtering the {@link Optional} out where either the contained entry's key and/or the
    *     value are {@code null}, and then if the entry remains, it is ignored if it contains a duplicate key
    */
-  @NotNull
   public static <T, K, V> Map<K, V> toMapOrdered(
-      @NotNull Stream<T> stream,
-      @NotNull Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
+      Stream<@Nullable T> stream,
+      Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
     var map = stream
         .filter(t ->
@@ -511,9 +498,8 @@ public final class MapsOps {
    *     the same value (according to {@link Object#equals})
    * @throws NullPointerException if an {@link Entry} contains {@code null} in either its key or value.
    */
-  @NotNull
   public static <K, V> Map<V, K> swap(
-      @NotNull Map<K, V> map
+      Map<K, V> map
   ) {
     return !map.isEmpty()
         //@formatter:off
@@ -549,9 +535,8 @@ public final class MapsOps {
    *     one key with the same value (according to {@link Object#equals})
    * @throws NullPointerException if an {@link Entry} contains {@code null} in either its key or value.
    */
-  @NotNull
   public static <K, V> Map<V, K> swapOrdered(
-      @NotNull Map<K, V> map
+      Map<K, V> map
   ) {
     if (!map.isEmpty()) {
       var result = new LinkedHashMap<V, K>();
@@ -581,7 +566,6 @@ public final class MapsOps {
    * @param <V>  the type of the value instances of the entry in the stream
    * @return an unmodifiable <u><i>ordered</i></u> {@link Map} of the source's elements in reverse order
    */
-  @NotNull
   public static <K, V> Map<K, V> reverse(
       Map<K, V> vByK
   ) {
@@ -601,7 +585,6 @@ public final class MapsOps {
    * @param <V>    the type of the value instances of the entry in the stream
    * @return an unmodifiable <u><i>ordered</i></u> {@link Map} of the source's elements in reverse order
    */
-  @NotNull
   public static <K, V> Map<K, V> reverse(
       Stream<Entry<K, V>> stream
   ) {
@@ -610,6 +593,53 @@ public final class MapsOps {
       Collections.reverse(mutableList);
 
       return toMapOrdered(mutableList.stream());
+    }
+
+    return Map.of();
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@code Map} containing the (filtered to non-null, including key and
+   * value) entries.
+   *
+   * @param kAndVs the source of the entries
+   * @param <K>    the type of the key instances of the entry in the source
+   * @param <V>    the type of the value instances of the entry in the source
+   * @return an unmodifiable <u><i>ordered</i></u> {@code Map} containing the (filtered to non-null, including key and
+   *     value) entries
+   * @throws IllegalArgumentException if any key instance is duplicated; i.e. all keys must be unique, and identifies
+   *                                  the {@code key}(s) causing the collision
+   */
+  @SuppressWarnings("ConstantValue")
+  @SafeVarargs
+  public static <K, V> Map<K, V> ofEntriesOrdered(
+      Entry<K, V>... kAndVs
+  ) {
+    if (kAndVs.length > 0) {
+      var result = new LinkedHashMap<K, V>();
+      var duplicates = new ArrayList<Entry<K, V>>();
+      Arrays.stream(kAndVs)
+          .filter(kAndV ->
+              Objects.nonNull(kAndV) && isNonNulls(kAndV))
+          .forEachOrdered(kAndV -> {
+            if (result.put(kAndV.getKey(), kAndV.getValue()) != null) {
+              duplicates.add(kAndV);
+            }
+          });
+      if (!duplicates.isEmpty()) {
+        throw new IllegalArgumentException("duplicate keys encountered - %s".formatted(
+            String.join(
+                ",",
+                duplicates
+                    .stream()
+                    .map(kAndV ->
+                        kAndV.getKey().toString())
+                    .toList())));
+      }
+
+      return !result.isEmpty()
+          ? Collections.unmodifiableMap(result)
+          : Map.of();
     }
 
     return Map.of();
@@ -634,11 +664,10 @@ public final class MapsOps {
    *     {@code key} causing the collision
    */
   @SuppressWarnings("UnusedReturnValue")
-  @NotNull
   private static <K, V> Map<K, V> put(
-      @NotNull Map<K, V> mutableMap,
-      @NotNull K key,
-      @NotNull V value
+      Map<K, V> mutableMap,
+      K key,
+      V value
   ) {
     if (mutableMap.put(key, value) != null) {
       throw new IllegalArgumentException("duplicate key: " + key);
@@ -657,9 +686,8 @@ public final class MapsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@code Map} containing as single mapping
    * @throws NullPointerException if the key or the value is {@code null}
    */
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1
+      K key1, V value1
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -680,10 +708,9 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2
+      K key1, V value1,
+      K key2, V value2
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -707,11 +734,10 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -738,12 +764,11 @@ public final class MapsOps {
    * @throws IllegalArgumentException if the keys are not unique
    * @throws NullPointerException     if any key or value is {@code null}
    */
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -774,13 +799,12 @@ public final class MapsOps {
    * @throws NullPointerException     if any key or value is {@code null}
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4,
-      @NotNull K key5, @NotNull V value5
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4,
+      K key5, V value5
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -814,14 +838,13 @@ public final class MapsOps {
    * @throws NullPointerException     if any key or value is {@code null}
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4,
-      @NotNull K key5, @NotNull V value5,
-      @NotNull K key6, @NotNull V value6
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4,
+      K key5, V value5,
+      K key6, V value6
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -858,15 +881,14 @@ public final class MapsOps {
    * @throws NullPointerException     if any key or value is {@code null}
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4,
-      @NotNull K key5, @NotNull V value5,
-      @NotNull K key6, @NotNull V value6,
-      @NotNull K key7, @NotNull V value7
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4,
+      K key5, V value5,
+      K key6, V value6,
+      K key7, V value7
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -906,16 +928,15 @@ public final class MapsOps {
    * @throws NullPointerException     if any key or value is {@code null}
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4,
-      @NotNull K key5, @NotNull V value5,
-      @NotNull K key6, @NotNull V value6,
-      @NotNull K key7, @NotNull V value7,
-      @NotNull K key8, @NotNull V value8
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4,
+      K key5, V value5,
+      K key6, V value6,
+      K key7, V value7,
+      K key8, V value8
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -958,17 +979,16 @@ public final class MapsOps {
    * @throws NullPointerException     if any key or value is {@code null}
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4,
-      @NotNull K key5, @NotNull V value5,
-      @NotNull K key6, @NotNull V value6,
-      @NotNull K key7, @NotNull V value7,
-      @NotNull K key8, @NotNull V value8,
-      @NotNull K key9, @NotNull V value9
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4,
+      K key5, V value5,
+      K key6, V value6,
+      K key7, V value7,
+      K key8, V value8,
+      K key9, V value9
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);
@@ -1014,18 +1034,17 @@ public final class MapsOps {
    * @throws NullPointerException     if any key or value is {@code null}
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <K, V> Map<K, V> ofOrdered(
-      @NotNull K key1, @NotNull V value1,
-      @NotNull K key2, @NotNull V value2,
-      @NotNull K key3, @NotNull V value3,
-      @NotNull K key4, @NotNull V value4,
-      @NotNull K key5, @NotNull V value5,
-      @NotNull K key6, @NotNull V value6,
-      @NotNull K key7, @NotNull V value7,
-      @NotNull K key8, @NotNull V value8,
-      @NotNull K key9, @NotNull V value9,
-      @NotNull K key10, @NotNull V value10
+      K key1, V value1,
+      K key2, V value2,
+      K key3, V value3,
+      K key4, V value4,
+      K key5, V value5,
+      K key6, V value6,
+      K key7, V value7,
+      K key8, V value8,
+      K key9, V value9,
+      K key10, V value10
   ) {
     var result = new LinkedHashMap<K, V>();
     result.put(key1, value1);

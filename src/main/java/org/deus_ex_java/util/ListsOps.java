@@ -2,8 +2,8 @@ package org.deus_ex_java.util;
 
 import org.deus_ex_java.util.refined.NonEmptyList;
 import org.deus_ex_java.util.tuple.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link List} instances.
  */
+@NullMarked
 public final class ListsOps {
 
   private ListsOps() {
@@ -30,7 +31,6 @@ public final class ListsOps {
    * @param <T> the type of instances contained in the {@link List}
    * @return an empty {@link List} using {@link List#of}, if {@code ts} is {@code null}, otherwise returns {@code ts}
    */
-  @NotNull
   public static <T> List<T> nullToEmpty(@Nullable List<T> ts) {
     return ts != null
         ? ts
@@ -45,10 +45,9 @@ public final class ListsOps {
    * @param <T>   the type of instances contained in the list
    * @return an unmodifiable list with the {@code value} appended
    */
-  @NotNull
   public static <T> List<T> appendItem(
-      @NotNull List<T> list,
-      @NotNull T value
+      List<T> list,
+      T value
   ) {
     if (!list.isEmpty()) {
       var result = new ArrayList<>(list);
@@ -70,9 +69,8 @@ public final class ListsOps {
    *     iteration order
    */
   @SuppressWarnings("ConstantValue")
-  @NotNull
   @SafeVarargs
-  public static <T> List<T> appendLists(@NotNull List<T>... lists) {
+  public static <T> List<T> appendLists(List<T>... lists) {
     if (lists.length > 0) {
       var result = new ArrayList<T>();
       IntStream.range(0, lists.length)
@@ -104,9 +102,8 @@ public final class ListsOps {
    * @param <T>        the type of the instances
    * @return an unmodifiable {@link List} filtered of {@code null}s
    */
-  @NotNull
   public static <T> List<T> nullSanitize(
-      @NotNull Collection<T> collection
+      Collection<T> collection
   ) {
     return nullSanitize(collection.stream());
   }
@@ -118,13 +115,15 @@ public final class ListsOps {
    * @param <T>    the type of the instances
    * @return an unmodifiable {@link List} filtered of {@code null}s
    */
-  @NotNull
   public static <T> List<T> nullSanitize(
-      @NotNull Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
+    //noinspection RedundantCast
     return stream
         .filter(t ->
             !Objects.isNull(t))
+        .map(t ->
+            (T) t)
         .toList();
   }
 
@@ -135,9 +134,8 @@ public final class ListsOps {
    * @param collection the source of the derived {@link Integer} values
    * @return an unmodifiable {@link List} from a source of {@code integers} filtered of {@code null}s
    */
-  @NotNull
   public static List<Integer> toDistinctSortedListInteger(
-      @NotNull Collection<Integer> collection
+      Collection<Integer> collection
   ) {
     return toDistinctSortedListInteger(collection.stream());
   }
@@ -149,9 +147,8 @@ public final class ListsOps {
    * @param stream the source of the derived {@link Integer} values
    * @return an unmodifiable {@link List} from a source of {@code integers} filtered of {@code null}s
    */
-  @NotNull
   public static List<Integer> toDistinctSortedListInteger(
-      @NotNull Stream<Integer> stream
+      Stream<Integer> stream
   ) {
     return toDistinctSortedListInteger(stream, Function.identity());
   }
@@ -166,10 +163,9 @@ public final class ListsOps {
    * @return a new {@link List} from a collection of {@code ts} deriving the {@link Integer} value via the function
    *     {@code fTToId} filtered of {@code null}s
    */
-  @NotNull
   public static <T> List<Integer> toDistinctSortedListInteger(
-      @NotNull Collection<T> collection,
-      @NotNull Function<T, Integer> fTToId
+      Collection<T> collection,
+      Function<T, Integer> fTToId
   ) {
     return toDistinctSortedListInteger(collection.stream(), fTToId);
   }
@@ -184,10 +180,9 @@ public final class ListsOps {
    * @return a new {@link List} from a collection of {@code ts} deriving the {@link Integer} value via the function
    *     {@code fTToId} filtered of {@code null}s
    */
-  @NotNull
   public static <T> List<Integer> toDistinctSortedListInteger(
-      @NotNull Stream<T> stream,
-      @NotNull Function<T, Integer> fTToId
+      Stream<@Nullable T> stream,
+      Function<T, Integer> fTToId
   ) {
     return stream
         .filter(t ->
@@ -205,9 +200,8 @@ public final class ListsOps {
    * @param <T> the type of instances contained in the list
    * @return an unmodifiable {@link List} of the source's elements in reverse order
    */
-  @NotNull
   public static <T> List<T> reverse(
-      List<T> ts
+      List<@Nullable T> ts
   ) {
     if (!ts.isEmpty()) {
 
@@ -226,13 +220,15 @@ public final class ListsOps {
    * @return an unmodifiable {@link List} of the source's elements in reverse order with the {@code null} elements
    *     filtered out
    */
-  @NotNull
   public static <T> List<T> reverse(
-      Stream<T> stream
+      Stream<@Nullable T> stream
   ) {
+    //noinspection RedundantCast
     var mutableList = stream
         .filter(t ->
             !Objects.isNull(t))
+        .map(t ->
+            (T) t)
         .collect(Collectors.toList());
     if (!mutableList.isEmpty()) {
       Collections.reverse(mutableList);
@@ -252,9 +248,8 @@ public final class ListsOps {
    * @return a new {@link List} extracting the non-empty {@link Optional} elements, and filtering out the {@code null}
    *     and {@link Optional} empty elements
    */
-  @NotNull
   public static <T> List<T> flatten(
-      @NotNull Collection<Optional<T>> collection
+      Collection<@Nullable Optional<T>> collection
   ) {
     return flatten(collection.stream());
   }
@@ -268,9 +263,8 @@ public final class ListsOps {
    * @return a new {@link List} extracting the non-empty {@link Optional} elements, and filtering out the {@code null}
    *     and {@link Optional} empty elements
    */
-  @NotNull
   public static <T> List<T> flatten(
-      @NotNull Stream<Optional<T>> stream
+      Stream<@Nullable Optional<T>> stream
   ) {
     return stream
         .filter(t ->
@@ -287,9 +281,8 @@ public final class ListsOps {
    * @param <R>         the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Collection} of {@link Either}s
    */
-  @NotNull
   public static <L, R> Tuple2<List<Optional<L>>, List<Optional<R>>> unzipEithers(
-      @NotNull Collection<Either<L, R>> collections
+      Collection<@Nullable Either<L, R>> collections
   ) {
     return unzipEithers(collections.stream());
   }
@@ -302,9 +295,8 @@ public final class ListsOps {
    * @param <R>    the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Stream} of {@link Either}s
    */
-  @NotNull
   public static <L, R> Tuple2<List<Optional<L>>, List<Optional<R>>> unzipEithers(
-      @NotNull Stream<Either<L, R>> stream
+      Stream<@Nullable Either<L, R>> stream
   ) {
     return unzip(stream
         .filter(t ->
@@ -326,9 +318,8 @@ public final class ListsOps {
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Collection} of {@link Either}s,
    *     {@link #flatten}ing each returned list
    */
-  @NotNull
   public static <L, R> Tuple2<List<L>, List<R>> unzipAndFlattenEithers(
-      @NotNull Collection<Either<L, R>> collection
+      Collection<@Nullable Either<L, R>> collection
   ) {
     return unzipAndFlattenEithers(collection.stream());
   }
@@ -343,9 +334,8 @@ public final class ListsOps {
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Stream} of {@link Either}s, {@link #flatten}ing
    *     each returned list
    */
-  @NotNull
   public static <L, R> Tuple2<List<L>, List<R>> unzipAndFlattenEithers(
-      @NotNull Stream<Either<L, R>> stream
+      Stream<@Nullable Either<L, R>> stream
   ) {
     var unzippedEithers = unzipEithers(stream);
 
@@ -364,9 +354,8 @@ public final class ListsOps {
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B> Tuple2<List<A>, List<B>> unzip(
-      @NotNull Collection<Tuple2<A, B>> collection
+      Collection<Tuple2<A, B>> collection
   ) {
     return unzip(collection.stream());
   }
@@ -381,9 +370,8 @@ public final class ListsOps {
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B> Tuple2<List<A>, List<B>> unzip(
-      @NotNull Stream<Tuple2<A, B>> stream
+      Stream<Tuple2<A, B>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -418,10 +406,9 @@ public final class ListsOps {
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B> Tuple2<List<A>, List<B>> unzipAndFlatten(
-      @NotNull Collection<Tuple2<A, B>> collection,
-      @NotNull Function<
+      Collection<Tuple2<A, B>> collection,
+      Function<
           Tuple2<A, B>,
           Optional<Tuple2<Optional<A>, Optional<B>>>> fMapper
   ) {
@@ -440,10 +427,9 @@ public final class ListsOps {
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @NotNull
   public static <A, B> Tuple2<List<A>, List<B>> unzipAndFlatten(
-      @NotNull Stream<Tuple2<A, B>> stream,
-      @NotNull Function<
+      Stream<Tuple2<A, B>> stream,
+      Function<
           Tuple2<A, B>,
           Optional<Tuple2<Optional<A>, Optional<B>>>> fMapper
   ) {
@@ -475,9 +461,8 @@ public final class ListsOps {
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3(
-      @NotNull Collection<Tuple3<A, B, C>> collection
+      Collection<Tuple3<A, B, C>> collection
   ) {
     return unzip3(collection.stream());
   }
@@ -493,9 +478,8 @@ public final class ListsOps {
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3(
-      @NotNull Stream<Tuple3<A, B, C>> stream
+      Stream<Tuple3<A, B, C>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -535,10 +519,9 @@ public final class ListsOps {
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3AndFlatten(
-      @NotNull Collection<Tuple3<A, B, C>> collection,
-      @NotNull Function<
+      Collection<Tuple3<A, B, C>> collection,
+      Function<
           Tuple3<A, B, C>,
           Optional<Tuple3<Optional<A>, Optional<B>, Optional<C>>>> fMapper
   ) {
@@ -558,10 +541,9 @@ public final class ListsOps {
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @NotNull
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3AndFlatten(
-      @NotNull Stream<Tuple3<A, B, C>> stream,
-      @NotNull Function<
+      Stream<Tuple3<A, B, C>> stream,
+      Function<
           Tuple3<A, B, C>,
           Optional<Tuple3<Optional<A>, Optional<B>, Optional<C>>>> fMapper
   ) {
@@ -597,9 +579,8 @@ public final class ListsOps {
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4(
-      @NotNull Collection<Tuple4<A, B, C, D>> collection
+      Collection<Tuple4<A, B, C, D>> collection
   ) {
     return unzip4(collection.stream());
   }
@@ -616,9 +597,8 @@ public final class ListsOps {
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4(
-      @NotNull Stream<Tuple4<A, B, C, D>> stream
+      Stream<Tuple4<A, B, C, D>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -663,10 +643,9 @@ public final class ListsOps {
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4AndFlatten(
-      @NotNull Collection<Tuple4<A, B, C, D>> collection,
-      @NotNull Function<
+      Collection<Tuple4<A, B, C, D>> collection,
+      Function<
           Tuple4<A, B, C, D>,
           Optional<Tuple4<Optional<A>, Optional<B>, Optional<C>, Optional<D>>>> fMapper
   ) {
@@ -687,10 +666,9 @@ public final class ListsOps {
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @NotNull
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4AndFlatten(
-      @NotNull Stream<Tuple4<A, B, C, D>> stream,
-      @NotNull Function<
+      Stream<Tuple4<A, B, C, D>> stream,
+      Function<
           Tuple4<A, B, C, D>,
           Optional<Tuple4<Optional<A>, Optional<B>, Optional<C>, Optional<D>>>> fMapper
   ) {
@@ -730,9 +708,8 @@ public final class ListsOps {
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
-      @NotNull Collection<Tuple5<A, B, C, D, E>> collection
+      Collection<Tuple5<A, B, C, D, E>> collection
   ) {
     return unzip5(collection.stream());
   }
@@ -751,9 +728,8 @@ public final class ListsOps {
    *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
-      @NotNull Stream<Tuple5<A, B, C, D, E>> stream
+      Stream<Tuple5<A, B, C, D, E>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -803,10 +779,9 @@ public final class ListsOps {
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
-      @NotNull Collection<Tuple5<A, B, C, D, E>> collection,
-      @NotNull Function<
+      Collection<Tuple5<A, B, C, D, E>> collection,
+      Function<
           Tuple5<A, B, C, D, E>,
           Optional<Tuple5<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>>>> fMapper
   ) {
@@ -829,10 +804,9 @@ public final class ListsOps {
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
-      @NotNull Stream<Tuple5<A, B, C, D, E>> stream,
-      @NotNull Function<
+      Stream<Tuple5<A, B, C, D, E>> stream,
+      Function<
           Tuple5<A, B, C, D, E>,
           Optional<Tuple5<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>>>> fMapper
   ) {
@@ -876,9 +850,8 @@ public final class ListsOps {
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
-      @NotNull Collection<Tuple6<A, B, C, D, E, F>> collection
+      Collection<Tuple6<A, B, C, D, E, F>> collection
   ) {
     return unzip6(collection.stream());
   }
@@ -898,9 +871,8 @@ public final class ListsOps {
    *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
-      @NotNull Stream<Tuple6<A, B, C, D, E, F>> stream
+      Stream<Tuple6<A, B, C, D, E, F>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -955,10 +927,9 @@ public final class ListsOps {
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
-      @NotNull Collection<Tuple6<A, B, C, D, E, F>> collection,
-      @NotNull Function<
+      Collection<Tuple6<A, B, C, D, E, F>> collection,
+      Function<
           Tuple6<A, B, C, D, E, F>,
           Optional<Tuple6<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>>>> fMapper
   ) {
@@ -982,10 +953,9 @@ public final class ListsOps {
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
-      @NotNull Stream<Tuple6<A, B, C, D, E, F>> stream,
-      @NotNull Function<
+      Stream<Tuple6<A, B, C, D, E, F>> stream,
+      Function<
           Tuple6<A, B, C, D, E, F>,
           Optional<Tuple6<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>>>> fMapper
   ) {
@@ -1033,9 +1003,8 @@ public final class ListsOps {
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
-      @NotNull Collection<Tuple7<A, B, C, D, E, F, G>> collection
+      Collection<Tuple7<A, B, C, D, E, F, G>> collection
   ) {
     return unzip7(collection.stream());
   }
@@ -1056,9 +1025,8 @@ public final class ListsOps {
    *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
-      @NotNull Stream<Tuple7<A, B, C, D, E, F, G>> stream
+      Stream<Tuple7<A, B, C, D, E, F, G>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -1118,10 +1086,9 @@ public final class ListsOps {
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
-      @NotNull Collection<Tuple7<A, B, C, D, E, F, G>> collection,
-      @NotNull Function<
+      Collection<Tuple7<A, B, C, D, E, F, G>> collection,
+      Function<
           Tuple7<A, B, C, D, E, F, G>,
           Optional<Tuple7<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>>>> fMapper
   ) {
@@ -1146,10 +1113,9 @@ public final class ListsOps {
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
-      @NotNull Stream<Tuple7<A, B, C, D, E, F, G>> stream,
-      @NotNull Function<
+      Stream<Tuple7<A, B, C, D, E, F, G>> stream,
+      Function<
           Tuple7<A, B, C, D, E, F, G>,
           Optional<Tuple7<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>>>> fMapper
   ) {
@@ -1201,9 +1167,8 @@ public final class ListsOps {
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
-      @NotNull Collection<Tuple8<A, B, C, D, E, F, G, H>> collection
+      Collection<Tuple8<A, B, C, D, E, F, G, H>> collection
   ) {
     return unzip8(collection.stream());
   }
@@ -1225,9 +1190,8 @@ public final class ListsOps {
    *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
-      @NotNull Stream<Tuple8<A, B, C, D, E, F, G, H>> stream
+      Stream<Tuple8<A, B, C, D, E, F, G, H>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -1292,10 +1256,9 @@ public final class ListsOps {
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
-      @NotNull Collection<Tuple8<A, B, C, D, E, F, G, H>> collection,
-      @NotNull Function<
+      Collection<Tuple8<A, B, C, D, E, F, G, H>> collection,
+      Function<
           Tuple8<A, B, C, D, E, F, G, H>,
           Optional<Tuple8<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>, Optional<H>>>> fMapper
   ) {
@@ -1321,10 +1284,9 @@ public final class ListsOps {
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
-      @NotNull Stream<Tuple8<A, B, C, D, E, F, G, H>> stream,
-      @NotNull Function<
+      Stream<Tuple8<A, B, C, D, E, F, G, H>> stream,
+      Function<
           Tuple8<A, B, C, D, E, F, G, H>,
           Optional<Tuple8<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>, Optional<H>>>> fMapper
   ) {
@@ -1380,9 +1342,8 @@ public final class ListsOps {
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
-      @NotNull Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection
+      Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection
   ) {
     return unzip9(collection.stream());
   }
@@ -1405,9 +1366,8 @@ public final class ListsOps {
    *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
-      @NotNull Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream
+      Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -1477,10 +1437,9 @@ public final class ListsOps {
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
-      @NotNull Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection,
-      @NotNull Function<
+      Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection,
+      Function<
           Tuple9<A, B, C, D, E, F, G, H, I>,
           Optional<Tuple9<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>, Optional<H>, Optional<I>>>> fMapper
   ) {
@@ -1507,10 +1466,9 @@ public final class ListsOps {
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
-      @NotNull Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream,
-      @NotNull Function<
+      Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream,
+      Function<
           Tuple9<A, B, C, D, E, F, G, H, I>,
           Optional<Tuple9<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>, Optional<H>, Optional<I>>>> fMapper
   ) {
@@ -1570,9 +1528,8 @@ public final class ListsOps {
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
    *     {@code null}s
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
-      @NotNull Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection
+      Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection
   ) {
     return unzip10(collection.stream());
   }
@@ -1596,9 +1553,8 @@ public final class ListsOps {
    *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
-      @NotNull Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream
+      Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
@@ -1673,10 +1629,9 @@ public final class ListsOps {
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
-      @NotNull Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection,
-      @NotNull Function<
+      Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection,
+      Function<
           Tuple10<A, B, C, D, E, F, G, H, I, J>,
           Optional<Tuple10<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>, Optional<H>, Optional<I>, Optional<J>>>> fMapper
   ) {
@@ -1704,10 +1659,9 @@ public final class ListsOps {
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
-  @NotNull
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
-      @NotNull Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream,
-      @NotNull Function<
+      Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream,
+      Function<
           Tuple10<A, B, C, D, E, F, G, H, I, J>,
           Optional<Tuple10<Optional<A>, Optional<B>, Optional<C>, Optional<D>, Optional<E>, Optional<F>, Optional<G>, Optional<H>, Optional<I>, Optional<J>>>> fMapper
   ) {

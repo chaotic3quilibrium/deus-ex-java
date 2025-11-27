@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple4;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function4} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function4Checked<A, B, C, D, R, EX extends Exception> {
 
   /**
@@ -20,11 +21,11 @@ public interface Function4Checked<A, B, C, D, R, EX extends Exception> {
    * @param d the fourth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d) throws EX;
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -35,15 +36,14 @@ public interface Function4Checked<A, B, C, D, R, EX extends Exception> {
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function4Checked<A, B, C, D, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d) ->
+        A a,
+        B b,
+        C c,
+        D d) ->
         after.apply(apply(a, b, c, d));
   }
 
@@ -55,9 +55,8 @@ public interface Function4Checked<A, B, C, D, R, EX extends Exception> {
    * @return a {@link Function4Checked} where the input parameters are extracted from a {@link FunctionChecked} which
    *     accepts a {@link Tuple4}
    */
-  @NotNull
   default Function4Checked<A, B, C, D, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple4<
               ? super A,
               ? super B,
@@ -67,10 +66,10 @@ public interface Function4Checked<A, B, C, D, R, EX extends Exception> {
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d) ->
+        A a,
+        B b,
+        C c,
+        D d) ->
         function.apply(
             new Tuple4<>(a, b, c, d));
   }
@@ -80,9 +79,8 @@ public interface Function4Checked<A, B, C, D, R, EX extends Exception> {
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple4} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple4<A, B, C, D>, R, EX> tupled() {
-    return (@NotNull Tuple4<A, B, C, D> tuple4) ->
+    return (Tuple4<A, B, C, D> tuple4) ->
         apply(
             tuple4._1(),
             tuple4._2(),

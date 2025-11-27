@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.LongPredicate;
 
@@ -8,6 +8,7 @@ import java.util.function.LongPredicate;
  * Enables the providing of a {@link LongPredicate} Lambda function which can throw a checked Exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface LongPredicateChecked<EX extends Exception> {
 
   /**
@@ -31,9 +32,8 @@ public interface LongPredicateChecked<EX extends Exception> {
    * @return a composed predicate that represents the short-circuiting logical AND of this predicate and the
    *     {@code other} predicate
    */
-  @NotNull
   default LongPredicateChecked<EX> and(
-      @NotNull LongPredicateChecked<? extends EX> other
+      LongPredicateChecked<? extends EX> other
   ) {
     return (value) ->
         test(value) && other.test(value);
@@ -44,7 +44,6 @@ public interface LongPredicateChecked<EX extends Exception> {
    *
    * @return a predicate that represents the logical negation of this predicate
    */
-  @NotNull
   default LongPredicateChecked<EX> negate() {
     return (value) ->
         !test(value);
@@ -63,9 +62,8 @@ public interface LongPredicateChecked<EX extends Exception> {
    * @return a composed predicate that represents the short-circuiting logical OR of this predicate and the
    *     {@code other} predicate
    */
-  @NotNull
   default LongPredicateChecked<EX> or(
-      @NotNull LongPredicateChecked<? extends EX> other
+      LongPredicateChecked<? extends EX> other
   ) {
     return (value) ->
         test(value) || other.test(value);

@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.BinaryOperator;
@@ -8,6 +10,7 @@ import java.util.function.BinaryOperator;
  * Enables the providing of a {@link BinaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface BinaryOperatorChecked<T, EX extends Exception> extends BiFunctionChecked<T, T, T, EX> {
 
   /**

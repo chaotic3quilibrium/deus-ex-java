@@ -1,11 +1,10 @@
 package org.deus_ex_java.util.refined;
 
 import org.deus_ex_java.lang.ParametersValidationException;
-import org.deus_ex_java.lang.refined.NonBlankString;
 import org.deus_ex_java.util.CollectionsOps;
 import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.TryCatchesOps;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +19,7 @@ import java.util.stream.Stream;
  *
  * @param list a {@link List} that is non-empty and unmodifiable
  */
+@NullMarked
 public record NonEmptyList<T>(List<T> list) {
 
   /**
@@ -36,9 +36,8 @@ public record NonEmptyList<T>(List<T> list) {
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  @NotNull
   public static <T> Optional<ParametersValidationException> validate(
-      @NotNull List<T> list
+      List<T> list
   ) {
     var preconditionFailureMessages = Stream.of(
             list.isEmpty()
@@ -70,9 +69,8 @@ public record NonEmptyList<T>(List<T> list) {
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
    *     {@link #validate(List)} method
    */
-  @NotNull
   public static <T> Either<ParametersValidationException, NonEmptyList<T>> from(
-      @NotNull List<T> list
+      List<T> list
   ) {
     return TryCatchesOps.wrap(
         () ->

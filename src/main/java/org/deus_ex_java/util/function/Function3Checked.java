@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple3;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -9,6 +9,7 @@ import java.util.function.Function;
  * Enables the providing of a {@link Function3} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface Function3Checked<A, B, C, R, EX extends Exception> {
 
   /**
@@ -19,10 +20,10 @@ public interface Function3Checked<A, B, C, R, EX extends Exception> {
    * @param c the third function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c) throws EX;
+  R apply(
+      A a,
+      B b,
+      C c) throws EX;
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -33,14 +34,13 @@ public interface Function3Checked<A, B, C, R, EX extends Exception> {
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function3Checked<A, B, C, V, EX> andThen(
-      @NotNull FunctionChecked<? super R, ? extends V, ? extends EX> after
+      FunctionChecked<? super R, ? extends V, ? extends EX> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c) ->
+        A a,
+        B b,
+        C c) ->
         after.apply(apply(a, b, c));
   }
 
@@ -52,9 +52,8 @@ public interface Function3Checked<A, B, C, R, EX extends Exception> {
    * @return a {@link Function3Checked} where the input parameters are extracted from a {@link FunctionChecked} which
    *     accepts a {@link Tuple3}
    */
-  @NotNull
   default Function3Checked<A, B, C, R, EX> untupled(
-      @NotNull Function<
+      Function<
           Tuple3<
               ? super A,
               ? super B,
@@ -63,9 +62,9 @@ public interface Function3Checked<A, B, C, R, EX extends Exception> {
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c) ->
+        A a,
+        B b,
+        C c) ->
         function.apply(
             new Tuple3<>(a, b, c));
   }
@@ -75,9 +74,8 @@ public interface Function3Checked<A, B, C, R, EX extends Exception> {
    *
    * @return a {@link FunctionChecked} accepting a {@link Tuple3} of the original input parameters
    */
-  @NotNull
   default FunctionChecked<Tuple3<A, B, C>, R, EX> tupled() {
-    return (@NotNull Tuple3<A, B, C> tuple3) ->
+    return (Tuple3<A, B, C> tuple3) ->
         apply(
             tuple3._1(),
             tuple3._2(),

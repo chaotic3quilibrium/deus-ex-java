@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.function;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.IntUnaryOperator;
 
@@ -8,6 +8,7 @@ import java.util.function.IntUnaryOperator;
  * Enables the providing of a {@link IntUnaryOperator} Lambda function which can throw a checked exception.
  */
 @FunctionalInterface
+@NullMarked
 public interface IntUnaryOperatorChecked<EX extends Exception> {
 
   /**
@@ -27,9 +28,8 @@ public interface IntUnaryOperatorChecked<EX extends Exception> {
    * @return a composed operator that first applies the {@code before} operator and then applies this operator
    * @see #andThen(IntUnaryOperatorChecked)
    */
-  @NotNull
   default IntUnaryOperatorChecked<EX> compose(
-      @NotNull IntUnaryOperatorChecked<? extends EX> before
+      IntUnaryOperatorChecked<? extends EX> before
   ) {
     return (int v) ->
         applyAsInt(before.applyAsInt(v));
@@ -44,9 +44,8 @@ public interface IntUnaryOperatorChecked<EX extends Exception> {
    * @return a composed operator that first applies this operator and then applies the {@code after} operator
    * @see #compose(IntUnaryOperatorChecked)
    */
-  @NotNull
   default IntUnaryOperatorChecked<EX> andThen(
-      @NotNull IntUnaryOperatorChecked<? extends EX> after
+      IntUnaryOperatorChecked<? extends EX> after
   ) {
     return (int t) ->
         after.applyAsInt(applyAsInt(t));

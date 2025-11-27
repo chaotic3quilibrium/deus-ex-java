@@ -6,7 +6,7 @@
 
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0-SNAPSHOT</version>
     <name>deus-ex-java</name>
     <description>A Java augmentation library to ease the incremental modernization of legacy Enterprise IT systems
     </description>
@@ -60,9 +60,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>26.0.2-1</version>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -120,27 +120,6 @@
                     <publishingServerId>central</publishingServerId>
                     <autoPublish>true</autoPublish>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>se.eris</groupId>
-                <artifactId>notnull-instrumenter-maven-plugin</artifactId>
-                <version>1.1.1</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.jetbrains</groupId>
-                        <artifactId>annotations</artifactId>
-                        <version>RELEASE</version>
-                        <optional>true</optional>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>instrument-annotations</id>
-                        <goals>
-                            <goal>instrument</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

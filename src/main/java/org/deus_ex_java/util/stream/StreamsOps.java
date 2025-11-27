@@ -1,6 +1,6 @@
 package org.deus_ex_java.util.stream;
 
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -17,6 +17,7 @@ import static java.util.Map.entry;
  * And to facilitate easier creation of unmodifiable non-{@code null} {@link List}s, and unmodifiable <i>ordered</i>
  * non-{@code null} {@link Set}s and {@link Map}s.
  */
+@NullMarked
 public final class StreamsOps {
 
   private StreamsOps() {
@@ -31,9 +32,8 @@ public final class StreamsOps {
    * @return A new sequential {@code Stream} containing the elements from the iterator.
    * @throws NullPointerException if the provided {@code iterator} is {@code null}.
    */
-  @NotNull
   public static <T> Stream<T> from(
-      @NotNull Iterator<T> iterator
+      Iterator<T> iterator
   ) {
     return from(iterator, false);
   }
@@ -47,9 +47,8 @@ public final class StreamsOps {
    * @return A new {@code Stream} containing the elements from the iterator, with the specified parallelism.
    * @throws NullPointerException if the provided {@code iterator} is {@code null}.
    */
-  @NotNull
   public static <T> Stream<T> from(
-      @NotNull Iterator<T> iterator,
+      Iterator<T> iterator,
       boolean isParallel
   ) {
     return from(
@@ -66,9 +65,8 @@ public final class StreamsOps {
    * @return A new sequential {@code Stream} containing the elements from the iterable.
    * @throws NullPointerException if the provided {@code iterable} is {@code null}.
    */
-  @NotNull
   public static <T> Stream<T> from(
-      @NotNull Iterable<T> iterable
+      Iterable<T> iterable
   ) {
     return from(iterable, false);
   }
@@ -82,9 +80,8 @@ public final class StreamsOps {
    * @return A new {@code Stream} containing the elements from the iterable, with the specified parallelism.
    * @throws NullPointerException if the provided {@code iterable} is {@code null}.
    */
-  @NotNull
   public static <T> Stream<T> from(
-      @NotNull Iterable<T> iterable,
+      Iterable<T> iterable,
       boolean isParallel
   ) {
     return StreamSupport.stream(iterable.spliterator(), isParallel);
@@ -96,16 +93,15 @@ public final class StreamsOps {
    *
    * @param collectionLs the source of the left side (key) elements
    * @param collectionRs the source of the right side (value) elements
-   * @param <L>      the type of the left elements in the stream
-   * @param <R>      the type of the right elements in the stream
+   * @param <L>          the type of the left elements in the stream
+   * @param <R>          the type of the right elements in the stream
    * @return a new lazy Stream of Entry where each entry is composed of the next element at the same index in both
-   * streams, terminating with the shorter of the two Streams
+   *     streams, terminating with the shorter of the two Streams
    * @throws NullPointerException if either stream returns a {@code null}
    */
-  @NotNull
   public static <L, R> Stream<Entry<L, R>> zip(
-      @NotNull Collection<L> collectionLs,
-      @NotNull Collection<R> collectionRs
+      Collection<L> collectionLs,
+      Collection<R> collectionRs
   ) {
     return zip(collectionLs.stream(), collectionRs.stream());
   }
@@ -114,18 +110,17 @@ public final class StreamsOps {
    * Returns a new lazy Stream of Entry where each entry is composed of the next element at the same index in both
    * streams, terminating with the shorter of the two Streams.
    *
-   * @param streamLs the source of the left side (key) elements
+   * @param streamLs     the source of the left side (key) elements
    * @param collectionRs the source of the right side (value) elements
-   * @param <L>      the type of the left elements in the stream
-   * @param <R>      the type of the right elements in the stream
+   * @param <L>          the type of the left elements in the stream
+   * @param <R>          the type of the right elements in the stream
    * @return a new lazy Stream of Entry where each entry is composed of the next element at the same index in both
-   * streams, terminating with the shorter of the two Streams
+   *     streams, terminating with the shorter of the two Streams
    * @throws NullPointerException if either stream returns a {@code null}
    */
-  @NotNull
   public static <L, R> Stream<Entry<L, R>> zip(
-      @NotNull Stream<L> streamLs,
-      @NotNull Collection<R> collectionRs
+      Stream<L> streamLs,
+      Collection<R> collectionRs
   ) {
     return zip(streamLs, collectionRs.stream());
   }
@@ -135,17 +130,16 @@ public final class StreamsOps {
    * streams, terminating with the shorter of the two Streams.
    *
    * @param collectionLs the source of the left side (key) elements
-   * @param streamRs the source of the right side (value) elements
-   * @param <L>      the type of the left elements in the stream
-   * @param <R>      the type of the right elements in the stream
+   * @param streamRs     the source of the right side (value) elements
+   * @param <L>          the type of the left elements in the stream
+   * @param <R>          the type of the right elements in the stream
    * @return a new lazy Stream of Entry where each entry is composed of the next element at the same index in both
-   * streams, terminating with the shorter of the two Streams
+   *     streams, terminating with the shorter of the two Streams
    * @throws NullPointerException if either stream returns a {@code null}
    */
-  @NotNull
   public static <L, R> Stream<Entry<L, R>> zip(
-      @NotNull Collection<L> collectionLs,
-      @NotNull Stream<R> streamRs
+      Collection<L> collectionLs,
+      Stream<R> streamRs
   ) {
     return zip(collectionLs.stream(), streamRs);
   }
@@ -159,13 +153,12 @@ public final class StreamsOps {
    * @param <L>      the type of the left elements in the stream
    * @param <R>      the type of the right elements in the stream
    * @return a new lazy Stream of Entry where each entry is composed of the next element at the same index in both
-   * streams, terminating with the shorter of the two Streams
+   *     streams, terminating with the shorter of the two Streams
    * @throws NullPointerException if either stream returns a {@code null}
    */
-  @NotNull
   public static <L, R> Stream<Entry<L, R>> zip(
-      @NotNull Stream<L> streamLs,
-      @NotNull Stream<R> streamRs
+      Stream<L> streamLs,
+      Stream<R> streamRs
   ) {
     Iterator<R> iteratorRs = streamRs.iterator();
 
@@ -181,16 +174,15 @@ public final class StreamsOps {
    * index.
    *
    * @param collectionTs the source of the elements (keys) with which to associate a zero based index
-   * @param <T>      the type of the elements in the stream
+   * @param <T>          the type of the elements in the stream
    * @return a new lazy Stream of Entry where each entry is composed of the next element, and its associated zero-based
    *     index
    * @throws NullPointerException if the stream returns a {@code null}
    */
-  @NotNull
   public static <T> Stream<Entry<T, Integer>> zipWithIndex(
-      @NotNull Collection<T> collectionTs
+      Collection<T> collectionTs
   ) {
-    return  zipWithIndex(collectionTs.stream());
+    return zipWithIndex(collectionTs.stream());
 
   }
 
@@ -204,9 +196,8 @@ public final class StreamsOps {
    *     index
    * @throws NullPointerException if the stream returns a {@code null}
    */
-  @NotNull
   public static <T> Stream<Entry<T, Integer>> zipWithIndex(
-      @NotNull Stream<T> streamTs
+      Stream<T> streamTs
   ) {
     var atomicInteger = new AtomicInteger(0);
 

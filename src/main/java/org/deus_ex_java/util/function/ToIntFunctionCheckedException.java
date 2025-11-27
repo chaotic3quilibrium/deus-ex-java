@@ -1,5 +1,7 @@
 package org.deus_ex_java.util.function;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.function.ToIntFunction;
 
 /**
@@ -7,6 +9,7 @@ import java.util.function.ToIntFunction;
  * specifying {@link Exception}.
  */
 @FunctionalInterface
+@NullMarked
 public interface ToIntFunctionCheckedException<T> extends ToIntFunctionChecked<T, Exception> {
 
 }

@@ -1,7 +1,7 @@
 package org.deus_ex_java.util.function;
 
 import org.deus_ex_java.util.tuple.Tuple5;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.function.Function;
 
@@ -18,6 +18,7 @@ import java.util.function.Function;
  * @param <R> the type of the result of the function
  */
 @FunctionalInterface
+@NullMarked
 public interface Function5<A, B, C, D, E, R> {
 
   /**
@@ -30,12 +31,12 @@ public interface Function5<A, B, C, D, E, R> {
    * @param e the fifth function argument
    * @return the result of applying this function to the provided arguments
    */
-  @NotNull R apply(
-      @NotNull A a,
-      @NotNull B b,
-      @NotNull C c,
-      @NotNull D d,
-      @NotNull E e);
+  R apply(
+      A a,
+      B b,
+      C c,
+      D d,
+      E e);
 
   /**
    * Returns a composed function that first applies this function to its input, and then applies the {@code after}
@@ -46,16 +47,15 @@ public interface Function5<A, B, C, D, E, R> {
    * @param after the function to apply after this function is applied
    * @return a composed function that first applies this function and then applies the {@code after} function
    */
-  @NotNull
   default <V> Function5<A, B, C, D, E, V> andThen(
-      @NotNull Function<? super R, ? extends V> after
+      Function<? super R, ? extends V> after
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e) ->
         after.apply(apply(a, b, c, d, e));
   }
 
@@ -67,9 +67,8 @@ public interface Function5<A, B, C, D, E, R> {
    * @return a {@link Function5} where the input parameters are extracted from a {@link Function} which accepts a
    *     {@link Tuple5}
    */
-  @NotNull
   default Function5<A, B, C, D, E, R> untupled(
-      @NotNull Function<
+      Function<
           Tuple5<
               ? super A,
               ? super B,
@@ -80,11 +79,11 @@ public interface Function5<A, B, C, D, E, R> {
           > function
   ) {
     return (
-        @NotNull A a,
-        @NotNull B b,
-        @NotNull C c,
-        @NotNull D d,
-        @NotNull E e) ->
+        A a,
+        B b,
+        C c,
+        D d,
+        E e) ->
         function.apply(
             new Tuple5<>(a, b, c, d, e));
   }
@@ -94,9 +93,8 @@ public interface Function5<A, B, C, D, E, R> {
    *
    * @return a {@link Function} accepting a {@link Tuple5} of the original input parameters
    */
-  @NotNull
   default Function<Tuple5<A, B, C, D, E>, R> tupled() {
-    return (@NotNull Tuple5<A, B, C, D, E> tuple5) ->
+    return (Tuple5<A, B, C, D, E> tuple5) ->
         apply(
             tuple5._1(),
             tuple5._2(),

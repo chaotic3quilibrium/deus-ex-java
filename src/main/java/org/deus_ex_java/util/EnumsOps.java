@@ -2,7 +2,8 @@ package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ClassesOps;
 import org.deus_ex_java.lang.ParametersValidationException;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -30,12 +31,13 @@ import static java.util.Map.entry;
  *
  * @param <E> type of the {@link Enum}
  */
+@NullMarked
 public final class EnumsOps<E extends Enum<E>> {
 
   public static final String DEFAULT_SEPARATOR = ", ";
 
   private static final Object ENUM_OPS_BY_CLASS_E_SYNC = new Object();
-  private static volatile Memoizer<Class<?>, EnumsOps<?>> ENUM_OPS_BY_CLASS_E;
+  private static volatile @Nullable Memoizer<Class<?>, EnumsOps<?>> ENUMS_OPS_BY_CLASS_E;
 
   /**
    * Returns an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class.
@@ -50,13 +52,12 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param <E>    the specific Enum's type
    * @return an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class
    */
-  @NotNull
-  public static <E extends Enum<E>> EnumsOps<E> from(@NotNull Class<E> classE) {
-    if (ENUM_OPS_BY_CLASS_E == null) {
+  public static <E extends Enum<E>> EnumsOps<E> from(Class<E> classE) {
+    if (ENUMS_OPS_BY_CLASS_E == null) {
       synchronized (ENUM_OPS_BY_CLASS_E_SYNC) {
-        if (ENUM_OPS_BY_CLASS_E == null) {
+        if (ENUMS_OPS_BY_CLASS_E == null) {
           //noinspection unchecked
-          ENUM_OPS_BY_CLASS_E = Memoizer.from(classWildcard ->
+          ENUMS_OPS_BY_CLASS_E = Memoizer.from(classWildcard ->
               ClassesOps.narrow(() ->
                       new EnumsOps<>((Class<E>) classWildcard))
                   .orElseThrow(() ->
@@ -65,18 +66,25 @@ public final class EnumsOps<E extends Enum<E>> {
       }
     }
 
-    //noinspection unchecked
-    return ClassesOps.narrow(() ->
-            (EnumsOps<E>) ENUM_OPS_BY_CLASS_E.get(classE))
+    return ClassesOps.narrow(() -> {
+          //noinspection unchecked
+          return Optional.ofNullable(ENUMS_OPS_BY_CLASS_E)
+              .map(enumsOpsByClassE ->
+                  (EnumsOps<E>) enumsOpsByClassE.get(classE))
+              .orElseThrow(() ->
+                  new IllegalStateException("ENUMS_OPS_BY_CLASS_E is null"));
+        })
+
+        //(EnumsOps<E>) ENUM_OPS_BY_CLASS_E.get(classE))
         .orElseThrow(() ->
             new IllegalStateException("unable to narrow to EnumsOps<E> for class " + classE.getName()));
   }
 
   private final Class<E> classE;
   private final List<E> enumsValues;
-  private final Map<String, E> orderedMapEnumValueByNameLowerCase;
+  private final Map<String, E> enumValueByNameLowerCase;
 
-  private EnumsOps(@NotNull Class<E> classE) {
+  private EnumsOps(Class<E> classE) {
     var enumsValues = Collections.unmodifiableList(Arrays.asList(classE.getEnumConstants()));
     var nameLowerCaseAndEnumValues = enumsValues
         .stream()
@@ -119,13 +127,13 @@ public final class EnumsOps<E extends Enum<E>> {
     //all preconditions have been validated, so assign the instance fields
     this.classE = classE;
     this.enumsValues = enumsValues;
-    this.orderedMapEnumValueByNameLowerCase = MapsOps.toMapOrdered(
-        enumsValues
-            .stream()
-            .map(enumValue ->
-                entry(
-                    enumValue.name().toLowerCase(),
-                    enumValue)));
+    this.enumValueByNameLowerCase = enumsValues
+        .stream()
+        .map(enumValue ->
+            entry(
+                enumValue.name().toLowerCase(),
+                enumValue))
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**
@@ -133,7 +141,6 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @return the {@link Class} of the enum being augmented
    */
-  @NotNull
   public Class<E> getClassE() {
     return this.classE;
   }
@@ -143,7 +150,6 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable {@link List}
    */
-  @NotNull
   public List<E> toList() {
     return this.enumsValues;
   }
@@ -153,7 +159,6 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @return the {@link Enum}'s mutable array {@code values} as a {@link Stream}
    */
-  @NotNull
   public Stream<E> stream() {
     return this.enumsValues.stream();
   }
@@ -165,7 +170,6 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable {@link Set} specifically wrapping with
    *     the highly performant {@link EnumSet}
    */
-  @NotNull
   public Set<E> toOrderedSet() {
     return Collections.unmodifiableSet(EnumSet.allOf(this.classE));
   }
@@ -177,7 +181,6 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable <i>ordered</i> {@link Map} where the key
    *     is the {@link Enum#name()}, and the enum constant itself is the value
    */
-  @NotNull
   public Map<String, E> toOrderedMapByName() {
     return MapsOps.toMapOrdered(
         stream(),
@@ -190,7 +193,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param consumer a non-interfering action to perform on the elements
    */
-  public void forEach(@NotNull Consumer<E> consumer) {
+  public void forEach(Consumer<E> consumer) {
     stream().forEach(consumer);
   }
 
@@ -200,7 +203,7 @@ public final class EnumsOps<E extends Enum<E>> {
    *
    * @param consumer a non-interfering action to perform on the elements
    */
-  public void forEachOrdered(@NotNull Consumer<E> consumer) {
+  public void forEachOrdered(Consumer<E> consumer) {
     stream().forEachOrdered(consumer);
   }
 
@@ -212,9 +215,8 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return the case-insensitive search by name for the enum value, otherwise the first enum value in
    *     {@link EnumsOps#toList}
    */
-  @NotNull
   public E valueOfOrDefaultToFirst(
-      @NotNull String search
+      String search
   ) {
     return valueOf(search, this.enumsValues.get(0));
   }
@@ -226,10 +228,9 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param orElseDefault the value to provide if the enum value cannot be found by its case-insensitive name
    * @return the case-insensitive search by name for the enum value, otherwise the {@code orElseDefault}
    */
-  @NotNull
   public E valueOf(
-      @NotNull String search,
-      @NotNull E orElseDefault
+      String search,
+      E orElseDefault
   ) {
     return valueOf(search)
         .orElse(orElseDefault);
@@ -243,12 +244,11 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return an {@link Optional} wrapping the case-insensitive search by name for the enum, otherwise an empty
    *     {@link Optional}
    */
-  @NotNull
   public Optional<E> valueOf(
-      @NotNull String search
+      String search
   ) {
     return Optional.ofNullable(
-        this.orderedMapEnumValueByNameLowerCase
+        this.enumValueByNameLowerCase
             .get(search.toLowerCase()));
   }
 
@@ -259,7 +259,6 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the {@code Enum name} for all the enum values joined together
    *     with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String join() {
     return join(DEFAULT_SEPARATOR);
   }
@@ -272,8 +271,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the {@code Enum name} for all the enum values joined together
    *     with a copy of the specified {@code separator}
    */
-  @NotNull
-  public String join(@NotNull String separator) {
+  public String join(String separator) {
     return join(Enum::name, separator);
   }
 
@@ -285,8 +283,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the {@code Enum} transformed by the {@code eToString} function,
    *     and joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
-  public String join(@NotNull Function<E, String> eToString) {
+  public String join(Function<E, String> eToString) {
     return join(eToString, DEFAULT_SEPARATOR);
   }
 
@@ -299,10 +296,9 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the {@code Enum} transformed by the {@code eToString} function,
    *     and joined together with a copy of the specified {@code separator}
    */
-  @NotNull
   public String join(
-      @NotNull Function<E, String> eToString,
-      @NotNull String separator
+      Function<E, String> eToString,
+      String separator
   ) {
     return join(stream(), eToString, separator);
   }
@@ -315,8 +311,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the {@link Enum#name()} of each of the provided {@link Enum}s
    *     joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
-  public String join(@NotNull Stream<E> es) {
+  public String join(Stream<E> es) {
     return join(es, Enum::name);
   }
 
@@ -329,10 +324,9 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the provided {@code Enum}s transformed by the {@code eToString}
    *     function, and joined together with a copy of the {@link EnumsOps#DEFAULT_SEPARATOR}
    */
-  @NotNull
   public String join(
-      @NotNull Stream<E> es,
-      @NotNull Function<E, String> eToString
+      Stream<E> es,
+      Function<E, String> eToString
   ) {
     return join(es, eToString, DEFAULT_SEPARATOR);
   }
@@ -346,10 +340,9 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the {@link Enum#name()} of each of the provided {@link Enum}s
    *     joined together with a copy of the specified {@code separator}
    */
-  @NotNull
   public String join(
-      @NotNull Stream<E> es,
-      @NotNull String separator
+      Stream<E> es,
+      String separator
   ) {
     return join(es, Enum::name, separator);
   }
@@ -364,11 +357,10 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return a new {@code String} composed of copies of the provided {@code Enum}s transformed by the {@code eToString}
    *     function, and joined together with a copy of the specified {@code separator}
    */
-  @NotNull
   public String join(
-      @NotNull Stream<E> es,
-      @NotNull Function<E, String> eToString,
-      @NotNull String separator
+      Stream<E> es,
+      Function<E, String> eToString,
+      String separator
   ) {
     return String.join(
         separator,

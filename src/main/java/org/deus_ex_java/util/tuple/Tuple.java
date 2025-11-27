@@ -1,10 +1,13 @@
 package org.deus_ex_java.util.tuple;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.stream.Stream;
 
 /**
  * The base interface of all tuples.
  */
+@NullMarked
 public sealed interface Tuple permits
     Tuple1,
     Tuple2,
