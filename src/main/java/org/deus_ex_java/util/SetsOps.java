@@ -261,6 +261,25 @@ public final class SetsOps {
   }
 
   /**
+   * Returns {@code true} if any of the elements within {@code leftTs} are contained within {@code rightTs}, otherwise
+   * {@code false}.
+   *
+   * @param leftTs  the first source of the T elements
+   * @param rightTs the second source of the T elements
+   * @param <T>     the type of instances contained in the source
+   * @return {@code true} if any of the elements within {@code leftTs} are contained within {@code rightTs}, otherwise
+   *     {@code false}
+   */
+  public static <T> boolean containsAny(
+      Set<T> leftTs,
+      Set<T> rightTs
+  ) {
+    return (leftTs.size() < rightTs.size())
+        ? leftTs.stream().anyMatch(rightTs::contains)
+        : rightTs.stream().anyMatch(leftTs::contains);
+  }
+
+  /**
    * Represents the {@link Map#keySet} values in the returned by the {@code static} function,
    * {@link SetsOps#contrastSetPair} that is used to obtain the various sub-set views when comparing and contrasting a
    * pair of {@link Set}s, each of which may be obtained via {@link SetPairViewKey#LEFT} and
