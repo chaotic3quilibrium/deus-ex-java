@@ -46,6 +46,8 @@ public class SetsOpsTests {
     var setB = SetsOps.appendItem(setA, 3);
     assertTrue(CollectionsOps.isUnmodifiable(setB));
     assertEquals(List.of(1, 2, 3), setB.stream().toList());
+    var setC = SetsOps.appendItem(Set.of(), 10);
+    assertEquals(Set.of(10), setC);
   }
 
   @Test
@@ -62,6 +64,13 @@ public class SetsOpsTests {
     var setAddC = SetsOps.addSets(setAddB, Set.of(4, 5), setContainingNull);
     assertTrue(CollectionsOps.isUnmodifiable(setAddC));
     assertEquals(Set.of(1, 2, 3, 4, 5, 6), setAddC);
+    @SuppressWarnings("DataFlowIssue")
+    var setAddD = SetsOps.addSets(Set.of(), null, Set.of());
+    assertEquals(Set.of(), setAddD);
+    var a = new Set[]{};
+    @SuppressWarnings("unchecked")
+    var setAddE = SetsOps.addSets(a);
+    assertEquals(Set.of(), setAddE);
   }
 
   @Test
@@ -75,6 +84,13 @@ public class SetsOpsTests {
     var setAppendB = SetsOps.appendSets(setAppendA, Set.of(4), Set.of(5), setContainingNull);
     assertTrue(CollectionsOps.isUnmodifiable(setAppendB));
     assertEquals(List.of(1, 2, 3, 4, 5, 6), setAppendB.stream().toList());
+    @SuppressWarnings("DataFlowIssue")
+    var setAddD = SetsOps.appendSets(Set.of(), null, Set.of());
+    assertEquals(Set.of(), setAddD);
+    var a = new Set[]{};
+    @SuppressWarnings("unchecked")
+    var setAddE = SetsOps.appendSets(a);
+    assertEquals(Set.of(), setAddE);
   }
 
   @Test
@@ -99,6 +115,7 @@ public class SetsOpsTests {
 
   @Test
   public void testToSetOrderedStream() {
+    assertEquals(Set.of(), SetsOps.toSetOrdered(Stream.empty()));
     var expectedSetOrdered = new LinkedHashSet<>(List.of(3, 2, 1));
     var nullContainingSetOrdered = new LinkedHashSet<>(Stream.of(null, 3, null, 2, null, 1, null).toList());
     assertEquals(4, nullContainingSetOrdered.size());
@@ -123,6 +140,8 @@ public class SetsOpsTests {
 
   @Test
   public void testReverse() {
+    assertEquals(Set.of(), SetsOps.reverse(Set.of()));
+    assertEquals(Set.of(), SetsOps.reverse(Stream.empty()));
     var expectedSetOrdered = new LinkedHashSet<>(List.of(1, 2, 3));
     var nullContainingSetOrdered = new LinkedHashSet<>(Stream.of(null, 3, null, 2, null, 1, null).toList());
     assertEquals(expectedSetOrdered, SetsOps.reverse(nullContainingSetOrdered.stream()));
@@ -231,6 +250,7 @@ public class SetsOpsTests {
     assertNotNull(set);
     assertTrue(set.isEmpty());
     assertTrue(CollectionsOps.isUnmodifiable(set));
+    assertEquals(Set.of(), SetsOps.ofOrdered(null, null, null));
     var set2 = new LinkedHashSet<Integer>();
     assertEquals(set2, set);
     var set3 = SetsOps.ofOrdered(1, 3, 2, 4);
@@ -238,6 +258,11 @@ public class SetsOpsTests {
     assertFalse(set3.isEmpty());
     assertTrue(CollectionsOps.isUnmodifiable(set3));
     assertEquals(List.of(1, 3, 2, 4), set3.stream().toList());
+    var illegalArgumentException = assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            SetsOps.ofOrdered(1, 2, 2, 3, 5, 7, 3, 9));
+    assertEquals("duplicate elements encountered - 2, 3", illegalArgumentException.getMessage());
   }
 
   @Test

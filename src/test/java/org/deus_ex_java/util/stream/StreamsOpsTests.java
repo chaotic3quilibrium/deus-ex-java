@@ -29,7 +29,17 @@ public class StreamsOpsTests {
   }
 
   @Test
-  public void testZip() {
+  public void testZipStreamAndCollectionPermutations() {
+    var listInts0To4 = List.of(0, 1, 2, 3, 4);
+    var listStringsX0to2 = List.of("x0", "x1", "x2");
+    var zipped = List.of(entry(0, "x0"), entry(1, "x1"), entry(2, "x2"));
+    assertEquals(zipped, StreamsOps.zip(listInts0To4, listStringsX0to2).toList());
+    assertEquals(zipped, StreamsOps.zip(listInts0To4.stream(), listStringsX0to2).toList());
+    assertEquals(zipped, StreamsOps.zip(listInts0To4, listStringsX0to2.stream()).toList());
+  }
+
+  @Test
+  public void testZipStream() {
     var listEmpty = StreamsOps.zip(Stream.empty(), Stream.empty()).toList();
     assertTrue(listEmpty.isEmpty());
     var listInts0To4 = List.of(0, 1, 2, 3, 4);
@@ -45,11 +55,18 @@ public class StreamsOpsTests {
   }
 
   @Test
-  public void testZipWithIndex() {
+  public void testZipWithIndexCollection() {
+    var listEmpty = StreamsOps.zipWithIndex(List.of()).toList();
+    assertTrue(listEmpty.isEmpty());
+    var stringAndIndexes = StreamsOps.zipWithIndex(List.of("x0", "x1", "x2")).toList();
+    assertEquals(List.of(entry("x0", 0), entry("x1", 1), entry("x2", 2)), stringAndIndexes);
+  }
+
+  @Test
+  public void testZipWithIndexStream() {
     var listEmpty = StreamsOps.zipWithIndex(Stream.empty()).toList();
     assertTrue(listEmpty.isEmpty());
     var stringAndIndexes = StreamsOps.zipWithIndex(Stream.of("x0", "x1", "x2")).toList();
     assertEquals(List.of(entry("x0", 0), entry("x1", 1), entry("x2", 2)), stringAndIndexes);
   }
-
 }
