@@ -1,6 +1,7 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.util.refined.NonEmptySet;
+import org.deus_ex_java.util.tuple.Tuple2;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -277,6 +278,102 @@ public final class SetsOps {
     return (leftTs.size() < rightTs.size())
         ? leftTs.stream().anyMatch(rightTs::contains)
         : rightTs.stream().anyMatch(leftTs::contains);
+  }
+
+  /**
+   * Returns a {@link Tuple2} assigning the first property an unmodifiable unordered {@link Set} containing all the
+   * distinct elements from the source, and assigning to the second property an unmodifiable unordered {@link Set}
+   * containing all the elements which appeared more than once from the source.
+   *
+   * @param collection the source of the T elements
+   * @param <T>        the type of instances contained in the source
+   * @return a {@link Tuple2} assigning the first property an unmodifiable unordered {@link Set} containing all the
+   *     distinct elements from the source, and assigning to the second property an unmodifiable unordered {@link Set}
+   *     containing all the elements which appeared more than once from the source
+   */
+  public static <T> Tuple2<Set<T>, Set<T>> toDistinctAndDupes(
+      Collection<T> collection
+  ) {
+    if (!collection.isEmpty()) {
+      return toDistinctAndDupes(collection.stream());
+    }
+
+    return new Tuple2<>(Set.of(), Set.of());
+  }
+
+  /**
+   * Returns a {@link Tuple2} assigning the first property an unmodifiable unordered {@link Set} containing all the
+   * distinct elements from the source, and assigning to the second property an unmodifiable unordered {@link Set}
+   * containing all the elements which appeared more than once from the source.
+   *
+   * @param stream the source of the T elements
+   * @param <T>    the type of instances contained in the source
+   * @return a {@link Tuple2} assigning the first property an unmodifiable unordered {@link Set} containing all the
+   *     distinct elements from the source, and assigning to the second property an unmodifiable unordered {@link Set}
+   *     containing all the elements which appeared more than once from the source
+   */
+  public static <T> Tuple2<Set<T>, Set<T>> toDistinctAndDupes(
+      Stream<T> stream
+  ) {
+    var distincts = new HashSet<T>();
+    var dupes = new HashSet<T>();
+    stream.forEachOrdered(t -> {
+      if (!distincts.add(t)) {
+        dupes.add(t);
+      }
+    });
+
+    return new Tuple2<>(
+        Collections.unmodifiableSet(distincts),
+        Collections.unmodifiableSet(dupes));
+  }
+
+  /**
+   * Returns a {@link Tuple2} assigning the first property an unmodifiable <em>ordered</em> {@link Set} containing all
+   * the distinct elements from the source, and assigning to the second property an unmodifiable <em>ordered</em>
+   * {@link Set} containing all the elements which appeared more than once from the source.
+   *
+   * @param collection the source of the T elements
+   * @param <T>        the type of instances contained in the source
+   * @return a {@link Tuple2} assigning the first property an unmodifiable <em>ordered</em> {@link Set} containing all
+   *     the distinct elements from the source, and assigning to the second property an unmodifiable <em>ordered</em>
+   *     {@link Set} containing all the elements which appeared more than once from the source
+   */
+  public static <T> Tuple2<Set<T>, Set<T>> toDistinctAndDupesOrdered(
+      Collection<T> collection
+  ) {
+    if (!collection.isEmpty()) {
+      return toDistinctAndDupesOrdered(collection.stream());
+    }
+
+    return new Tuple2<>(Set.of(), Set.of());
+  }
+
+  /**
+   * Returns a {@link Tuple2} assigning the first property an unmodifiable <em>ordered</em> {@link Set} containing all
+   * the distinct elements from the source, and assigning to the second property an unmodifiable <em>ordered</em>
+   * {@link Set} containing all the elements which appeared more than once from the source.
+   *
+   * @param stream the source of the T elements
+   * @param <T>    the type of instances contained in the source
+   * @return a {@link Tuple2} assigning the first property an unmodifiable <em>ordered</em> {@link Set} containing all
+   *     the distinct elements from the source, and assigning to the second property an unmodifiable <em>ordered</em>
+   *     {@link Set} containing all the elements which appeared more than once from the source
+   */
+  public static <T> Tuple2<Set<T>, Set<T>> toDistinctAndDupesOrdered(
+      Stream<T> stream
+  ) {
+    var distincts = new LinkedHashSet<T>();
+    var dupes = new LinkedHashSet<T>();
+    stream.forEachOrdered(t -> {
+      if (!distincts.add(t)) {
+        dupes.add(t);
+      }
+    });
+
+    return new Tuple2<>(
+        Collections.unmodifiableSet(distincts),
+        Collections.unmodifiableSet(dupes));
   }
 
   /**
