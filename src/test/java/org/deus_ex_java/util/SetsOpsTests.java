@@ -1,9 +1,12 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.util.SetsOps.SetPairViewKey;
+import org.deus_ex_java.util.tuple.Tuple2;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -175,6 +178,82 @@ public class SetsOpsTests {
     assertTrue(SetsOps.containsAny(leftTs2, rightTs12));
     assertTrue(SetsOps.containsAny(leftTs12, rightTs2));
     assertTrue(SetsOps.containsAny(leftTs12, rightTs12));
+  }
+
+
+  @Test
+  public void testToDistinctAndDupes() {
+    assertEquals(
+        new Tuple2<>(Set.<Integer>of(), Set.<Integer>of()),
+        SetsOps.toDistinctAndDupes(List.<Integer>of()));
+    assertEquals(
+        new Tuple2<>(Set.of(1, 2, 3, 4), Set.of()),
+        SetsOps.toDistinctAndDupes(List.of(1, 2, 3, 4)));
+    assertEquals(
+        new Tuple2<>(Set.of(1, 2, 3, 4), Set.of(2, 3)),
+        SetsOps.toDistinctAndDupes(List.of(1, 2, 2, 3, 4, 3)));
+    assertEquals(
+        new Tuple2<>(Set.of(1, 2, 3, 4), Set.of(1, 2, 3, 4)),
+        SetsOps.toDistinctAndDupes(List.of(1, 2, 2, 3, 4, 3, 1, 4)));
+    assertEquals(
+        new Tuple2<>(Set.<Integer>of(), Set.<Integer>of()),
+        SetsOps.toDistinctAndDupes(Stream.<Integer>of()));
+    assertEquals(
+        new Tuple2<>(Set.of(1, 2, 3, 4), Set.of()),
+        SetsOps.toDistinctAndDupes(Stream.of(1, 2, 3, 4)));
+    assertEquals(
+        new Tuple2<>(Set.of(1, 2, 3, 4), Set.of(2, 3)),
+        SetsOps.toDistinctAndDupes(Stream.of(1, 2, 2, 3, 4, 3)));
+    assertEquals(
+        new Tuple2<>(Set.of(1, 2, 3, 4), Set.of(1, 2, 3, 4)),
+        SetsOps.toDistinctAndDupes(Stream.of(1, 2, 2, 3, 4, 3, 1, 4)));
+  }
+
+  private static <T1, T2, M1, M2> Tuple2<@NonNull M1, @NonNull M2> tuple2Map(
+      Tuple2<@NonNull T1, @NonNull T2> tuple2,
+      Function<T1, M1> fT1ToM1,
+      Function<T2, M2> fT2ToM2
+  ) {
+    return new Tuple2<>(
+        fT1ToM1.apply(tuple2._1()),
+        fT2ToM2.apply(tuple2._2()));
+  }
+
+  @Test
+  public void testToDistinctAndDupesOrdered() {
+    assertEquals(
+        new Tuple2<>(Set.<Integer>of(), Set.<Integer>of()),
+        SetsOps.toDistinctAndDupesOrdered(List.<Integer>of()));
+    assertEquals(
+        new Tuple2<>(new LinkedHashSet<>(List.of(1, 2, 3, 4)), Set.of()),
+        SetsOps.toDistinctAndDupesOrdered(List.of(1, 2, 3, 4)));
+    assertEquals(
+        new Tuple2<>(new LinkedHashSet<>(List.of(1, 2, 3, 4)), new LinkedHashSet<>(List.of(2, 3))),
+        SetsOps.toDistinctAndDupesOrdered(List.of(1, 2, 2, 3, 4, 3)));
+    assertEquals(
+        new Tuple2<>(new LinkedHashSet<>(List.of(1, 2, 3, 4)), new LinkedHashSet<>(List.of(2, 3, 1, 4))),
+        SetsOps.toDistinctAndDupesOrdered(List.of(1, 2, 2, 3, 4, 3, 1, 4)));
+    assertEquals(
+        new Tuple2<>(Set.<Integer>of(), Set.<Integer>of()),
+        SetsOps.toDistinctAndDupesOrdered(Stream.<Integer>of()));
+    assertEquals(
+        new Tuple2<>(List.of(1, 2, 3, 4), List.of()),
+        tuple2Map(
+            SetsOps.toDistinctAndDupesOrdered(Stream.of(1, 2, 3, 4)),
+            set -> set.stream().toList(),
+            set -> set.stream().toList()));
+    assertEquals(
+        new Tuple2<>(List.of(1, 2, 3, 4), List.of(2, 3)),
+        tuple2Map(
+            SetsOps.toDistinctAndDupesOrdered(Stream.of(1, 2, 2, 3, 4, 3)),
+            set -> set.stream().toList(),
+            set -> set.stream().toList()));
+    assertEquals(
+        new Tuple2<>(List.of(1, 2, 3, 4), List.of(2, 3, 1, 4)),
+        tuple2Map(
+            SetsOps.toDistinctAndDupesOrdered(Stream.of(1, 2, 2, 3, 4, 3, 1, 4)),
+            set -> set.stream().toList(),
+            set -> set.stream().toList()));
   }
 
   private <T> void validateContrastSetPairMap(
