@@ -9,8 +9,7 @@ import java.util.stream.Stream;
 
 /**
  * {@code WrappedCheckedException} is an <em>unchecked exception</em> final class used to wrap a checked exception
- * (guaranteed to be not {@code null}, and returned by {@link #getCause()}) that can be declared and thrown by a method
- * or constructor's explicitly defined {@code throws} clause.
+ * (which is returned by {@link #getCause()}, and guaranteed to be non-{@code null}).
  * <p>
  * {@link FunctionsOps} uses this to wrap the checked exception lambdas to enable use of the lambda within
  * {@link Stream} operations.
