@@ -2,7 +2,7 @@
 
 - Copyright (C) 2025 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.3`](#v13)
+- [`v1.4.0`](#v140)
 
 ---
 
@@ -22,10 +22,11 @@
     * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
     * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 * [Version History](#version-history)
-  * [v1.3](#v13)
-  * [v1.2](#v12)
-  * [v1.1](#v11)
-  * [v1.0](#v10)
+  * [v1.4.0](#v140)
+  * [v1.3.0](#v130)
+  * [v1.2.0](#v120)
+  * [v1.1.0](#v110)
+  * [v1.0.0](#v100)
 <!-- TOC -->
 
 ---
@@ -44,7 +45,7 @@ As a library targeting Java 17, deus-ex-java is a Java augmentation library to e
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
   </dependency>
 ```
 
@@ -154,7 +155,15 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 
 # Version History
 
-## v1.3
+## v1.4.0
+
+- 2025.11.30
+- Added SetsOps x4 methods, toDistinctAndDupes() and toDistinctAndDupesOrdered()
+- Completely refactored away FatalThrowable, and replaced with ForcedFatalThrowable to ensure fatal exceptions (including checked exceptions, like InterruptedException) flow by unhindered by library encapsulaters and guards
+- Refactored remaining try/catch statements to use TryCatchesOps to ensure correct handling using ForcedFatalThrowable
+- Tidied up javadocs for ForcedFatalThrowable and WrappedCheckedException
+
+## v1.3.0
 
 - 2025.11.27
 - Transitioned to JSpecify and off of JetBrains nullability library
@@ -164,21 +173,21 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 - Enhanced multiple places allowing for a Collection to be passed, and it is the forwards to the method overload taking a Stream
 - Added a RuntimeException of FatalThrowable to differentiate from WrappedCheckedException to enable local encapsulation of all checked exceptions, and allowing simple catch near the thread root to re-throw the wrapped fatal exception
 
-## v1.2
+## v1.2.0
 
 - 2025.11.08
 - Added convenient Collection twins for the Stream methods in ListsOps, SetsOps, and MapsOps
 - Expanded more tests
 - Tweaked javadocs
 
-## v1.1
+## v1.1.0
 
 - 2025.11.01
 - Added tons of tests
   - Remaining tests needed marked by "TODO:" comments
 - Fixes and tweaks related to defects exposed by expanded testing surface
 
-## v1.0
+## v1.0.0
 
 - 2025.10.19
 - Initial release
