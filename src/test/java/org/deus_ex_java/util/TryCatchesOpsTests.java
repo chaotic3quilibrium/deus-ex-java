@@ -1,6 +1,5 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.FatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.junit.jupiter.api.Test;
 
@@ -20,31 +19,15 @@ public class TryCatchesOpsTests {
       }
     });
     assertTrue(optionalRuntimeExceptionIsEmpty.isEmpty());
-    //exception on deus-ex-java FatalThrowable
-    var deusExJavaFatalThrowable = assertThrows(
-        FatalThrowable.class,
-        () ->
-            TryCatchesOps.wrap(() -> {
-              //noinspection ConstantValue
-              if (true) {
-                FatalThrowable.filterToFatalThrowable(new LinkageError("testier"))
-                    .ifPresent(fatalThrowable -> {
-
-                      throw fatalThrowable;
-                    });
-              }
-            }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", deusExJavaFatalThrowable.getMessage());
     //exception on JVM fatal throwable
     var fatalThrowable = assertThrows(
-        FatalThrowable.class,
+        LinkageError.class,
         () -> TryCatchesOps.wrap(() -> {
           //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testier");
           }
         }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", fatalThrowable.getMessage());
     //erred failure and option is non-empty
     var optionalIllegalArgumentException = TryCatchesOps.wrap(() -> {
       //noinspection ConstantValue
@@ -82,26 +65,9 @@ public class TryCatchesOpsTests {
     });
     assertTrue(eitherRight.isRight());
     assertEquals(1, eitherRight.getRight());
-    //exception on deus-ex-java FatalThrowable
-    var deusExJavaFatalThrowable = assertThrows(
-        FatalThrowable.class,
-        () ->
-            TryCatchesOps.wrap(() -> {
-              //noinspection ConstantValue
-              if (true) {
-                FatalThrowable.filterToFatalThrowable(new LinkageError("testier"))
-                    .ifPresent(fatalThrowable -> {
-
-                      throw fatalThrowable;
-                    });
-              }
-
-              return 1;
-            }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", deusExJavaFatalThrowable.getMessage());
     //exception on JVM fatal throwable
     var fatalThrowable = assertThrows(
-        FatalThrowable.class,
+        LinkageError.class,
         () -> TryCatchesOps.wrap(() -> {
           //noinspection ConstantValue
           if (true) {
@@ -110,7 +76,6 @@ public class TryCatchesOpsTests {
 
           return 1;
         }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", fatalThrowable.getMessage());
     //erred failure and option is non-empty
     var eitherLeft = TryCatchesOps.wrap(() -> {
       //noinspection ConstantValue
@@ -154,29 +119,9 @@ public class TryCatchesOpsTests {
       }
     });
     assertTrue(optionalRuntimeExceptionIsEmpty.isEmpty());
-    //exception on deus-ex-java FatalThrowable
-    var deusExJavaFatalThrowable = assertThrows(
-        FatalThrowable.class,
-        () ->
-            TryCatchesOps.wrapCheckedException(() -> {
-              //noinspection ConstantValue
-              if (false) {
-                //noinspection resource
-                InputStreamReader.nullReader().reset();
-              }
-              //noinspection ConstantValue
-              if (true) {
-                FatalThrowable.filterToFatalThrowable(new LinkageError("testier"))
-                    .ifPresent(fatalThrowable -> {
-
-                      throw fatalThrowable;
-                    });
-              }
-            }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", deusExJavaFatalThrowable.getMessage());
     //exception on JVM fatal throwable
     var fatalThrowable = assertThrows(
-        FatalThrowable.class,
+        InterruptedException.class,
         () -> TryCatchesOps.wrapCheckedException(() -> {
           //noinspection ConstantValue
           if (false) {
@@ -188,7 +133,6 @@ public class TryCatchesOpsTests {
             throw new InterruptedException("testier");
           }
         }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.InterruptedException - testier", fatalThrowable.getMessage());
     //erred failure and option is non-empty
     var optionalIllegalArgumentException = TryCatchesOps.wrapCheckedException(() -> {
       //noinspection ConstantValue
@@ -249,31 +193,9 @@ public class TryCatchesOpsTests {
     });
     assertTrue(eitherRight.isRight());
     assertEquals(1, eitherRight.getRight());
-    //exception on deus-ex-java FatalThrowable
-    var deusExJavaFatalThrowable = assertThrows(
-        FatalThrowable.class,
-        () ->
-            TryCatchesOps.wrapCheckedException(() -> {
-              //noinspection ConstantValue
-              if (false) {
-                //noinspection resource
-                InputStreamReader.nullReader().reset();
-              }
-              //noinspection ConstantValue
-              if (true) {
-                FatalThrowable.filterToFatalThrowable(new LinkageError("testier"))
-                    .ifPresent(fatalThrowable -> {
-
-                      throw fatalThrowable;
-                    });
-              }
-
-              return 1;
-            }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", deusExJavaFatalThrowable.getMessage());
     //exception on JVM fatal throwable
     var fatalThrowable = assertThrows(
-        FatalThrowable.class,
+        LinkageError.class,
         () -> TryCatchesOps.wrapCheckedException(() -> {
           //noinspection ConstantValue
           if (false) {
@@ -287,7 +209,6 @@ public class TryCatchesOpsTests {
 
           return 1;
         }));
-    assertEquals("FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.LinkageError - testier", fatalThrowable.getMessage());
     //erred failure and either is left
     var eitherLeft = TryCatchesOps.wrapCheckedException(() -> {
       //noinspection ConstantValue

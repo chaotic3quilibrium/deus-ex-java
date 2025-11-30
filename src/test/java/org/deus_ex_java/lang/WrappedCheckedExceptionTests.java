@@ -41,26 +41,22 @@ public class WrappedCheckedExceptionTests {
   }
 
   @Test
-  public void testThrowsFatalThrowable() {
+  public void testInhibitWrappingFatalThrowables() {
     var interruptedException = new InterruptedException("test");
-    var fatalThrowableMessage = "FatalThrowable.isFatalThrowable(throwable) must be false - java.lang.InterruptedException - test";
     var fatalThrowableMessageAndCause = assertThrows(
-        FatalThrowable.class,
+        InterruptedException.class,
         () -> {
           throw new WrappedCheckedException("ignored", interruptedException);
         });
-    assertEquals(fatalThrowableMessage, fatalThrowableMessageAndCause.getMessage());
     var fatalThrowableCause = assertThrows(
-        FatalThrowable.class,
+        InterruptedException.class,
         () -> {
           throw new WrappedCheckedException(interruptedException);
         });
-    assertEquals(fatalThrowableMessage, fatalThrowableCause.getMessage());
     var fatalThrowableAllArgs = assertThrows(
-        FatalThrowable.class,
+        InterruptedException.class,
         () -> {
           throw new WrappedCheckedException("ignored", interruptedException, true, true);
         });
-    assertEquals(fatalThrowableMessage, fatalThrowableAllArgs.getMessage());
   }
 }

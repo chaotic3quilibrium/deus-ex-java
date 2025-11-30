@@ -32,11 +32,12 @@ public class ForcedFatalThrowable {
 
   /**
    * Returns the passed {@code throwable} if it is non-fatal, i.e. returns false from
-   * {@link ForcedFatalThrowable#isFatalThrowable}, otherwise throws the throwable, even if it is checked exception.
+   * {@link ForcedFatalThrowable#isFatalThrowable}, otherwise throws the throwable, even if it is a checked exception.
    *
    * @param throwable instance of an exception against which to test for Fatal
    * @return the passed {@code throwable} if it is non-fatal, i.e. returns false from
-   *     {@link ForcedFatalThrowable#isFatalThrowable}, otherwise throws the throwable, even if it is checked exception
+   *     {@link ForcedFatalThrowable#isFatalThrowable}, otherwise throws the throwable, even if it is a checked
+   *     exception
    */
   public static Throwable requireNonFatalThrowableOrElseThrowFatalThrowable(Throwable throwable) {
     if (isFatalThrowable(throwable)) {

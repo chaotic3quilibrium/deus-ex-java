@@ -1,6 +1,6 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.FatalThrowable;
+import org.deus_ex_java.lang.ForcedFatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.function.SupplierCheckedException;
 import org.deus_ex_java.util.function.VoidSupplier;
@@ -17,13 +17,10 @@ import java.util.function.Supplier;
  * <b><u>WARNING:</b></u>
  * <p>
  * Given the legacy of Java's checked exception system, it is imperative that <b><em>fatal</em></b> exceptions (defined
- * in {@link FatalThrowable#isFatalThrowable(Throwable) FatalThrowable.isFatalThrowable(...)}) avoid being caught and
- * suppressed.
+ * in {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) avoid being
+ * caught and suppressed.
  * <p>
- * Within this framework, if a <b><em>fatal</em></b> exception is thrown, it will be encapsulated within an instance of
- * {@link FatalThrowable}, a descendant of {@link RuntimeException}. This specific exception should be explicitly
- * caught, and its {@code getCause()} be re-thrown at the next checked exception opportunity. This likely means at the
- * root of the thread, or within an event loop.
+ * Within this framework, if a <b><em>fatal</em></b> exception is thrown, it will explicitly not be caught.
  */
 @NullMarked
 public final class TryCatchesOps {
@@ -34,23 +31,29 @@ public final class TryCatchesOps {
 
   /**
    * Reify a try/catch statement into an {@link Optional} where, after the {@link VoidSupplier#execute()} is invoked, if
-   * there is no {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if an
-   * {@link Throwable} exception is thrown and the exception satisfies the {@link Class#isInstance(Object)} of one of
-   * the provided elements within {@code throwableClasses} (explicitly excludes {@link FatalThrowable}), the exception
-   * is returned within the {@link Optional#of}, otherwise, the unrecognized exception is re-thrown.
+   * there was not an {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if an
+   * {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   * {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception is
+   * returned within the {@link Optional#of}, otherwise, the non-fatal unrecognized exception is re-thrown.
    *
    * @param voidSupplier     function wrapped in the {@code try {...} catch (Throwable ...) {...} } block, that when
    *                         invoked, if there is no exception thrown, the result are ignored
    * @param throwableClasses if the {@code voidSupplier} function throws an exception, and the exception satisfies the
-   *                         {@link Class#isInstance} of one of the elements of this parameter (explicitly excludes
-   *                         {@link FatalThrowable}), the exception is returned within the {@link Optional#of}
+   *                         {@link Class#isInstance} of one of the elements of this parameter (explicitly precluding
+   *                         any exception where
+   *                         {@link ForcedFatalThrowable#isFatalThrowable(Throwable)
+   *                         ForcedFatalThrowable.isFatalThrowable(...)}) returns {@code true}, the exception is
+   *                         returned within the {@link Optional#of}
    * @param <L>              type of the {@link Throwable} instances being caught
-   * @return a try/catch statement into an {@link Optional} where, after the {@link VoidSupplier} is invoked, if there
-   *     is no {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if an
-   *     {@link Throwable} exception is thrown and the exception satisfies the {@link Class#isInstance} of one of the
-   *     provided elements within {@code throwableClasses} (explicitly excludes {@link FatalThrowable}), the exception
-   *     is returned within the {@link Optional#of}, otherwise, the unrecognized exception is re-thrown
-   * @throws FatalThrowable wraps <b><em>fatal</em></b> checked exceptions
+   * @return a try/catch statement into an {@link Optional} where, after the {@link VoidSupplier#execute()} is invoked,
+   *     if there was not an {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if
+   *     an {@link Throwable} exception was thrown, if
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   *     {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception
+   *     is returned within the {@link Optional#of}, otherwise, the non-fatal unrecognized exception is re-thrown
    */
   @SafeVarargs
   public static <L extends Throwable> Optional<L> wrap(
@@ -61,14 +64,9 @@ public final class TryCatchesOps {
       voidSupplier.execute();
 
       return Optional.empty();
-    } catch (FatalThrowable fatalThrowable) {
-      throw fatalThrowable;
     } catch (Throwable throwable) {
-      FatalThrowable.filterToFatalThrowable(throwable)
-          .ifPresent(fatalThrowable -> {
-
-            throw fatalThrowable;
-          });
+      //noinspection ThrowableNotThrown
+      ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
       if (Arrays.stream(throwableClasses)
           .anyMatch(throwableClass ->
               throwableClass.isInstance(throwable))
@@ -84,17 +82,22 @@ public final class TryCatchesOps {
 
   /**
    * Reify a try/catch statement into an {@link Optional} where, after the {@link VoidSupplier#execute()} is invoked, if
-   * there is no {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if an
-   * {@link Throwable} exception is thrown and the exception is a {@link RuntimeException}, the exception is returned
-   * within the {@link Optional#of}, otherwise, the unrecognized exception is re-thrown.
+   * there was not an {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if an
+   * {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a
+   * {@link RuntimeException}, the exception is returned within the {@link Optional#of}, otherwise, the non-fatal
+   * unrecognized exception is re-thrown.
    *
    * @param voidSupplier function wrapped in the {@code try {...} catch (Throwable ...) {...} } block, that when
    *                     invoked, if there is no exception thrown, the result are ignored
    * @return a try/catch statement into an {@link Optional} where, after the {@link VoidSupplier#execute()} is invoked,
-   *     if there is no {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if an
-   *     {@link Throwable} exception is thrown and the exception is a {@link RuntimeException}, the exception is
-   *     returned within the {@link Optional#of}, otherwise, the unrecognized exception is re-thrown
-   * @throws FatalThrowable wraps <b><em>fatal</em></b> checked exceptions
+   *     if * there was not an {@link Throwable} exception thrown, an {@link Optional#empty()} is returned, otherwise if
+   *     an * {@link Throwable} exception was thrown, if *
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns *
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a *
+   *     {@link RuntimeException}, the exception is returned within the {@link Optional#of}, otherwise, the non-fatal *
+   *     unrecognized exception is re-thrown
    */
   public static Optional<RuntimeException> wrap(
       VoidSupplier voidSupplier
@@ -103,30 +106,33 @@ public final class TryCatchesOps {
   }
 
   /**
-   * Reify a try/catch statement into an {@link Either} where, when the {@link Supplier} is invoked, if there is no
-   * {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within the right side of
-   * an {@link Either}, otherwise if an {@link Throwable} exception is thrown and the exception satisfies the
-   * {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses} (explicitly
-   * excludes {@link FatalThrowable}), the exception is returned within the left side of an {@link Either}, otherwise,
-   * the exception is re-thrown.
+   * Reify a try/catch statement into an {@link Either} where, after the {@link Supplier#get()} is invoked, if there was
+   * not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within the right
+   * side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   * {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception is
+   * returned within the left side of an {@link Either}, otherwise, the non-fatal unrecognized exception is re-thrown.
    *
    * @param supplier         function wrapped in the {@code try {...} catch (Throwable ...) {...} } block, that when
    *                         invoked, if there is no exception thrown, the function's return value is returned within
    *                         the right side of an {@link Either}
    * @param throwableClasses if the {@code supplier} function throws an exception, and the exception satisfies the
-   *                         {@link Class#isInstance} of one of the elements of this parameter (explicitly excludes
-   *                         {@link FatalThrowable}), the exception is returned within the left side of an
-   *                         {@link Either} left side of an {@link Either}, otherwise, the exception is
-   *                         re-{@code thrown}
+   *                         {@link Class#isInstance} of one of the elements of this parameter (explicitly precluding
+   *                         any exception where
+   *                         {@link ForcedFatalThrowable#isFatalThrowable(Throwable)
+   *                         ForcedFatalThrowable.isFatalThrowable(...)}) returns {@code true}, the exception is
+   *                         returned within the left side of an {@link Either}
    * @param <L>              type of the {@link Throwable} instance being caught
    * @param <R>              type of the instance provided by the {@link Supplier}
-   * @return a try/catch statement into an {@link Either} where, when the {@link Supplier} is invoked, if there is no
-   *     {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within the right
-   *     side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown and the exception satisfies
-   *     the {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}
-   *     (explicitly excludes {@link FatalThrowable}), the exception is returned within the left side of an
-   *     {@link Either}, otherwise, the exception is re-thrown
-   * @throws FatalThrowable wraps <b><em>fatal</em></b> checked exceptions
+   * @return a try/catch statement into an {@link Either} where, after the {@link Supplier#get()} is invoked, if there
+   *     was not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within
+   *     the right side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   *     {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception
+   *     is returned within the left side of an {@link Either}, otherwise, the non-fatal unrecognized exception is
+   *     re-thrown
    */
   @SafeVarargs
   public static <L extends Throwable, R> Either<L, R> wrap(
@@ -134,15 +140,11 @@ public final class TryCatchesOps {
       Class<L>... throwableClasses
   ) {
     try {
-      return Either.right(supplier.get());
-    } catch (FatalThrowable fatalThrowable) {
-      throw fatalThrowable;
-    } catch (Throwable throwable) {
-      FatalThrowable.filterToFatalThrowable(throwable)
-          .ifPresent(fatalThrowable -> {
 
-            throw fatalThrowable;
-          });
+      return Either.right(supplier.get());
+    } catch (Throwable throwable) {
+      //noinspection ThrowableNotThrown
+      ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
       if (Arrays.stream(throwableClasses)
           .anyMatch(throwableClass ->
               throwableClass.isInstance(throwable))
@@ -157,22 +159,25 @@ public final class TryCatchesOps {
   }
 
   /**
-   * Reify a try/catch statement into an {@link Either} where, when the {@link Supplier} is invoked, if there is no
-   * {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within the right side of
-   * an {@link Either}, otherwise if an {@link Throwable} exception is thrown and the exception is a
+   * Reify a try/catch statement into an {@link Either} where, after the {@link Supplier#get()} is invoked, if there was
+   * not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within the right
+   * side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a
    * {@link RuntimeException}, the exception is returned within the left side of an {@link Either}, otherwise, the
-   * exception is re-thrown.
+   * non-fatal unrecognized exception is re-thrown.
    *
    * @param supplier function wrapped in the {@code try {...} catch (Throwable ...) {...} } block, that when invoked, if
    *                 there is no exception thrown, the function's return value is returned within the right side of an
    *                 {@link Either}
    * @param <R>      type of the instance provided by the {@link Supplier}
-   * @return a try/catch statement into an {@link Either} where, when the {@link Supplier} is invoked, if there is no
-   *     {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within the right
-   *     side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown and the exception is a
+   * @return a try/catch statement into an {@link Either} where, after the {@link Supplier#get()} is invoked, if there
+   *     was not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is returned within
+   *     the right side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a
    *     {@link RuntimeException}, the exception is returned within the left side of an {@link Either}, otherwise, the
-   *     exception is re-thrown
-   * @throws FatalThrowable wraps <b><em>fatal</em></b> checked exceptions
+   *     non-fatal unrecognized exception is re-thrown
    */
   public static <R> Either<RuntimeException, R> wrap(
       Supplier<R> supplier
@@ -186,11 +191,8 @@ public final class TryCatchesOps {
       String s,
       Class<T>... throwableClasses
   ) {
-    FatalThrowable.filterToFatalThrowable(throwable)
-        .ifPresent(fatalThrowable -> {
-
-          throw fatalThrowable;
-        });
+    //noinspection ThrowableNotThrown
+    ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
     if (Arrays.stream(throwableClasses)
         .anyMatch(throwableClass ->
             throwableClass.isInstance(throwable))
@@ -211,29 +213,33 @@ public final class TryCatchesOps {
 
   /**
    * Reify a try/catch statement into an {@link Optional} where, after the
-   * {@link VoidSupplierCheckedException#execute()} is invoked, if there is no {@link Throwable} exception thrown, an
-   * {@link Optional#empty()} is returned, otherwise if an {@link Throwable} exception is thrown and the exception
-   * satisfies the {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}
-   * (explicitly excludes {@link FatalThrowable}), the exception is returned within the {@link Optional#of}, otherwise,
-   * if the unrecognized exception is an instance of {@link RuntimeException}, it is rethrown, otherwise a new
-   * {@link WrappedCheckedException} wrapping the unrecognized exception is thrown.
+   * {@link VoidSupplierCheckedException#execute()} is invoked, if there was not an {@link Throwable} exception thrown,
+   * an {@link Optional#empty()} is returned, otherwise if an {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   * {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception is
+   * returned within the {@link Optional#of}, otherwise if the exception is a {@link RuntimeException}, it is rethrown,
+   * otherwise a new {@link WrappedCheckedException} wrapping the non-fatal unrecognized exception is re-thrown.
    *
    * @param voidSupplierCheckedException function wrapped in the {@code try {...} catch (Throwable ...) {...} } block,
    *                                     that when invoked, if there is no exception thrown, the results are ignored
-   * @param throwableClasses             if the {@code voidSupplier} function throws an exception, and the exception
-   *                                     satisfies the {@link Class#isInstance} of one of the elements of this parameter
-   *                                     (explicitly excludes {@link FatalThrowable}), the exception is returned within
-   *                                     the {@link Optional#of}
+   * @param throwableClasses             if the {@code voidSupplierCheckedException} function throws an exception, and
+   *                                     the exception satisfies the {@link Class#isInstance} of one of the elements of
+   *                                     this parameter (explicitly precluding any exception where
+   *                                     {@link ForcedFatalThrowable#isFatalThrowable(Throwable)
+   *                                     ForcedFatalThrowable.isFatalThrowable(...)}) returns {@code true}, the
+   *                                     exception is returned within the {@link Optional#of}
    * @param <L>                          type of the {@link Throwable} instances being caught
    * @return a try/catch statement into an {@link Optional} where, after the
-   *     {@link VoidSupplierCheckedException#execute()} is invoked, if there is no {@link Throwable} exception thrown,
-   *     an {@link Optional#empty()} is returned, otherwise if an {@link Throwable} exception is thrown and the
-   *     exception satisfies the {@link Class#isInstance(Object)} of one of the provided elements within
-   *     {@code throwableClasses} (explicitly excludes {@link FatalThrowable}), the exception is returned within the
-   *     {@link Optional#of}, otherwise, if the unrecognized exception is an instance of {@link RuntimeException}, it is
-   *     rethrown, otherwise a new {@link WrappedCheckedException} wrapping the unrecognized exception is thrown
+   *     {@link VoidSupplierCheckedException#execute()} is invoked, if there was not an {@link Throwable} exception
+   *     thrown, an {@link Optional#empty()} is returned, otherwise if an {@link Throwable} exception was thrown, if
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   *     {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception
+   *     is returned within the {@link Optional#of}, otherwise if the exception is a {@link RuntimeException}, it is
+   *     rethrown, otherwise a new {@link WrappedCheckedException} wrapping the non-fatal unrecognized exception is
+   *     re-thrown
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   @SafeVarargs
   public static <L extends Throwable> Optional<L> wrapCheckedException(
@@ -244,8 +250,6 @@ public final class TryCatchesOps {
       voidSupplierCheckedException.execute();
 
       return Optional.empty();
-    } catch (FatalThrowable fatalThrowable) {
-      throw fatalThrowable;
     } catch (Throwable throwable) {
       return Optional.of(resolveCatchThrowableWrappedCheckedException(throwable, "VoidSupplierCheckedException", throwableClasses));
     }
@@ -253,11 +257,12 @@ public final class TryCatchesOps {
 
   /**
    * Reify a try/catch statement into an {@link Optional} where, after the
-   * {@link VoidSupplierCheckedException#execute()} is invoked, if there is no {@link Throwable} exception thrown, an
-   * {@link Optional#empty()} is returned, otherwise if an {@link Throwable} exception is thrown and the exception is a
-   * {@link RuntimeException}, the exception is returned within the {@link Optional#of}, otherwise, if the unrecognized
-   * exception is an instance of {@link RuntimeException}, it is rethrown, otherwise a new
-   * {@link WrappedCheckedException} wrapping the unrecognized exception is thrown.
+   * {@link VoidSupplierCheckedException#execute()} is invoked, if there was not an {@link Throwable} exception thrown,
+   * an {@link Optional#empty()} is returned, otherwise if an {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a
+   * {@link RuntimeException}, the exception is returned within the {@link Optional#of}, otherwise a new
+   * {@link WrappedCheckedException} wrapping the non-fatal unrecognized exception is re-thrown.
    *
    * @param voidSupplierCheckedException function wrapped in the {@code try {...} catch (Throwable ...) {...} } block,
    *                                     that when invoked, if there is no exception thrown, the results are ignored
@@ -268,7 +273,6 @@ public final class TryCatchesOps {
    *     if the unrecognized exception is an instance of {@link RuntimeException}, it is rethrown, otherwise a new
    *     {@link WrappedCheckedException} wrapping the unrecognized exception is thrown.
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static Optional<RuntimeException> wrapCheckedException(
       VoidSupplierCheckedException voidSupplierCheckedException
@@ -277,31 +281,36 @@ public final class TryCatchesOps {
   }
 
   /**
-   * Reify a try/catch statement into an {@link Either} where, when the {@link SupplierCheckedException} is invoked, if
-   * there is no {@link Throwable} exception thrown, the value returned by the {@link SupplierCheckedException} is
-   * returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown and the
-   * exception satisfies the {@link Class#isInstance(Object)} of one of the provided elements within
-   * {@code throwableClasses} (explicitly excludes {@link FatalThrowable}), the exception is returned within the left
-   * side of an {@link Either}, otherwise, the exception is re-thrown.
+   * Reify a try/catch statement into an {@link Either} where, after the {@link SupplierCheckedException#get()} is
+   * invoked, if there was not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is
+   * returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   * {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception is
+   * returned within the left side of an {@link Either}, otherwise if the exception is a {@link RuntimeException}, it is
+   * rethrown, otherwise a new {@link WrappedCheckedException} wrapping the non-fatal unrecognized exception is
+   * re-thrown.
    *
    * @param supplierCheckedException function wrapped in the {@code try {...} catch (Throwable ...) {...} } block, that
    *                                 when invoked, if there is no exception thrown, the function's return value is
    *                                 returned within the right side of an {@link Either}
-   * @param throwableClasses         if the {@code supplier} function throws an exception, and the exception satisfies
-   *                                 the {@link Class#isInstance} of one of the elements of this parameter (explicitly
-   *                                 excludes {@link FatalThrowable}), the exception is returned within the left side of
-   *                                 an {@link Either} left side of an {@link Either}, otherwise, the exception is
-   *                                 re-{@code thrown}
+   * @param throwableClasses         if the {@code supplierCheckedException} function throws an exception, and the
+   *                                 exception satisfies the {@link Class#isInstance} of one of the elements of this
+   *                                 parameter (explicitly precluding any exception where
+   *                                 {@link ForcedFatalThrowable#isFatalThrowable(Throwable)
+   *                                 ForcedFatalThrowable.isFatalThrowable(...)}) returns {@code true}, the exception is
+   *                                 returned within the left side of an {@link Either}
    * @param <L>                      type of the {@link Throwable} instance being caught
    * @param <R>                      type of the instance provided by the {@link SupplierCheckedException}
-   * @return a try/catch statement into an {@link Either} where, when the {@link SupplierCheckedException} is invoked,
-   *     if there is no {@link Throwable} exception thrown, the value returned by the {@link SupplierCheckedException}
-   *     is returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown
-   *     and the exception satisfies the {@link Class#isInstance(Object)} of one of the provided elements within
-   *     {@code throwableClasses} (explicitly excludes {@link FatalThrowable}), the exception is returned within the
-   *     left side of an {@link Either}, otherwise, the exception is re-thrown
+   * @return a try/catch statement into an {@link Either} where, after the {@link SupplierCheckedException#get()} is
+   *     invoked, if there was not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is
+   *     returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception satisfies the
+   *     {@link Class#isInstance(Object)} of one of the provided elements within {@code throwableClasses}, the exception
+   *     is returned within the left side of an {@link Either}, otherwise a new {@link WrappedCheckedException} wrapping
+   *     the non-fatal unrecognized exception is re-thrown
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   @SafeVarargs
   public static <L extends Throwable, R> Either<L, R> wrapCheckedException(
@@ -310,8 +319,6 @@ public final class TryCatchesOps {
   ) {
     try {
       return Either.right(supplierCheckedException.get());
-    } catch (FatalThrowable fatalThrowable) {
-      throw fatalThrowable;
     } catch (Throwable throwable) {
 
       return Either.left(resolveCatchThrowableWrappedCheckedException(throwable, "SupplierCheckedException", throwableClasses));
@@ -319,28 +326,30 @@ public final class TryCatchesOps {
   }
 
   /**
-   * Reify a try/catch statement into an {@link Either} where, when the {@link SupplierCheckedException} is invoked, if
-   * there is no {@link Throwable} exception thrown, the value returned by the {@link SupplierCheckedException} is
-   * returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown and the
-   * exception is a {@link RuntimeException}, the exception is returned within the left side of an {@link Either},
-   * otherwise, the exception is re-thrown.
+   * Reify a try/catch statement into an {@link Either} where, after the {@link SupplierCheckedException#get()} is
+   * invoked, if there was not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is
+   * returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   * {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a
+   * {@link RuntimeException}, the exception is returned within the left side of an {@link Either}, otherwise a new
+   * {@link WrappedCheckedException} wrapping the non-fatal unrecognized exception is re-thrown.
    *
    * @param supplierCheckedException function wrapped in the {@code try {...} catch (Throwable ...) {...} } block, that
    *                                 when invoked, if there is no exception thrown, the function's return value is
    *                                 returned within the right side of an {@link Either}
    * @param <R>                      type of the instance provided by the {@link SupplierCheckedException}
-   * @return a try/catch statement into an {@link Either} where, when the {@link SupplierCheckedException} is invoked,
-   *     if there is no {@link Throwable} exception thrown, the value returned by the {@link SupplierCheckedException}
-   *     is returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception is thrown
-   *     and the exception is a {@link RuntimeException}, the exception is returned within the left side of an
-   *     {@link Either}, otherwise, the exception is re-throw
+   * @return a try/catch statement into an {@link Either} where, after the {@link SupplierCheckedException#get()} is
+   *     invoked, if there was not an {@link Throwable} exception thrown, the value returned by the {@link Supplier} is
+   *     returned within the right side of an {@link Either}, otherwise if an {@link Throwable} exception was thrown, if
+   *     {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)}) returns
+   *     {@code true}, the fatal throwable is immediately re-thrown, otherwise if the exception is a
+   *     {@link RuntimeException}, the exception is returned within the left side of an {@link Either}, otherwise a new
+   *     {@link WrappedCheckedException} wrapping the non-fatal unrecognized exception is re-thrown
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <R> Either<Exception, R> wrapCheckedException(
       SupplierCheckedException<R> supplierCheckedException
   ) {
     return wrapCheckedException(supplierCheckedException, Exception.class);
   }
-
 }
