@@ -1,6 +1,5 @@
 package org.deus_ex_java.util.function;
 
-import org.deus_ex_java.lang.FatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.jspecify.annotations.NullMarked;
@@ -35,7 +34,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static BooleanSupplier wrapCheckedException(
       BooleanSupplierCheckedException booleanSupplierCheckedException
@@ -57,7 +55,6 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link BooleanSupplier} that wraps the checked exception lambda, {@code booleanSupplierCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> BooleanSupplier wrapCheckedException(
       BooleanSupplierCheckedException booleanSupplierCheckedException,
@@ -80,7 +77,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code doubleBinaryOperatorCheckedException}, with a {@link RuntimeException} of
    *     {@link WrappedCheckedException} to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoubleBinaryOperator wrapCheckedException(
       DoubleBinaryOperatorCheckedException doubleBinaryOperatorCheckedException
@@ -102,15 +98,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleBinaryOperator} that wraps the checked exception lambda,
    *     {@code doubleBinaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoubleBinaryOperator wrapCheckedException(
       DoubleBinaryOperatorCheckedException doubleBinaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                doubleBinaryOperatorCheckedException.applyAsDouble(left, right))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doubleBinaryOperatorCheckedException.applyAsDouble(left, right))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -126,7 +122,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoubleConsumer wrapCheckedException(
       DoubleConsumerCheckedException doubleConsumerCheckedException
@@ -148,19 +143,20 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleConsumer} that wraps the checked exception lambda, {@code doubleConsumerCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoubleConsumer wrapCheckedException(
       DoubleConsumerCheckedException doubleConsumerCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
-    return (t) -> {
-      try {
-        doubleConsumerCheckedException.accept(t);
-      } catch (Exception exception) {
-        throw fRuntimeExceptionWrapper.apply(exception);
-      }
-    };
+    return (t) ->
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doubleConsumerCheckedException.accept(t),
+                Exception.class)
+            .map(fRuntimeExceptionWrapper)
+            .ifPresent(runtimeExceptionWrapper -> {
+              throw runtimeExceptionWrapper;
+            });
   }
 
   /**
@@ -175,7 +171,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <R> DoubleFunction<R> wrapCheckedException(
       DoubleFunctionCheckedException<R> doubleFunctionCheckedException
@@ -198,15 +193,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleFunction} that wraps the checked exception lambda, {@code doubleFunctionCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, R> DoubleFunction<R> wrapCheckedException(
       DoubleFunctionCheckedException<R> doubleFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                doubleFunctionCheckedException.apply(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doubleFunctionCheckedException.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -222,7 +217,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoublePredicate wrapCheckedException(
       DoublePredicateCheckedException doublePredicateCheckedException
@@ -244,15 +238,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoublePredicate} that wraps the checked exception lambda, {@code doublePredicateCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoublePredicate wrapCheckedException(
       DoublePredicateCheckedException doublePredicateCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                doublePredicateCheckedException.test(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doublePredicateCheckedException.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -268,7 +262,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoubleSupplier wrapCheckedException(
       DoubleSupplierCheckedException doubleSupplierCheckedException
@@ -290,7 +283,6 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleSupplier} that wraps the checked exception lambda, {@code doubleSupplierCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoubleSupplier wrapCheckedException(
       DoubleSupplierCheckedException doubleSupplierCheckedException,
@@ -313,7 +305,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code doubleToIntFunctionCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoubleToIntFunction wrapCheckedException(
       DoubleToIntFunctionCheckedException doubleToIntFunctionCheckedException
@@ -335,15 +326,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleToIntFunction} that wraps the checked exception lambda,
    *     {@code doubleToIntFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoubleToIntFunction wrapCheckedException(
       DoubleToIntFunctionCheckedException doubleToIntFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                doubleToIntFunctionCheckedException.applyAsInt(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doubleToIntFunctionCheckedException.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -359,7 +350,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code doubleToLongFunctionCheckedException}, with a {@link RuntimeException} of
    *     {@link WrappedCheckedException} to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoubleToLongFunction wrapCheckedException(
       DoubleToLongFunctionCheckedException doubleToLongFunctionCheckedException
@@ -381,15 +371,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleToLongFunction} that wraps the checked exception lambda,
    *     {@code doubleToLongFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoubleToLongFunction wrapCheckedException(
       DoubleToLongFunctionCheckedException doubleToLongFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                doubleToLongFunctionCheckedException.applyAsLong(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doubleToLongFunctionCheckedException.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -405,7 +395,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code doubleUnaryOperatorCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static DoubleUnaryOperator wrapCheckedException(
       DoubleUnaryOperatorCheckedException doubleUnaryOperatorCheckedException
@@ -427,15 +416,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link DoubleUnaryOperator} that wraps the checked exception lambda,
    *     {@code doubleUnaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> DoubleUnaryOperator wrapCheckedException(
       DoubleUnaryOperatorCheckedException doubleUnaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                doubleUnaryOperatorCheckedException.applyAsDouble(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    doubleUnaryOperatorCheckedException.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -451,7 +440,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code intBinaryOperatorCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntBinaryOperator wrapCheckedException(
       IntBinaryOperatorCheckedException intBinaryOperatorCheckedException
@@ -473,15 +461,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntBinaryOperator} that wraps the checked exception lambda,
    *     {@code intBinaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntBinaryOperator wrapCheckedException(
       IntBinaryOperatorCheckedException intBinaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                intBinaryOperatorCheckedException.applyAsInt(left, right))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intBinaryOperatorCheckedException.applyAsInt(left, right))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -497,7 +485,6 @@ public final class FunctionsPrimitivesOps {
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntConsumer wrapCheckedException(
       IntConsumerCheckedException intConsumerCheckedException
@@ -519,19 +506,20 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntConsumer} that wraps the checked exception lambda, {@code intConsumerCheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntConsumer wrapCheckedException(
       IntConsumerCheckedException intConsumerCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
-    return (t) -> {
-      try {
-        intConsumerCheckedException.accept(t);
-      } catch (Exception exception) {
-        throw fRuntimeExceptionWrapper.apply(exception);
-      }
-    };
+    return (t) ->
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intConsumerCheckedException.accept(t),
+                Exception.class)
+            .map(fRuntimeExceptionWrapper)
+            .ifPresent(runtimeExceptionWrapper -> {
+              throw runtimeExceptionWrapper;
+            });
   }
 
   /**
@@ -546,7 +534,6 @@ public final class FunctionsPrimitivesOps {
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <R> IntFunction<R> wrapCheckedException(
       IntFunctionCheckedException<R> intFunctionCheckedException
@@ -569,15 +556,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntFunction} that wraps the checked exception lambda, {@code intFunctionCheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, R> IntFunction<R> wrapCheckedException(
       IntFunctionCheckedException<R> intFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                intFunctionCheckedException.apply(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intFunctionCheckedException.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -593,7 +580,6 @@ public final class FunctionsPrimitivesOps {
    *     a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntPredicate wrapCheckedException(
       IntPredicateCheckedException intPredicateCheckedException
@@ -615,15 +601,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntPredicate} that wraps the checked exception lambda, {@code intPredicateCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntPredicate wrapCheckedException(
       IntPredicateCheckedException intPredicateCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                intPredicateCheckedException.test(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intPredicateCheckedException.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -639,7 +625,6 @@ public final class FunctionsPrimitivesOps {
    *     {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntSupplier wrapCheckedException(
       IntSupplierCheckedException intSupplierCheckedException
@@ -661,7 +646,6 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntSupplier} that wraps the checked exception lambda, {@code intSupplierCheckedException}, with a
    *     {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntSupplier wrapCheckedException(
       IntSupplierCheckedException intSupplierCheckedException,
@@ -684,7 +668,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code intToDoubleFunctionCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntToDoubleFunction wrapCheckedException(
       IntToDoubleFunctionCheckedException intToDoubleFunctionCheckedException
@@ -706,15 +689,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntToDoubleFunction} that wraps the checked exception lambda,
    *     {@code intToDoubleFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntToDoubleFunction wrapCheckedException(
       IntToDoubleFunctionCheckedException intToDoubleFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                intToDoubleFunctionCheckedException.applyAsDouble(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intToDoubleFunctionCheckedException.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -730,7 +713,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code intToLongFunctionCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntToLongFunction wrapCheckedException(
       IntToLongFunctionCheckedException intToLongFunctionCheckedException
@@ -752,15 +734,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntToLongFunction} that wraps the checked exception lambda,
    *     {@code intToLongFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntToLongFunction wrapCheckedException(
       IntToLongFunctionCheckedException intToLongFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                intToLongFunctionCheckedException.applyAsLong(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intToLongFunctionCheckedException.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -776,7 +758,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code intUnaryOperatorCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException} to
    *     enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static IntUnaryOperator wrapCheckedException(
       IntUnaryOperatorCheckedException intUnaryOperatorCheckedException
@@ -798,15 +779,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link IntUnaryOperator} that wraps the checked exception lambda,
    *     {@code intUnaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> IntUnaryOperator wrapCheckedException(
       IntUnaryOperatorCheckedException intUnaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                intUnaryOperatorCheckedException.applyAsInt(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    intUnaryOperatorCheckedException.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -822,7 +803,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code longBinaryOperatorCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongBinaryOperator wrapCheckedException(
       LongBinaryOperatorCheckedException longBinaryOperatorCheckedException
@@ -844,15 +824,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongBinaryOperator} that wraps the checked exception lambda,
    *     {@code longBinaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongBinaryOperator wrapCheckedException(
       LongBinaryOperatorCheckedException longBinaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (left, right) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                longBinaryOperatorCheckedException.applyAsLong(left, right))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longBinaryOperatorCheckedException.applyAsLong(left, right))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -868,7 +848,6 @@ public final class FunctionsPrimitivesOps {
    *     a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongConsumer wrapCheckedException(
       LongConsumerCheckedException longConsumerCheckedException
@@ -890,19 +869,20 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongConsumer} that wraps the checked exception lambda, {@code longConsumerCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongConsumer wrapCheckedException(
       LongConsumerCheckedException longConsumerCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
-    return (t) -> {
-      try {
-        longConsumerCheckedException.accept(t);
-      } catch (Exception exception) {
-        throw fRuntimeExceptionWrapper.apply(exception);
-      }
-    };
+    return (t) ->
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longConsumerCheckedException.accept(t),
+                Exception.class)
+            .map(fRuntimeExceptionWrapper)
+            .ifPresent(runtimeExceptionWrapper -> {
+              throw runtimeExceptionWrapper;
+            });
   }
 
   /**
@@ -917,7 +897,6 @@ public final class FunctionsPrimitivesOps {
    *     a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <R> LongFunction<R> wrapCheckedException(
       LongFunctionCheckedException<R> longFunctionCheckedException
@@ -940,15 +919,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongFunction} that wraps the checked exception lambda, {@code longFunctionCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, R> LongFunction<R> wrapCheckedException(
       LongFunctionCheckedException<R> longFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                longFunctionCheckedException.apply(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longFunctionCheckedException.apply(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -964,7 +943,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongPredicate wrapCheckedException(
       LongPredicateCheckedException longPredicateCheckedException
@@ -986,15 +964,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongPredicate} that wraps the checked exception lambda, {@code longPredicateCheckedException},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongPredicate wrapCheckedException(
       LongPredicateCheckedException longPredicateCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                longPredicateCheckedException.test(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longPredicateCheckedException.test(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1010,7 +988,6 @@ public final class FunctionsPrimitivesOps {
    *     a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within {@link Stream}
    *     operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongSupplier wrapCheckedException(
       LongSupplierCheckedException longSupplierCheckedException
@@ -1032,7 +1009,6 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongSupplier} that wraps the checked exception lambda, {@code longSupplierCheckedException}, with
    *     a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of the
    *     lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongSupplier wrapCheckedException(
       LongSupplierCheckedException longSupplierCheckedException,
@@ -1055,7 +1031,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code longToDoubleFunctionCheckedException}, with a {@link RuntimeException} of
    *     {@link WrappedCheckedException} to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongToDoubleFunction wrapCheckedException(
       LongToDoubleFunctionCheckedException longToDoubleFunctionCheckedException
@@ -1077,15 +1052,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongToDoubleFunction} that wraps the checked exception lambda,
    *     {@code longToDoubleFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongToDoubleFunction wrapCheckedException(
       LongToDoubleFunctionCheckedException longToDoubleFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                longToDoubleFunctionCheckedException.applyAsDouble(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longToDoubleFunctionCheckedException.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1101,7 +1076,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code longToIntFunctionCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongToIntFunction wrapCheckedException(
       LongToIntFunctionCheckedException longToIntFunctionCheckedException
@@ -1123,15 +1097,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongToIntFunction} that wraps the checked exception lambda,
    *     {@code longToIntFunctionCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongToIntFunction wrapCheckedException(
       LongToIntFunctionCheckedException longToIntFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                longToIntFunctionCheckedException.applyAsInt(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longToIntFunctionCheckedException.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1147,7 +1121,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code longUnaryOperatorCheckedException}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static LongUnaryOperator wrapCheckedException(
       LongUnaryOperatorCheckedException longUnaryOperatorCheckedException
@@ -1169,15 +1142,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link LongUnaryOperator} that wraps the checked exception lambda,
    *     {@code longUnaryOperatorCheckedException}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException> LongUnaryOperator wrapCheckedException(
       LongUnaryOperatorCheckedException longUnaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                longUnaryOperatorCheckedException.applyAsLong(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    longUnaryOperatorCheckedException.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1194,7 +1167,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code objDoubleConsumerCheckedExceptionT}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T> ObjDoubleConsumer<T> wrapCheckedException(
       ObjDoubleConsumerCheckedException<T> objDoubleConsumerCheckedExceptionT
@@ -1217,19 +1189,20 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ObjDoubleConsumer} that wraps the checked exception lambda,
    *     {@code objDoubleConsumerCheckedExceptionT}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> ObjDoubleConsumer<T> wrapCheckedException(
       ObjDoubleConsumerCheckedException<T> objDoubleConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
-    return (t, value) -> {
-      try {
-        objDoubleConsumerCheckedExceptionT.accept(t, value);
-      } catch (Exception exception) {
-        throw fRuntimeExceptionWrapper.apply(exception);
-      }
-    };
+    return (t, u) ->
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    objDoubleConsumerCheckedExceptionT.accept(t, u),
+                Exception.class)
+            .map(fRuntimeExceptionWrapper)
+            .ifPresent(runtimeExceptionWrapper -> {
+              throw runtimeExceptionWrapper;
+            });
   }
 
   /**
@@ -1244,7 +1217,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T> ObjIntConsumer<T> wrapCheckedException(
       ObjIntConsumerCheckedException<T> objIntConsumerCheckedExceptionT
@@ -1267,19 +1239,20 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ObjIntConsumer} that wraps the checked exception lambda, {@code objIntConsumerCheckedExceptionT},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> ObjIntConsumer<T> wrapCheckedException(
       ObjIntConsumerCheckedException<T> objIntConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
-    return (t, value) -> {
-      try {
-        objIntConsumerCheckedExceptionT.accept(t, value);
-      } catch (Exception exception) {
-        throw fRuntimeExceptionWrapper.apply(exception);
-      }
-    };
+    return (t, u) ->
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    objIntConsumerCheckedExceptionT.accept(t, u),
+                Exception.class)
+            .map(fRuntimeExceptionWrapper)
+            .ifPresent(runtimeExceptionWrapper -> {
+              throw runtimeExceptionWrapper;
+            });
   }
 
   /**
@@ -1294,7 +1267,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code objLongConsumerCheckedExceptionT}, with a {@link RuntimeException} of {@link WrappedCheckedException} to
    *     enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T> ObjLongConsumer<T> wrapCheckedException(
       ObjLongConsumerCheckedException<T> objLongConsumerCheckedExceptionT
@@ -1317,19 +1289,20 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ObjLongConsumer} that wraps the checked exception lambda,
    *     {@code objLongConsumerCheckedExceptionT}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> ObjLongConsumer<T> wrapCheckedException(
       ObjLongConsumerCheckedException<T> objLongConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
-    return (t, value) -> {
-      try {
-        objLongConsumerCheckedExceptionT.accept(t, value);
-      } catch (Exception exception) {
-        throw fRuntimeExceptionWrapper.apply(exception);
-      }
-    };
+    return (t, u) ->
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    objLongConsumerCheckedExceptionT.accept(t, u),
+                Exception.class)
+            .map(fRuntimeExceptionWrapper)
+            .ifPresent(runtimeExceptionWrapper -> {
+              throw runtimeExceptionWrapper;
+            });
   }
 
   /**
@@ -1345,7 +1318,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code toDoubleBiFunctionCheckedExceptionT}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T, U> ToDoubleBiFunction<T, U> wrapCheckedException(
       ToDoubleBiFunctionCheckedException<T, U> toDoubleBiFunctionCheckedExceptionTAndU
@@ -1369,15 +1341,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ToDoubleBiFunction} that wraps the checked exception lambda,
    *     {@code toDoubleBiFunctionCheckedExceptionT}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T, U> ToDoubleBiFunction<T, U> wrapCheckedException(
       ToDoubleBiFunctionCheckedException<T, U> toDoubleBiFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                toDoubleBiFunctionCheckedExceptionTAndU.applyAsDouble(t, u))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    toDoubleBiFunctionCheckedExceptionTAndU.applyAsDouble(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1395,7 +1367,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code toIntBiFunctionCheckedExceptionT}, with a {@link RuntimeException} of {@link WrappedCheckedException} to
    *     enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T, U> ToIntBiFunction<T, U> wrapCheckedException(
       ToIntBiFunctionCheckedException<T, U> toIntBiFunctionCheckedExceptionTAndU
@@ -1419,15 +1390,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ToIntBiFunction} that wraps the checked exception lambda,
    *     {@code toIntBiFunctionCheckedExceptionT}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T, U> ToIntBiFunction<T, U> wrapCheckedException(
       ToIntBiFunctionCheckedException<T, U> toIntBiFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                toIntBiFunctionCheckedExceptionTAndU.applyAsInt(t, u))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    toIntBiFunctionCheckedExceptionTAndU.applyAsInt(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1445,7 +1416,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code toLongBiFunctionCheckedExceptionT}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T, U> ToLongBiFunction<T, U> wrapCheckedException(
       ToLongBiFunctionCheckedException<T, U> toLongBiFunctionCheckedExceptionTAndU
@@ -1469,15 +1439,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ToLongBiFunction} that wraps the checked exception lambda,
    *     {@code toLongBiFunctionCheckedExceptionT}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T, U> ToLongBiFunction<T, U> wrapCheckedException(
       ToLongBiFunctionCheckedException<T, U> toLongBiFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t, u) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                toLongBiFunctionCheckedExceptionTAndU.applyAsLong(t, u))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    toLongBiFunctionCheckedExceptionTAndU.applyAsLong(t, u))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1494,7 +1464,6 @@ public final class FunctionsPrimitivesOps {
    *     {@code toDoubleFunctionCheckedExceptionT}, with a {@link RuntimeException} of {@link WrappedCheckedException}
    *     to enable use of the lambda within {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T> ToDoubleFunction<T> wrapCheckedException(
       ToDoubleFunctionCheckedException<T> toDoubleFunctionCheckedExceptionT
@@ -1517,15 +1486,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ToDoubleFunction} that wraps the checked exception lambda,
    *     {@code toDoubleFunctionCheckedExceptionT}, with a {@link RuntimeException} returned by the supplier,
    *     {@code fRuntimeExceptionWrapper}, to enable use of the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> ToDoubleFunction<T> wrapCheckedException(
       ToDoubleFunctionCheckedException<T> toDoubleFunctionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                toDoubleFunctionCheckedExceptionT.applyAsDouble(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    toDoubleFunctionCheckedExceptionT.applyAsDouble(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1542,7 +1511,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T> ToIntFunction<T> wrapCheckedException(
       ToIntFunctionCheckedException<T> toIntFunctionCheckedExceptionT
@@ -1565,15 +1533,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ToIntFunction} that wraps the checked exception lambda, {@code toIntFunctionCheckedExceptionT},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> ToIntFunction<T> wrapCheckedException(
       ToIntFunctionCheckedException<T> toIntFunctionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                toIntFunctionCheckedExceptionT.applyAsInt(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    toIntFunctionCheckedExceptionT.applyAsInt(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1590,7 +1558,6 @@ public final class FunctionsPrimitivesOps {
    *     with a {@link RuntimeException} of {@link WrappedCheckedException} to enable use of the lambda within
    *     {@link Stream} operations
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <T> ToLongFunction<T> wrapCheckedException(
       ToLongFunctionCheckedException<T> toLongFunctionCheckedExceptionT
@@ -1613,15 +1580,15 @@ public final class FunctionsPrimitivesOps {
    * @return a {@link ToLongFunction} that wraps the checked exception lambda, {@code toLongFunctionCheckedExceptionT},
    *     with a {@link RuntimeException} returned by the supplier, {@code fRuntimeExceptionWrapper}, to enable use of
    *     the lambda within {@link Stream} operations
-   * @throws FatalThrowable wraps unrecognized <b><em>fatal</em></b> checked exceptions
    */
   public static <EX extends RuntimeException, T> ToLongFunction<T> wrapCheckedException(
       ToLongFunctionCheckedException<T> toLongFunctionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
     return (t) ->
-        TryCatchesOps.wrapCheckedException(() ->
-                toLongFunctionCheckedExceptionT.applyAsLong(t))
+        TryCatchesOps.wrapCheckedException(
+                () ->
+                    toLongFunctionCheckedExceptionT.applyAsLong(t))
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }

@@ -9,14 +9,14 @@ import java.util.stream.Stream;
 
 /**
  * {@code WrappedCheckedException} is an <em>unchecked exception</em> final class used to wrap a checked exception
- * (guaranteed to be not {@code null}, and returned by {@link #getCause()}) that can be declared and thrown by a method
- * or constructor's explicitly defined {@code throws} clause.
+ * (which is returned by {@link #getCause()}, and guaranteed to be non-{@code null}).
  * <p>
  * {@link FunctionsOps} uses this to wrap the checked exception lambdas to enable use of the lambda within
  * {@link Stream} operations.
  * <p>
- * <b>WARNING</b>: A {@link FatalThrowable} is thrown if the {@code cause} parameter returns true from
- * {@link FatalThrowable#isFatalThrowable}.
+ * <b>WARNING</b>: If
+ * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)} returns
+ * {@code true}, the <em>fatal</em> exception is not wrapped, and is instead immediately rethrown.
  */
 @NullMarked
 public final class WrappedCheckedException extends RuntimeException {
@@ -24,7 +24,9 @@ public final class WrappedCheckedException extends RuntimeException {
   private static final long serialVersionUID = -7411859319326389055L;
 
   /**
-   * Returns a new runtime exception with the specified detail message and cause.
+   * Returns a new runtime exception with the specified detail message and cause when
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)} is false,
+   * otherwise immediately rethrows the <em>fatal</em> exception.
    * <p>
    * <b>Note:</b> The detail message associated with {@code cause} is <i>not</i> automatically incorporated in this
    * runtime exception's detail message.
@@ -33,8 +35,6 @@ public final class WrappedCheckedException extends RuntimeException {
    * @param cause   the cause (which is saved for later retrieval by the {@link #getCause()} method).  (A {@code null}
    *                value is <i>not</i> permitted.)
    * @throws NullPointerException if the provided {@code cause} is {@code null}
-   * @throws FatalThrowable       if the provided {@code cause} returns true from
-   *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
       String message,
@@ -42,37 +42,38 @@ public final class WrappedCheckedException extends RuntimeException {
   ) {
     super(
         message,
-        Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)));
+        Objects.requireNonNull(ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(cause)));
   }
 
   /**
    * Returns a new runtime exception with the specified cause and a detail message of {@code cause.toString())} (which
-   * typically contains the class and detail message of {@code cause}).  This constructor is useful for runtime
-   * exceptions that are little more than wrappers for other throwables.
+   * typically contains the class and detail message of {@code cause}) when
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)} is false,
+   * otherwise immediately rethrows the <em>fatal</em> exception.
+   * <p>
+   * This constructor is useful for runtime exceptions that are little more than wrappers for other throwables.
    *
    * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method).  (A {@code null}
    *              value is <i>not</i> permitted.)
    * @throws NullPointerException if the provided {@code cause} is {@code null}.
-   * @throws FatalThrowable       if the provided {@code cause} returns true from
-   *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
       Throwable cause
   ) {
-    super(Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)));
+    super(Objects.requireNonNull(ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(cause)));
   }
 
   /**
    * Returns a new runtime exception with the specified detail message, cause, suppression enabled or disabled, and
-   * writable stack trace enabled or disabled.
+   * writable stack trace enabled or disabled when
+   * {@link ForcedFatalThrowable#isFatalThrowable(Throwable) ForcedFatalThrowable.isFatalThrowable(...)} is false,
+   * otherwise immediately rethrows the <em>fatal</em> exception.
    *
    * @param message            the detail message.
    * @param cause              the cause.  (A {@code null} value is <i>not</i> permitted.)
    * @param enableSuppression  whether suppression is enabled or disabled
    * @param writableStackTrace whether the stack trace should be writable
    * @throws NullPointerException if the provided {@code cause} is {@code null}.
-   * @throws FatalThrowable       if the provided {@code cause} returns true from
-   *                              {@link FatalThrowable#isFatalThrowable}
    */
   public WrappedCheckedException(
       String message,
@@ -82,7 +83,7 @@ public final class WrappedCheckedException extends RuntimeException {
   ) {
     super(
         message,
-        Objects.requireNonNull(FatalThrowable.requireNonFatalThrowable(cause)),
+        Objects.requireNonNull(ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(cause)),
         enableSuppression,
         writableStackTrace);
   }

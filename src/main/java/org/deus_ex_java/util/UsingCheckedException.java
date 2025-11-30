@@ -1,6 +1,5 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.FatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.function.FunctionCheckedException;
 import org.deus_ex_java.util.function.SupplierCheckedException;
@@ -44,7 +43,6 @@ public final class UsingCheckedException {
    *     throwing a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <A extends AutoCloseable, T> Either<RuntimeException, T> apply(
       SupplierCheckedException<A> fceSupplierA,
@@ -79,7 +77,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <A extends AutoCloseable, T> T applyUnsafe(
       SupplierCheckedException<A> fceSupplierA,
@@ -111,7 +108,6 @@ public final class UsingCheckedException {
    *     throwing a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -153,7 +149,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -192,7 +187,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -235,7 +229,6 @@ public final class UsingCheckedException {
    *     a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -273,7 +266,6 @@ public final class UsingCheckedException {
    *     throwing a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -320,7 +312,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -365,7 +356,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -414,7 +404,6 @@ public final class UsingCheckedException {
    *     a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -457,7 +446,6 @@ public final class UsingCheckedException {
    *     throwing a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -509,7 +497,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -560,7 +547,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -615,7 +601,6 @@ public final class UsingCheckedException {
    *     a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -663,7 +648,6 @@ public final class UsingCheckedException {
    *     throwing a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -720,7 +704,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -777,7 +760,6 @@ public final class UsingCheckedException {
    *     {@link WrappedCheckedException} with its {@link WrappedCheckedException#getCause()} containing the thrown
    *     checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
@@ -838,7 +820,6 @@ public final class UsingCheckedException {
    *     a checked exception, will be a {@link WrappedCheckedException} with its
    *     {@link WrappedCheckedException#getCause()} containing the thrown checked exception instance
    * @throws WrappedCheckedException wraps unrecognized non-fatal checked exceptions
-   * @throws FatalThrowable          wraps <b><em>fatal</em></b> checked exceptions
    */
   public static <
       A extends AutoCloseable,
