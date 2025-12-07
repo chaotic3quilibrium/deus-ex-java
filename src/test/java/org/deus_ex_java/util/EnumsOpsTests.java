@@ -1,6 +1,7 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ParametersValidationException;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@NullMarked
 public class EnumsOpsTests {
 
   private enum TrafficLight {
@@ -29,28 +31,20 @@ public class EnumsOpsTests {
     private static final EnumsOps<TrafficLightBased> ENUM_OPS = EnumsOps.from(
         TrafficLightBased.class);
 
-    public static EnumsOps<TrafficLightBased> ops() {
+    public static EnumsOps<TrafficLightBased> enumOps() {
       return ENUM_OPS;
     }
 
     public static List<TrafficLightBased> toList() {
-      return ENUM_OPS.toList();
+      return enumOps().toList();
     }
 
     public static Stream<TrafficLightBased> stream() {
-      return ENUM_OPS.stream();
+      return enumOps().stream();
     }
 
     public static Optional<TrafficLightBased> valueOfIgnoreCase(String search) {
-      return ENUM_OPS.valueOf(search);
-    }
-
-    public static String join() {
-      return ENUM_OPS.join();
-    }
-
-    public static String join(Stream<TrafficLightBased> es) {
-      return ENUM_OPS.join(es);
+      return enumOps().valueOf(search);
     }
   }
 
@@ -73,7 +67,7 @@ public class EnumsOpsTests {
   public void testConstructor() {
     assertEquals(
         "SGREEN, SYELLOW, SRED",
-        ENUMS_OPS_TRAFFIC_LIGHT.join());
+        ENUMS_OPS_TRAFFIC_LIGHT.getFormatBuilder().join());
     var parametersValidationExceptionX1 =
         assertThrows(
             ParametersValidationException.class,
@@ -102,7 +96,7 @@ public class EnumsOpsTests {
             TrafficLight.SYELLOW,
             TrafficLight.SRED),
         ENUMS_OPS_TRAFFIC_LIGHT.toList());
-    var tlbOps = TrafficLightBased.ops();
+    var tlbOps = TrafficLightBased.enumOps();
     assertSame(tlbOps, EnumsOps.from(TrafficLightBased.class));
     //noinspection AssertBetweenInconvertibleTypes
     assertNotSame(ENUMS_OPS_TRAFFIC_LIGHT, tlbOps);
@@ -115,13 +109,13 @@ public class EnumsOpsTests {
   }
 
   @Test
-  public void testToListThroughOps() {
+  public void testToListThroughenumOps() {
     assertEquals(
         List.of(
             TrafficLightBased.GREEN,
             TrafficLightBased.YELLOW,
             TrafficLightBased.RED),
-        TrafficLightBased.ops().toList());
+        TrafficLightBased.enumOps().toList());
   }
 
   @Test
@@ -135,13 +129,13 @@ public class EnumsOpsTests {
   }
 
   @Test
-  public void testStreamThroughOps() {
+  public void testStreamThroughenumOps() {
     assertEquals(
         List.of(
             TrafficLightBased.GREEN,
             TrafficLightBased.YELLOW,
             TrafficLightBased.RED),
-        TrafficLightBased.ops().stream().toList());
+        TrafficLightBased.enumOps().stream().toList());
   }
 
   @Test
@@ -155,17 +149,17 @@ public class EnumsOpsTests {
   }
 
   @Test
-  public void testToOrderedSetThroughOps() {
+  public void testToOrderedSetThroughenumOps() {
     assertEquals(
         List.of(
             TrafficLightBased.GREEN,
             TrafficLightBased.YELLOW,
             TrafficLightBased.RED),
-        TrafficLightBased.ops().toOrderedSet().stream().toList());
+        TrafficLightBased.enumOps().toOrderedSet().stream().toList());
   }
 
   @Test
-  public void testToOrderedMapThroughOps() {
+  public void testToOrderedMapThroughenumOps() {
     var orderedMapExpected =
         MapsOps.toMapOrdered(
             Arrays.stream(TrafficLightBased.values())
@@ -175,20 +169,20 @@ public class EnumsOpsTests {
                         trafficLightBased)));
     assertEquals(
         orderedMapExpected.keySet().stream().toList(),
-        TrafficLightBased.ops().toOrderedMapByName().keySet().stream().toList());
+        TrafficLightBased.enumOps().toOrderedMapByName().keySet().stream().toList());
     assertEquals(
         orderedMapExpected,
-        TrafficLightBased.ops().toOrderedMapByName());
+        TrafficLightBased.enumOps().toOrderedMapByName());
   }
 
   @Test
   public void forEachPlus() {
     var counter = new int[]{0};
-    TrafficLightBased.ops()
+    TrafficLightBased.enumOps()
         .forEach(trafficLightBased ->
             ++counter[0]);
     assertEquals(3, counter[0]);
-    TrafficLightBased.ops()
+    TrafficLightBased.enumOps()
         .forEachOrdered(trafficLightBased ->
             ++counter[0]);
     assertEquals(6, counter[0]);
@@ -197,21 +191,21 @@ public class EnumsOpsTests {
   //As it is fairly difficult, decided to forgo testing of forEach and forEachOrdered, as both are forward to java.util.Stream's methods
 
   @Test
-  public void testValueOfThroughOps() {
+  public void testValueOfThroughenumOps() {
     assertEquals(TrafficLightBased.YELLOW,
-        TrafficLightBased.ops().valueOfOrDefaultToFirst("yElLoW"));
+        TrafficLightBased.enumOps().valueOfOrDefaultToFirst("yElLoW"));
     assertEquals(TrafficLightBased.GREEN,
-        TrafficLightBased.ops().valueOfOrDefaultToFirst("yElLoWx"));
+        TrafficLightBased.enumOps().valueOfOrDefaultToFirst("yElLoWx"));
     assertEquals(TrafficLightBased.YELLOW,
-        TrafficLightBased.ops().valueOf("yElLoW", TrafficLightBased.RED));
+        TrafficLightBased.enumOps().valueOf("yElLoW", TrafficLightBased.RED));
     assertEquals(TrafficLightBased.RED,
-        TrafficLightBased.ops()
+        TrafficLightBased.enumOps()
             .valueOf("yElLoWx", TrafficLightBased.RED));
     assertEquals(Optional.of(TrafficLightBased.YELLOW),
-        TrafficLightBased.ops().valueOf("yElLoW"));
+        TrafficLightBased.enumOps().valueOf("yElLoW"));
     assertEquals(Optional.empty(),
-        TrafficLightBased.ops().valueOf("yElLoWx"));
-    var voo1 = TrafficLightBased.ops().valueOf("yElLoW");
+        TrafficLightBased.enumOps().valueOf("yElLoWx"));
+    var voo1 = TrafficLightBased.enumOps().valueOf("yElLoW");
     assertTrue(voo1.isPresent());
     assertEquals(TrafficLightBased.YELLOW, voo1.get());
   }
@@ -233,96 +227,59 @@ public class EnumsOpsTests {
   }
 
   @Test
-  public void testJoinThroughOps() {
+  public void testFormatBuilder() {
+    var formatBuilderDefaults = TrafficLightBased
+        .enumOps().getFormatBuilder();
+    assertSame(formatBuilderDefaults, formatBuilderDefaults.setSeparator(formatBuilderDefaults.getSeparator()));
+    //the four defaults
     assertEquals(
         "GREEN, YELLOW, RED",
-        TrafficLightBased
-            .ops()
+        formatBuilderDefaults
             .join());
+    //filtering the enum set
     assertEquals(
-        "GREEN,YELLOW,RED",
-        TrafficLightBased.ops().join(","));
+        "GREEN, RED",
+        formatBuilderDefaults
+            .setFilter(stream ->
+                stream.filter(trafficLightBased ->
+                    trafficLightBased.toString().contains("R")))
+            .join());
+    //sorting the enum set on the default (by ordinal) in reverse
+    assertEquals(
+        "RED, YELLOW, GREEN",
+        formatBuilderDefaults
+            .setSortStrategy(formatBuilderDefaults.getSortStrategy().reversed())
+            .join());
+    //reformatting the String
     assertEquals(
         "GREEN(0), YELLOW(1), RED(2)",
-        TrafficLightBased
-            .ops()
-            .join(
-                trafficLightBased -> "%s(%d)".formatted(
+        formatBuilderDefaults
+            .setReformat(trafficLightBased ->
+                "%s(%d)".formatted(
                     trafficLightBased.toString(),
-                    trafficLightBased.ordinal())));
-    assertEquals(
-        "GREEN(0),YELLOW(1),RED(2)",
-        TrafficLightBased
-            .ops()
-            .join(
-                trafficLightBased -> "%s(%d)".formatted(
-                    trafficLightBased.toString(),
-                    trafficLightBased.ordinal()),
-                ","));
-    assertEquals(
-        "GREEN, RED",
-        TrafficLightBased
-            .ops()
-            .join(
-                TrafficLightBased
-                    .ops()
-                    .stream()
-                    .filter(trafficLightBased ->
-                        trafficLightBased.toString().contains("R"))));
-    assertEquals(
-        "GREEN(0), RED(2)",
-        TrafficLightBased
-            .ops()
-            .join(
-                TrafficLightBased
-                    .ops()
-                    .stream()
-                    .filter(trafficLightBased ->
-                        trafficLightBased.toString().contains("R")),
-                trafficLightBased -> "%s(%d)".formatted(
-                    trafficLightBased.toString(),
-                    trafficLightBased.ordinal())));
-    assertEquals(
-        "GREEN,RED",
-        TrafficLightBased
-            .ops()
-            .join(
-                TrafficLightBased
-                    .ops()
-                    .stream()
-                    .filter(trafficLightBased ->
-                        trafficLightBased.toString().contains("R")),
-                ","));
-    assertEquals(
-        "GREEN(0),RED(2)",
-        TrafficLightBased
-            .ops()
-            .join(
-                TrafficLightBased
-                    .ops()
-                    .stream()
-                    .filter(trafficLightBased ->
-                        trafficLightBased.toString().contains("R")),
-                trafficLightBased -> "%s(%d)".formatted(
-                    trafficLightBased.toString(),
-                    trafficLightBased.ordinal()),
-                ","));
-  }
-
-  @Test
-  public void testJoinDirectly() {
-    assertEquals(
-        "GREEN, YELLOW, RED",
-        TrafficLightBased
+                    trafficLightBased.ordinal()))
             .join());
+    //ensure same instance returned when the separator passed is equal to the one already present
+    assertSame(formatBuilderDefaults, formatBuilderDefaults.setSeparator(formatBuilderDefaults.getSeparator()));
+    //changing the separator
     assertEquals(
-        "GREEN, RED",
-        TrafficLightBased
-            .join(
-                TrafficLightBased
-                    .ops()
-                    .stream()
-                    .filter(trafficLightBased ->
-                        trafficLightBased.toString().contains("R"))));
+        "GREEN,YELLOW,RED",
+        formatBuilderDefaults
+            .setSeparator(",")
+            .join());
+    //changing all four simultaneously
+    assertEquals(
+        "1 -> YELLOW|0 -> GREEN",
+        formatBuilderDefaults
+            .setFilter(stream ->
+                stream.filter(trafficLightBased ->
+                    trafficLightBased.ordinal() < 2))
+            .setSortStrategy(formatBuilderDefaults.getSortStrategy().reversed())
+            .setReformat(trafficLightBased ->
+                "%d -> %s".formatted(
+                    trafficLightBased.ordinal(),
+                    trafficLightBased.toString()))
+            .setSeparator("|")
+            .join());
   }
 }
