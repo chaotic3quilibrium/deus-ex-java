@@ -9,8 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Map.entry;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EnumAndIdsOpsTests {
   public interface EquivalentInt {
@@ -369,6 +368,8 @@ public class EnumAndIdsOpsTests {
                     trafficLightWithIdAAndId.getKey().toString(),
                     trafficLightWithIdAAndId.getValue()))
             .join());
+    //ensure same instance returned when the separator passed is equal to the one already present
+    assertSame(formatBuilderDefaults, formatBuilderDefaults.setSeparator(formatBuilderDefaults.getSeparator()));
     //changing the separator
     assertEquals(
         "SGREEN(1),SYELLOW(2),SRED(5)",

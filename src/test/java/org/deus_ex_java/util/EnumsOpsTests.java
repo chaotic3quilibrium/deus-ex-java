@@ -230,6 +230,7 @@ public class EnumsOpsTests {
   public void testFormatBuilder() {
     var formatBuilderDefaults = TrafficLightBased
         .enumOps().getFormatBuilder();
+    assertSame(formatBuilderDefaults, formatBuilderDefaults.setSeparator(formatBuilderDefaults.getSeparator()));
     //the four defaults
     assertEquals(
         "GREEN, YELLOW, RED",
@@ -258,6 +259,8 @@ public class EnumsOpsTests {
                     trafficLightBased.toString(),
                     trafficLightBased.ordinal()))
             .join());
+    //ensure same instance returned when the separator passed is equal to the one already present
+    assertSame(formatBuilderDefaults, formatBuilderDefaults.setSeparator(formatBuilderDefaults.getSeparator()));
     //changing the separator
     assertEquals(
         "GREEN,YELLOW,RED",
