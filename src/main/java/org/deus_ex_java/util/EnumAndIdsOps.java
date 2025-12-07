@@ -39,8 +39,8 @@ import static java.util.Map.entry;
  * regardless of context.
  * <p>
  *
- * @param <E>  type of the {@link Enum}
- * @param <ID> type of the associated {@code ID}
+ * @param <E>  the type of the {@link Enum} values being enhanced
+ * @param <ID> type of each {@link Enum} value's associated {@code ID}
  */
 @NullMarked
 public final class EnumAndIdsOps<E extends Enum<E>, ID> {
@@ -301,6 +301,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
 
   private final EnumsOps<E> enumsOps;
   private final Class<ID> classId;
+  private final FormatBuilder<E, ID> formatBuilder = FormatBuilder.from(this);
   private final Map<E, ID> orderedMapIdByEnumValue;
   private final Map<ID, E> orderedMapEnumValueById;
   private final Map<String, E> enumValueByNameOrIdOrAlternatesLowerCase;
@@ -387,7 +388,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
           "invalid state for enum [%s] where the .toLowerCase() of enumValue.toString(), fEAndIdToNonEmptyLowerCaseString.apply(enumValue, id), and optionalFEAndIdToNonEmptyLowerCaseStrings.map(fEAndIdToNonEmptyLowerCaseStrings -> fEAndIdToNonEmptyLowerCaseStrings.apply(enumValue, id)).get() is not unique across all the enums values - erred values: %s".formatted(
               classE.getSimpleName(),
               String.join(
-                  EnumsOps.DEFAULT_SEPARATOR,
+                  FormatBuilder.DEFAULT_SEPARATOR,
                   keyStringAndEnumValueAndCollisionSources
                       .stream()
                       .sorted(
@@ -587,281 +588,271 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                 getOrderedMapIdByEnumValue().get(enumValue)));
   }
 
-  public String generateJoinDefault(
-      Entry<E, ID> entry
-  ) {
-    return "%s(%s)".formatted(
-        entry.getKey().name(),
-        entry.getValue().toString());
+  /**
+   * Returns a {@link FormatBuilder} with defaults to assist with String encodings of this collection.
+   *
+   * @return a {@link FormatBuilder} to assist with String encodings of this collection
+   */
+  public FormatBuilder<E, ID> getFormatBuilder() {
+    return this.formatBuilder;
   }
 
   /**
-   * Returns a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
+   * Defines a format builder to assist with String encodings of this collection.
    *
-   * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as *
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the *
-   *     {@link EnumsOps#DEFAULT_SEPARATOR}
+   * @param <E>  the type of the {@link Enum} values being enhanced
+   * @param <ID> type of each {@link Enum} value's associated {@code ID}
    */
-  public String join() {
-    return join(EnumsOps.DEFAULT_SEPARATOR);
-  }
+  public static class FormatBuilder<E extends Enum<E>, ID> {
+    public static final String DEFAULT_SEPARATOR = EnumsOps.FormatBuilder.DEFAULT_SEPARATOR;
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the specified
-   * {@code separator}.
-   *
-   * @param separator the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the enum values, joined together with a copy of the specified
-   *     {@code separator}
-   */
-  public String join(String separator) {
-    return join(this::generateJoinDefault, separator);
-  }
+    private final EnumAndIdsOps<E, ID> enumAndIdsOps;
+    private final Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> filter;
+    private final Comparator<Entry<E, ID>> sortStrategy;
+    private final Function<Entry<E, ID>, String> reformat;
+    private final String separator;
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the enum values, and joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @param eAndIdToString the function to transform an enum value into a String
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for all the enum values, and joined together with a copy of the
-   *     {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String join(
-      Function<Entry<E, ID>, String> eAndIdToString
-  ) {
-    return join(eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
-  }
+    private FormatBuilder(
+        EnumAndIdsOps<E, ID> enumAndIdsOps,
+        Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> filter,
+        Comparator<Entry<E, ID>> sortStrategy,
+        Function<Entry<E, ID>, String> reformat,
+        String separator
+    ) {
+      this.enumAndIdsOps = enumAndIdsOps;
+      this.filter = filter;
+      this.sortStrategy = sortStrategy;
+      this.reformat = reformat;
+      this.separator = separator;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the enum values, and joined together with a copy of the specified
-   * {@code separator}.
-   *
-   * @param eAndIdToString the function to transform an enum value into a String
-   * @param separator      the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for all the enum values, and joined together with a copy of the specified
-   *     {@code separator}
-   */
-  public String join(
-      Function<Entry<E, ID>, String> eAndIdToString,
-      String separator
-  ) {
-    return join(getEnumsOps().stream(), eAndIdToString, separator);
-  }
+    /**
+     * Returns a {@link String} formatted as {@code ENUM_VALUE(ID)} for an {@code enumValueAndId} entry.
+     * <p>
+     * This method is used as the default for {@link FormatBuilder#reformat FormatBuilder.getReformat()} property.
+     *
+     * @param enumValueAndId the entry from which to produce a formatted String
+     * @param <E>            the type of the {@link Enum} values being enhanced
+     * @param <ID>           type of each {@link Enum} value's associated {@code ID}
+     * @return a {@link String} formatted as {@code ENUM_VALUE(ID)} for an {@code enumValueAndId} entry
+     */
+    public static <E extends Enum<E>, ID> String defaultReformat(
+        Entry<E, ID> enumValueAndId
+    ) {
+      return "%s(%s)".formatted(
+          enumValueAndId.getKey().name(),
+          enumValueAndId.getValue().toString());
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @param es the list of enum values to use
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
-   *     the {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String join(Stream<E> es) {
-    return join(es, this::generateJoinDefault);
-  }
+    /**
+     * Returns a new {@link FormatBuilder} that augments an {@link EnumAndIdsOps}, and provides overridable defaults for
+     * each of the {@link FormatBuilder}'s properties.
+     * <p>
+     * Defaults are:
+     * <ul>
+     *   <li>includes all the {@link EnumAndIdsOps} entries; i.e., no filtering</li>
+     *   <li>sorts by each {@link EnumAndIdsOps} entry's {@code ordinal} property</li>
+     *   <li>displays each {@link EnumAndIdsOps} entry with the {@link FormatBuilder#defaultReformat(Entry)} method</li>
+     *   <li>separates each {@link EnumAndIdsOps} entry's display value with the {@link FormatBuilder#DEFAULT_SEPARATOR}</li>
+     * </ul>
+     *
+     * @param enumAndIdsOps the {@link EnumAndIdsOps} being augmented
+     * @param <E>           the type of the {@link Enum} values being enhanced
+     * @param <ID>          type of each {@link Enum} value's associated {@code ID}
+     * @return a new {@link FormatBuilder} that augments an {@link EnumAndIdsOps}, and provides overridable defaults for
+     *     each of the {@link FormatBuilder}'s properties
+     */
+    public static <E extends Enum<E>, ID> FormatBuilder<E, ID> from(
+        EnumAndIdsOps<E, ID> enumAndIdsOps
+    ) {
+      return new FormatBuilder<>(
+          enumAndIdsOps,
+          Function.identity(),
+          Comparator.comparingInt(
+              (Entry<E, ID> enumValueAndId) ->
+                  enumValueAndId.getKey().ordinal()),
+          FormatBuilder::defaultReformat,
+          DEFAULT_SEPARATOR);
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for each of the provided {@link Enum} values, and joined together with a copy of
-   * the {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @param es             the list of enum values to use
-   * @param eAndIdToString the function to transform an enum value into a String
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for each of the provided {@link Enum} values, and joined together with a copy
-   *     of the {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String join(
-      Stream<E> es,
-      Function<Entry<E, ID>, String> eAndIdToString
-  ) {
-    return join(es, eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
-  }
+    /**
+     * Returns the {@link EnumAndIdsOps} being augmented.
+     *
+     * @return the {@link EnumAndIdsOps} being augmented
+     */
+    public EnumAndIdsOps<E, ID> getEnumAndIdsOps() {
+      return this.enumAndIdsOps;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of the
-   * specified {@code separator}.
-   *
-   * @param es        the list of enum values to use
-   * @param separator the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@link Enum} values, joined together with a copy of
-   *     the specified {@code separator}
-   */
-  public String join(
-      Stream<E> es,
-      String separator
-  ) {
-    return join(es, this::generateJoinDefault, separator);
-  }
+    /**
+     * Returns the {@code filter} {@link Function} property this {@link FormatBuilder} instance is using to
+     * include/exclude {@link EnumAndIdsOps} entries.
+     * <p>
+     * The default {@code filter} {@link Function} property includes all the {@link EnumAndIdsOps} entries; i.e., no
+     * filtering.
+     *
+     * @return the {@code filter} {@link Function} property this {@link FormatBuilder} instance is using to
+     *     include/exclude {@link EnumAndIdsOps} entries
+     */
+    public Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> getFilter() {
+      return this.filter;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the provided {@code Enum}s and their associated {@code ID}s
-   * transformed by the {@code eAndIdToString} function, and joined together with a copy of the specified
-   * {@code separator}.
-   *
-   * @param es             the list of enum values to use
-   * @param eAndIdToString the function to transform an enum and its associated id value into a String
-   * @param separator      the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the provided {@code Enum}s and their associated {@code ID}s
-   *     transformed by the {@code eAndIdToString} function, and joined together with a copy of the specified
-   *     {@code separator}
-   */
-  public String join(
-      Stream<E> es,
-      Function<Entry<E, ID>, String> eAndIdToString,
-      String separator
-  ) {
-    return String.join(
-        separator,
-        es.map(e ->
-                eAndIdToString.apply(entry(e, getOrderedMapIdByEnumValue().get(e))))
-            .toList());
-  }
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Function} property that defines how to
+     * include/exclude {@link EnumAndIdsOps} entries.
+     *
+     * @param filter a {@link Function} property that defines how to include/exclude {@link EnumAndIdsOps} entries
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Function} property that defines how to
+     *     include/exclude {@link EnumAndIdsOps} entries
+     */
+    public FormatBuilder<E, ID> setFilter(Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> filter) {
+      return new FormatBuilder<>(
+          this.enumAndIdsOps,
+          filter,
+          this.sortStrategy,
+          this.reformat,
+          this.separator);
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the
-   *     {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String joinOnIds() {
-    return joinOnIds(EnumsOps.DEFAULT_SEPARATOR);
-  }
+    /**
+     * Returns the {@code sortStrategy} {@link Comparator} property this {@link FormatBuilder} instance is using to
+     * reorder the filtered {@link EnumAndIdsOps} entries.
+     * <p>
+     * The default {@code sortStrategy} {@link Comparator} property sorts by each {@link EnumAndIdsOps} entry's by the
+     * {@link Enum#ordinal()} property.
+     *
+     * @return the {@code sortStrategy} {@link Comparator} property this {@link FormatBuilder} instance is using to
+     *     reorder the filtered {@link EnumAndIdsOps} entries
+     */
+    public Comparator<Entry<E, ID>> getSortStrategy() {
+      return this.sortStrategy;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the specified
-   * {@code separator}.
-   *
-   * @param separator the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum name} and {@code ID.toString()} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for all the id values, joined together with a copy of the specified
-   *     {@code separator}
-   */
-  public String joinOnIds(String separator) {
-    return joinOnIds(this::generateJoinDefault, separator);
-  }
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code sortStrategy} {@link Comparator} property that
+     * defines how to reorder the filtered {@link EnumAndIdsOps} entries.
+     *
+     * @param sortStrategy a {@link Comparator} that defines how to reorder the filtered {@link EnumAndIdsOps} entries
+     * @return a copy of the {@link FormatBuilder} with the {@code sortStrategy} {@link Comparator} property that
+     *     defines how to reorder the filtered {@link EnumAndIdsOps} entries
+     */
+    public FormatBuilder<E, ID> setSortStrategy(Comparator<Entry<E, ID>> sortStrategy) {
+      return new FormatBuilder<>(
+          this.enumAndIdsOps,
+          this.filter,
+          sortStrategy,
+          this.reformat,
+          this.separator);
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the id values, and joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @param eAndIdToString the function to transform an enum value into a String
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for all the id values, and joined together with a copy of the
-   *     {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String joinOnIds(
-      Function<Entry<E, ID>, String> eAndIdToString
-  ) {
-    return joinOnIds(eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
-  }
+    /**
+     * Returns the {@code reformat} {@link Function} property this {@link FormatBuilder} instance is using to display
+     * each {@link EnumAndIdsOps} entry.
+     * <p>
+     * The default {@code reformat} {@link Function} property displays each {@link EnumAndIdsOps} entry with the
+     * {@link FormatBuilder#defaultReformat(Entry) FormatBuilder.defaultReformat()} method.
+     *
+     * @return the {@code reformat} {@link Function} property this {@link FormatBuilder} instance is using to display
+     *     each {@link EnumAndIdsOps} entry
+     */
+    public Function<Entry<E, ID>, String> getReformat() {
+      return this.reformat;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for all the id values, and joined together with a copy of the specified
-   * {@code separator}.
-   *
-   * @param eAndIdToString the function to transform an enum value into a String
-   * @param separator      the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for all the id values, and joined together with a copy of the specified
-   *     {@code separator}
-   */
-  public String joinOnIds(
-      Function<Entry<E, ID>, String> eAndIdToString,
-      String separator
-  ) {
-    return joinOnIds(getOrderedMapEnumValueById().keySet().stream(), eAndIdToString, separator);
-  }
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code reformat} {@link Function} property that defines how
+     * to display each {@link EnumAndIdsOps} entry.
+     *
+     * @param reformat a {@link Function} that defines how to display each {@link EnumAndIdsOps} entry
+     * @return a copy of the {@link FormatBuilder} with the {@code reformat} {@link Function} property that defines how
+     *     to display each {@link EnumAndIdsOps} entry
+     */
+    public FormatBuilder<E, ID> setReformat(Function<Entry<E, ID>, String> reformat) {
+      return new FormatBuilder<>(
+          this.enumAndIdsOps,
+          this.filter,
+          this.sortStrategy,
+          reformat,
+          this.separator);
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @param ids the list of id values to use
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
-   *     the {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String joinOnIds(Stream<ID> ids) {
-    return joinOnIds(ids, this::generateJoinDefault);
-  }
+    /**
+     * Returns the {@code separator} String property this {@link FormatBuilder} instance is using to separate and
+     * display the filtered and reordered {@link EnumAndIdsOps} entries.
+     * <p>
+     * The default {@code separator} String property separates each {@link EnumAndIdsOps} entry's display value with the
+     * {@link FormatBuilder#DEFAULT_SEPARATOR}.
+     *
+     * @return the {@code separator} String property this {@link FormatBuilder} instance is using to separate and *
+     *     display the filtered and reordered {@link EnumAndIdsOps} entries
+     */
+    public String getSeparator() {
+      return this.separator;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of the
-   * {@link EnumsOps#DEFAULT_SEPARATOR}.
-   *
-   * @param ids            the list of id values to use
-   * @param eAndIdToString the function to transform an enum value into a String
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
-   *     the {@link EnumsOps#DEFAULT_SEPARATOR}
-   */
-  public String joinOnIds(
-      Stream<ID> ids,
-      Function<Entry<E, ID>, String> eAndIdToString
-  ) {
-    return joinOnIds(ids, eAndIdToString, EnumsOps.DEFAULT_SEPARATOR);
-  }
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
+     * separate and display the filtered and reordered {@link EnumAndIdsOps} entries.
+     *
+     * @param separator a {@link Function} that defines how to separate and display the filtered and reordered
+     *                  {@link EnumAndIdsOps} entries
+     * @return a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
+     *     separate and display the filtered and reordered {@link EnumAndIdsOps} entries
+     */
+    public FormatBuilder<E, ID> setSeparator(String separator) {
+      if (!this.separator.equals(separator)) {
+        return new FormatBuilder<>(
+            this.enumAndIdsOps,
+            this.filter,
+            this.sortStrategy,
+            this.reformat,
+            separator);
+      }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   * {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of the
-   * specified {@code separator}.
-   *
-   * @param ids       the list of id values to use
-   * @param separator the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} as
-   *     {@code "ENUM_NAME(ID_TO_STRING)"} for each of the provided {@code ID} values, joined together with a copy of
-   *     the specified {@code separator}
-   */
-  public String joinOnIds(
-      Stream<ID> ids,
-      String separator
-  ) {
-    return joinOnIds(ids, this::generateJoinDefault, separator);
-  }
+      return this;
+    }
 
-  /**
-   * Returns a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   * {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of the
-   * specified {@code separator}.
-   *
-   * @param ids            the list of enum values to use
-   * @param eAndIdToString the function to transform an enum and its associated id value into a String
-   * @param separator      the string used to separate the enum values
-   * @return a new {@code String} composed of copies of the {@code Enum} and {@code ID} transformed by the
-   *     {@code eAndIdToString} function for each of the provided {@code ID} values, and joined together with a copy of
-   *     the specified {@code separator}
-   */
-  public String joinOnIds(
-      Stream<ID> ids,
-      Function<Entry<E, ID>, String> eAndIdToString,
-      String separator
-  ) {
-    return String.join(
-        separator,
-        ids.map(id ->
-                eAndIdToString.apply(entry(getOrderedMapEnumValueById().get(id), id)))
-            .toList());
+    /**
+     * Returns the {@link Stream} used by {@code join} to obtain the filtered and reordered {@link Entry} values.
+     *
+     * @return the {@link Stream} used by {@code join} to obtain the filtered and reordered {@link Entry} values
+     */
+    public Stream<Entry<E, ID>> toFilteredAndSorted() {
+      return this.getFilter().apply(
+          this.getEnumAndIdsOps()
+              .stream()
+              .sorted(this.sortStrategy));
+    }
+
+    /**
+     * Returns the {@link Stream} used by {@code join} to display the filtered and reordered {@link Entry} values.
+     *
+     * @return the {@link Stream} used by {@code join} to display the filtered and reordered {@link Entry} values
+     */
+    public Stream<String> toStrings() {
+      return toFilteredAndSorted()
+          .map(this.getReformat());
+    }
+
+    /**
+     * Returns the {@link List} used by {@code join} to display the filtered and reordered {@link Entry} values.
+     *
+     * @return the {@link List} used by {@code join} to display the filtered and reordered {@link Entry} values
+     */
+    public List<String> toList() {
+      return toStrings().toList();
+    }
+
+    /**
+     * Returns a new {@code String} composed of copies of the provided {@code Enum}s and {@code ID}s; filtered, sorted,
+     * and transformed, and then {@link String#join(CharSequence, Iterable)}ed.
+     *
+     * @return a new {@code String} composed of copies of the provided {@code Enum}s and {@code ID}s; filtered, sorted,
+     *     and transformed, and then {@link String#join(CharSequence, Iterable)}ed
+     */
+    public String join() {
+      return String.join(this.getSeparator(), toList());
+    }
   }
 }

@@ -5,7 +5,6 @@ import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,7 +37,7 @@ public class EnumAndIdsOpsTests {
   @Test
   public void testOrdinal() {
     var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
-    assertEquals("SGREEN(0), SYELLOW(1), SRED(2)", tlwixoo.join());
+    assertEquals("SGREEN(0), SYELLOW(1), SRED(2)", tlwixoo.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdA.SGREEN), tlwixoo.get(0));
     assertEquals(Optional.of(entry(TrafficLightWithIdA.SGREEN, 0)), tlwixoo.valueOf("0"));
     assertEquals(Optional.of(entry(TrafficLightWithIdA.SGREEN, 0)), tlwixoo.valueOf("sgreen"));
@@ -69,7 +68,7 @@ public class EnumAndIdsOpsTests {
   @Test
   public void testOrdinalOffset() {
     var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdB.class, 1);
-    assertEquals("SGREEN(1), SYELLOW(2), SRED(3)", tlwixoo.join());
+    assertEquals("SGREEN(1), SYELLOW(2), SRED(3)", tlwixoo.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdB.SGREEN), tlwixoo.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdB.SGREEN, 1)), tlwixoo.valueOf("1"));
     assertEquals(Optional.of(entry(TrafficLightWithIdB.SGREEN, 1)), tlwixoo.valueOf("sgreen"));
@@ -102,7 +101,7 @@ public class EnumAndIdsOpsTests {
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdC.class,
         TrafficLightWithIdC::getEquivalent);
-    assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.join());
+    assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdC.SGREEN), tlwix.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("1"));
     assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("sgreen"));
@@ -136,8 +135,8 @@ public class EnumAndIdsOpsTests {
         TrafficLightWithIdD.class,
         TrafficLightWithIdD::getEquivalent,
         enumValueAndId ->
-            new NonEmptyLowerCaseString(("C" + enumValueAndId.getValue().toString() + "!").toLowerCase()));
-    assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.join());
+            new NonEmptyLowerCaseString(("C" + enumValueAndId.getValue() + "!").toLowerCase()));
+    assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdD.SGREEN), tlwix.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdD.SGREEN, 1)), tlwix.valueOf("c1!"));
     assertEquals(Optional.of(entry(TrafficLightWithIdD.SGREEN, 1)), tlwix.valueOf("sgreen"));
@@ -191,7 +190,7 @@ public class EnumAndIdsOpsTests {
     assertEquals(
         Set.of("1", "2", "5", "sred", "x4", "x6", "syellow", "sgreen", "x7"),
         tlwix.valueOfLookupKeys());
-    assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.join());
+    assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(1, tlwix.get(TrafficLightWithIdE.SGREEN));
     assertEquals(Optional.of(TrafficLightWithIdE.SGREEN), tlwix.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdE.SGREEN, 1)), tlwix.valueOf("1"));
@@ -318,26 +317,77 @@ public class EnumAndIdsOpsTests {
         tlwix.stream().toList());
   }
 
-  @Test
-  public void testJoinDirectly() {
-    var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
-    assertEquals(
-        "SGREEN(0), SYELLOW(1), SRED(2)",
-        tlwixoo
-            .joinOnIds());
-    assertEquals(
-        "SGREEN(0), SRED(2)",
-        tlwixoo
-            .joinOnIds(
-                tlwixoo
-                    .stream()
-                    .filter(trafficLightBasedWithIdAAndId ->
-                        trafficLightBasedWithIdAAndId.toString().contains("R"))
-                    .map(Map.Entry::getValue)));
-  }
+//  @Test
+//  public void testJoinDirectly() {
+//    var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
+//    assertEquals(
+//        "SGREEN(0), SYELLOW(1), SRED(2)",
+//        tlwixoo
+//            .joinOnIds());
+//    assertEquals(
+//        "SGREEN(0), SRED(2)",
+//        tlwixoo
+//            .joinOnIds(
+//                tlwixoo
+//                    .stream()
+//                    .filter(trafficLightBasedWithIdAAndId ->
+//                        trafficLightBasedWithIdAAndId.toString().contains("R"))
+//                    .map(Map.Entry::getValue)));
+//  }
 
   @Test
-  public void testRemainingUnimplemented() {
-    //throw new MissingImplementationException("missing x7 join() and x8 joinOnIds() tests");
+  public void testFormatBuilder() {
+    var enumAndIdsOps = EnumAndIdsOps.from(
+        TrafficLightWithIdC.class,
+        TrafficLightWithIdC::getEquivalent);
+    var formatBuilderDefaults = enumAndIdsOps.getFormatBuilder();
+    //the four defaults
+    assertEquals(
+        "SGREEN(1), SYELLOW(2), SRED(5)",
+        formatBuilderDefaults
+            .join());
+    //filtering the enum set
+    assertEquals(
+        "SGREEN(1), SRED(5)",
+        formatBuilderDefaults
+            .setFilter(stream ->
+                stream.filter(trafficLightWithIdAAndId ->
+                    trafficLightWithIdAAndId.getKey().toString().contains("R")))
+            .join());
+    //sorting the enum set on the default (by ordinal) in reverse
+    assertEquals(
+        "SRED(5), SYELLOW(2), SGREEN(1)",
+        formatBuilderDefaults
+            .setSortStrategy(formatBuilderDefaults.getSortStrategy().reversed())
+            .join());
+    //reformatting the String
+    assertEquals(
+        "SGREEN[1], SYELLOW[2], SRED[5]",
+        formatBuilderDefaults
+            .setReformat(trafficLightWithIdAAndId ->
+                "%s[%d]".formatted(
+                    trafficLightWithIdAAndId.getKey().toString(),
+                    trafficLightWithIdAAndId.getValue()))
+            .join());
+    //changing the separator
+    assertEquals(
+        "SGREEN(1),SYELLOW(2),SRED(5)",
+        formatBuilderDefaults
+            .setSeparator(",")
+            .join());
+    //changing all four simultaneously
+    assertEquals(
+        "2 -> SYELLOW|1 -> SGREEN",
+        formatBuilderDefaults
+            .setFilter(stream ->
+                stream.filter(trafficLightWithIdAAndId ->
+                    trafficLightWithIdAAndId.getValue() < 3))
+            .setSortStrategy(formatBuilderDefaults.getSortStrategy().reversed())
+            .setReformat(trafficLightWithIdAAndId ->
+                "%d -> %s".formatted(
+                    trafficLightWithIdAAndId.getValue(),
+                    trafficLightWithIdAAndId.getKey().toString()))
+            .setSeparator("|")
+            .join());
   }
 }
