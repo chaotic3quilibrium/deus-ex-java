@@ -8,6 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ForcedFatalThrowableTests {
   private static final RuntimeException runtimeException = new RuntimeException();
+  private static final ControlBreakThrowable controlBreakThrowable = new ControlBreakThrowable() {
+    @Serial
+    private static final long serialVersionUID = 197941024916184170L;
+  };
   private static final VirtualMachineError virtualMachineError = new VirtualMachineError() {
     @Serial
     private static final long serialVersionUID = -2155501631536602697L;
@@ -20,6 +24,7 @@ public class ForcedFatalThrowableTests {
   @Test
   public void testIsFatalThrowable() {
     assertFalse(ForcedFatalThrowable.isFatalThrowable(runtimeException));
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(controlBreakThrowable));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(virtualMachineError));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(threadDeath));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(interruptedException));
@@ -29,6 +34,11 @@ public class ForcedFatalThrowableTests {
   @Test
   public void testRequireNonFatalThrowable() {
     assertEquals(RuntimeException.class, ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(runtimeException).getClass());
+    @SuppressWarnings("ThrowableNotThrown")
+    var fatalThrowableControlBreakThrowable = assertThrows(
+        ControlBreakThrowable.class,
+        () ->
+            ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(controlBreakThrowable));
     @SuppressWarnings("ThrowableNotThrown")
     var fatalThrowableVirtualMachineError = assertThrows(
         VirtualMachineError.class,
