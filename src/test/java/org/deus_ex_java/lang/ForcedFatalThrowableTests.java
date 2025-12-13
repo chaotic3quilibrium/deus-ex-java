@@ -34,28 +34,28 @@ public class ForcedFatalThrowableTests {
   @Test
   public void testRequireNonFatalThrowable() {
     assertEquals(RuntimeException.class, ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(runtimeException).getClass());
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableControlBreakThrowable = assertThrows(
         ControlBreakThrowable.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(controlBreakThrowable));
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableVirtualMachineError = assertThrows(
         VirtualMachineError.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(virtualMachineError));
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableThreadDeath = assertThrows(
         ThreadDeath.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(threadDeath));
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableInterruptedException = assertThrows(
         InterruptedException.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(interruptedException));
     assertEquals("test", fatalThrowableInterruptedException.getMessage());
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableLinkageError = assertThrows(
         LinkageError.class,
         () ->
