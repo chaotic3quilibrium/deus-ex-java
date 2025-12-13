@@ -203,7 +203,6 @@ public final class SetsOps {
   public static <T> Set<T> toSetOrdered(
       Stream<@Nullable T> stream
   ) {
-    //noinspection RedundantCast
     var set = stream
         .filter(t ->
             !Objects.isNull(t))
@@ -301,6 +300,13 @@ public final class SetsOps {
     return new Tuple2<>(Set.of(), Set.of());
   }
 
+  private record ToDistinctAndDupesState<T>(
+      Set<T> distincts,
+      Set<T> dupes
+  ) {
+
+  }
+
   /**
    * Returns a {@link Tuple2} assigning the first property an unmodifiable unordered {@link Set} containing all the
    * distinct elements from the source, and assigning to the second property an unmodifiable unordered {@link Set}
@@ -315,17 +321,28 @@ public final class SetsOps {
   public static <T> Tuple2<Set<T>, Set<T>> toDistinctAndDupes(
       Stream<T> stream
   ) {
-    var distincts = new HashSet<T>();
-    var dupes = new HashSet<T>();
-    stream.forEachOrdered(t -> {
-      if (!distincts.add(t)) {
-        dupes.add(t);
-      }
-    });
+    var sequentialStream = stream.isParallel()
+        ? stream.sequential()
+        : stream;
+    var toDistinctAndDupesState = sequentialStream
+        .collect(
+            () ->
+                new ToDistinctAndDupesState<T>(
+                    new HashSet<>(),
+                    new HashSet<>()),
+            (toDistinctAndDupesStateInterim, t) -> {
+              if (!toDistinctAndDupesStateInterim.distincts.add(t)) {
+                toDistinctAndDupesStateInterim.dupes.add(t);
+              }
+            },
+            (toDistinctAndDupesStateInterim1, toDistinctAndDupesStateInterim2) -> {
+              throw new IllegalStateException("should never get here - combiner was called on sequential stream");
+            }
+        );
 
     return new Tuple2<>(
-        Collections.unmodifiableSet(distincts),
-        Collections.unmodifiableSet(dupes));
+        Collections.unmodifiableSet(toDistinctAndDupesState.distincts()),
+        Collections.unmodifiableSet(toDistinctAndDupesState.dupes()));
   }
 
   /**
@@ -363,17 +380,28 @@ public final class SetsOps {
   public static <T> Tuple2<Set<T>, Set<T>> toDistinctAndDupesOrdered(
       Stream<T> stream
   ) {
-    var distincts = new LinkedHashSet<T>();
-    var dupes = new LinkedHashSet<T>();
-    stream.forEachOrdered(t -> {
-      if (!distincts.add(t)) {
-        dupes.add(t);
-      }
-    });
+    var sequentialStream = stream.isParallel()
+        ? stream.sequential()
+        : stream;
+    var toDistinctAndDupesState = sequentialStream
+        .collect(
+            () ->
+                new ToDistinctAndDupesState<T>(
+                    new LinkedHashSet<>(),
+                    new LinkedHashSet<>()),
+            (toDistinctAndDupesStateInterim, t) -> {
+              if (!toDistinctAndDupesStateInterim.distincts.add(t)) {
+                toDistinctAndDupesStateInterim.dupes.add(t);
+              }
+            },
+            (toDistinctAndDupesStateInterim1, toDistinctAndDupesStateInterim2) -> {
+              throw new IllegalStateException("should never get here - combiner was called on sequential stream");
+            }
+        );
 
     return new Tuple2<>(
-        Collections.unmodifiableSet(distincts),
-        Collections.unmodifiableSet(dupes));
+        Collections.unmodifiableSet(toDistinctAndDupesState.distincts()),
+        Collections.unmodifiableSet(toDistinctAndDupesState.dupes()));
   }
 
   /**
