@@ -52,7 +52,7 @@ public class ForcedFatalThrowable {
    * @param throwable instance of an exception against which to test for Fatal
    * @return {@code true} if the {@code throwable} matches an instance, or descendant, of:
    *     <ul>
-   *     <li>{@link InterruptedException - a <em>checked</em> exception</li>
+   *     <li>{@link InterruptedException} - a <em>checked</em> exception</li>
    *     <li>{@link LinkageError}</li>
    *     <li>{@link ThreadDeath}</li>
    *     <li>{@link VirtualMachineError}</li>

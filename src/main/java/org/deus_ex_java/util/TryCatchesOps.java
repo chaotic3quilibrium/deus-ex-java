@@ -87,8 +87,9 @@ public final class TryCatchesOps {
 
       throwRuntimeExceptionOrWrappedCheckedException(throwable);
 
-      //never reached because the prior method call always throws a RuntimeException
-      return Optional.empty();
+      //this is never reached because the prior method call always throws a RuntimeException
+      //noinspection DataFlowIssue,OptionalAssignedToNull
+      return null;
     }
   }
 
@@ -161,6 +162,7 @@ public final class TryCatchesOps {
     wrap(voidSupplier)
         .ifPresent(runtimeException -> {
 
+          //can only be a RuntimeException
           throw runtimeException;
         });
   }
@@ -214,7 +216,11 @@ public final class TryCatchesOps {
         return Either.left((L) throwable);
       }
 
-      throw throwable;
+      throwRuntimeExceptionOrWrappedCheckedException(throwable);
+
+      //this is never reached because the prior method call always throws a RuntimeException
+      //noinspection DataFlowIssue
+      return null;
     }
   }
 
@@ -252,12 +258,8 @@ public final class TryCatchesOps {
     var either = wrap(supplier, throwableClasses);
     if (either.isLeft()) {
       var throwable = either.getLeft();
-      if (throwable instanceof RuntimeException runtimeException) {
 
-        throw runtimeException;
-      }
-
-      throw new WrappedCheckedException(throwable);
+      throwRuntimeExceptionOrWrappedCheckedException(throwable);
     }
 
     return either.getRight();
@@ -314,6 +316,7 @@ public final class TryCatchesOps {
     var either = wrap(supplier);
     if (either.isLeft()) {
 
+      //can only be a RuntimeException
       throw either.getLeft();
     }
 
@@ -323,7 +326,6 @@ public final class TryCatchesOps {
   @SafeVarargs
   private static <T extends Throwable> T resolveCatchThrowableWrappedCheckedException(
       Throwable throwable,
-      String s,
       Class<? extends T>... throwableClasses
   ) {
     //noinspection ThrowableNotThrown
@@ -336,14 +338,12 @@ public final class TryCatchesOps {
       //noinspection unchecked
       return (T) throwable;
     }
-    if (throwable instanceof RuntimeException runtimeException) {
 
-      throw runtimeException;
-    }
+    throwRuntimeExceptionOrWrappedCheckedException(throwable);
 
-    throw new WrappedCheckedException(
-        "wrapCheckedException(%s) failure - %s".formatted(s, throwable.getMessage()),
-        throwable);
+    //this is never reached because the prior method call always throws a RuntimeException
+    //noinspection DataFlowIssue
+    return null;
   }
 
   /**
@@ -386,7 +386,9 @@ public final class TryCatchesOps {
 
       return Optional.empty();
     } catch (Throwable throwable) {
-      return Optional.of(resolveCatchThrowableWrappedCheckedException(throwable, "VoidSupplierCheckedException", throwableClasses));
+
+      //noinspection DataFlowIssue
+      return Optional.of(resolveCatchThrowableWrappedCheckedException(throwable, throwableClasses));
     }
   }
 
@@ -415,14 +417,7 @@ public final class TryCatchesOps {
       Class<? extends T>... throwableClasses
   ) {
     wrapCheckedException(voidSupplierCheckedException, throwableClasses)
-        .ifPresent(throwable -> {
-          if (throwable instanceof RuntimeException runtimeException) {
-
-            throw runtimeException;
-          }
-
-          throw new WrappedCheckedException(throwable);
-        });
+        .ifPresent(TryCatchesOps::throwRuntimeExceptionOrWrappedCheckedException);
   }
 
   /**
@@ -467,6 +462,7 @@ public final class TryCatchesOps {
     wrapCheckedException(voidSupplierCheckedException)
         .ifPresent(runtimeException -> {
 
+          //can only be a RuntimeException
           throw runtimeException;
         });
   }
@@ -513,7 +509,8 @@ public final class TryCatchesOps {
       return Either.right(supplierCheckedException.get());
     } catch (Throwable throwable) {
 
-      return Either.left(resolveCatchThrowableWrappedCheckedException(throwable, "SupplierCheckedException", throwableClasses));
+      //noinspection DataFlowIssue
+      return Either.left(resolveCatchThrowableWrappedCheckedException(throwable, throwableClasses));
     }
   }
 
@@ -556,12 +553,8 @@ public final class TryCatchesOps {
     var either = wrapCheckedException(supplierCheckedException, throwableClasses);
     if (either.isLeft()) {
       var throwable = either.getLeft();
-      if (throwable instanceof RuntimeException runtimeException) {
 
-        throw runtimeException;
-      }
-
-      throw new WrappedCheckedException(throwable);
+      throwRuntimeExceptionOrWrappedCheckedException(throwable);
     }
 
     return either.getRight();
@@ -622,6 +615,7 @@ public final class TryCatchesOps {
     var either = wrapCheckedException(supplierCheckedException);
     if (either.isLeft()) {
 
+      //can only be a RuntimeException
       throw either.getLeft();
     }
 
