@@ -8,6 +8,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ForcedFatalThrowableTests {
   private static final RuntimeException runtimeException = new RuntimeException();
+  private static final ControlBreakThrowable controlBreakThrowable = new ControlBreakThrowable() {
+    @Serial
+    private static final long serialVersionUID = 197941024916184170L;
+  };
   private static final VirtualMachineError virtualMachineError = new VirtualMachineError() {
     @Serial
     private static final long serialVersionUID = -2155501631536602697L;
@@ -20,6 +24,7 @@ public class ForcedFatalThrowableTests {
   @Test
   public void testIsFatalThrowable() {
     assertFalse(ForcedFatalThrowable.isFatalThrowable(runtimeException));
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(controlBreakThrowable));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(virtualMachineError));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(threadDeath));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(interruptedException));
@@ -29,23 +34,28 @@ public class ForcedFatalThrowableTests {
   @Test
   public void testRequireNonFatalThrowable() {
     assertEquals(RuntimeException.class, ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(runtimeException).getClass());
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
+    var fatalThrowableControlBreakThrowable = assertThrows(
+        ControlBreakThrowable.class,
+        () ->
+            ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(controlBreakThrowable));
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableVirtualMachineError = assertThrows(
         VirtualMachineError.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(virtualMachineError));
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableThreadDeath = assertThrows(
         ThreadDeath.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(threadDeath));
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableInterruptedException = assertThrows(
         InterruptedException.class,
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(interruptedException));
     assertEquals("test", fatalThrowableInterruptedException.getMessage());
-    @SuppressWarnings("ThrowableNotThrown")
+    @SuppressWarnings({"ThrowableNotThrown", "unused"})
     var fatalThrowableLinkageError = assertThrows(
         LinkageError.class,
         () ->

@@ -40,6 +40,7 @@ public class ForcedFatalThrowable {
   /**
    * Returns {@code true} if the {@code throwable} matches an instance, or descendant, of:
    * <ul>
+   * <li>{@link ControlBreakThrowable} - use for flow control</li>
    * <li>{@link InterruptedException} - a <em>checked</em> exception</li>
    * <li>{@link LinkageError}</li>
    * <li>{@link ThreadDeath}</li>
@@ -52,7 +53,8 @@ public class ForcedFatalThrowable {
    * @param throwable instance of an exception against which to test for Fatal
    * @return {@code true} if the {@code throwable} matches an instance, or descendant, of:
    *     <ul>
-   *     <li>{@link InterruptedException - a <em>checked</em> exception</li>
+   *     <li>{@link ControlBreakThrowable}</li>
+   *     <li>{@link InterruptedException} - a <em>checked</em> exception</li>
    *     <li>{@link LinkageError}</li>
    *     <li>{@link ThreadDeath}</li>
    *     <li>{@link VirtualMachineError}</li>
@@ -61,7 +63,8 @@ public class ForcedFatalThrowable {
   public static boolean isFatalThrowable(
       Throwable throwable
   ) {
-    return (throwable instanceof InterruptedException) ||
+    return (throwable instanceof ControlBreakThrowable) ||
+        (throwable instanceof InterruptedException) ||
         (throwable instanceof LinkageError) ||
         (throwable instanceof ThreadDeath) ||
         (throwable instanceof VirtualMachineError);
