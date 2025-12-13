@@ -329,6 +329,7 @@ public class SetsOpsTests {
     assertNotNull(set);
     assertTrue(set.isEmpty());
     assertTrue(CollectionsOps.isUnmodifiable(set));
+    //noinspection DataFlowIssue
     assertEquals(Set.of(), SetsOps.ofOrdered(null, null, null));
     var set2 = new LinkedHashSet<Integer>();
     assertEquals(set2, set);
