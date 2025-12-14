@@ -82,6 +82,70 @@ public class ListsOpsTests {
   }
 
   @Test
+  public void testCompareAlignedRight() {
+    assertEquals(0, ListsOps.<Integer>compareAlignedRight(List.of(), List.of()));
+    assertEquals(1, ListsOps.compareAlignedRight(List.of(1), List.of()));
+    assertEquals(-1, ListsOps.compareAlignedRight(List.of(), List.of(1)));
+    assertEquals(0, ListsOps.compareAlignedRight(List.of(1), List.of(1)));
+    assertEquals(1, ListsOps.compareAlignedRight(List.of(1, 2), List.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedRight(List.of(1), List.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedRight(List.of(1, 2), List.of(1, 2)));
+    assertEquals(0, ListsOps.<Integer>compareAlignedRight(Stream.empty(), Stream.empty()));
+    assertEquals(1, ListsOps.compareAlignedRight(Stream.of(1), Stream.of()));
+    assertEquals(-1, ListsOps.compareAlignedRight(Stream.of(), Stream.of(1)));
+    assertEquals(0, ListsOps.compareAlignedRight(Stream.of(1), Stream.of(1)));
+    assertEquals(1, ListsOps.compareAlignedRight(Stream.of(1, 2), Stream.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedRight(Stream.of(1), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedRight(Stream.of(1, 2), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.<Integer>compareAlignedRight(List.of(), Stream.empty()));
+    assertEquals(1, ListsOps.compareAlignedRight(List.of(1), Stream.of()));
+    assertEquals(-1, ListsOps.compareAlignedRight(List.of(), Stream.of(1)));
+    assertEquals(0, ListsOps.compareAlignedRight(List.of(1), Stream.of(1)));
+    assertEquals(1, ListsOps.compareAlignedRight(List.of(1, 2), Stream.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedRight(List.of(1), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedRight(List.of(1, 2), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.<Integer>compareAlignedRight(Stream.empty(), List.of()));
+    assertEquals(1, ListsOps.compareAlignedRight(Stream.of(1), List.of()));
+    assertEquals(-1, ListsOps.compareAlignedRight(Stream.of(), List.of(1)));
+    assertEquals(0, ListsOps.compareAlignedRight(Stream.of(1), List.of(1)));
+    assertEquals(1, ListsOps.compareAlignedRight(Stream.of(1, 2), List.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedRight(Stream.of(1), List.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedRight(Stream.of(1, 2), List.of(1, 2)));
+  }
+
+  @Test
+  public void testCompareAlignedLeft() {
+    assertEquals(0, ListsOps.<Integer>compareAlignedLeft(List.of(), List.of()));
+    assertEquals(1, ListsOps.compareAlignedLeft(List.of(1), List.of()));
+    assertEquals(-1, ListsOps.compareAlignedLeft(List.of(), List.of(1)));
+    assertEquals(0, ListsOps.compareAlignedLeft(List.of(1), List.of(1)));
+    assertEquals(1, ListsOps.compareAlignedLeft(List.of(1, 2), List.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedLeft(List.of(1), List.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedLeft(List.of(1, 2), List.of(1, 2)));
+    assertEquals(0, ListsOps.<Integer>compareAlignedLeft(Stream.empty(), Stream.empty()));
+    assertEquals(1, ListsOps.compareAlignedLeft(Stream.of(1), Stream.of()));
+    assertEquals(-1, ListsOps.compareAlignedLeft(Stream.of(), Stream.of(1)));
+    assertEquals(0, ListsOps.compareAlignedLeft(Stream.of(1), Stream.of(1)));
+    assertEquals(1, ListsOps.compareAlignedLeft(Stream.of(1, 2), Stream.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedLeft(Stream.of(1), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedLeft(Stream.of(1, 2), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.<Integer>compareAlignedLeft(List.of(), Stream.empty()));
+    assertEquals(1, ListsOps.compareAlignedLeft(List.of(1), Stream.of()));
+    assertEquals(-1, ListsOps.compareAlignedLeft(List.of(), Stream.of(1)));
+    assertEquals(0, ListsOps.compareAlignedLeft(List.of(1), Stream.of(1)));
+    assertEquals(1, ListsOps.compareAlignedLeft(List.of(1, 2), Stream.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedLeft(List.of(1), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedLeft(List.of(1, 2), Stream.of(1, 2)));
+    assertEquals(0, ListsOps.<Integer>compareAlignedLeft(Stream.empty(), List.of()));
+    assertEquals(1, ListsOps.compareAlignedLeft(Stream.of(1), List.of()));
+    assertEquals(-1, ListsOps.compareAlignedLeft(Stream.of(), List.of(1)));
+    assertEquals(0, ListsOps.compareAlignedLeft(Stream.of(1), List.of(1)));
+    assertEquals(1, ListsOps.compareAlignedLeft(Stream.of(1, 2), List.of(1)));
+    assertEquals(-1, ListsOps.compareAlignedLeft(Stream.of(1), List.of(1, 2)));
+    assertEquals(0, ListsOps.compareAlignedLeft(Stream.of(1, 2), List.of(1, 2)));
+  }
+
+  @Test
   public void testToDistinctSortedListIntegerStream() {
     assertEquals(
         List.of(1, 2, 3, 4),

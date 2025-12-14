@@ -118,13 +118,242 @@ public final class ListsOps {
   public static <T> List<T> nullSanitize(
       Stream<@Nullable T> stream
   ) {
-    //noinspection RedundantCast
     return stream
         .filter(t ->
             !Objects.isNull(t))
         .map(t ->
             (T) t)
         .toList();
+  }
+
+  /**
+   * Returns the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedRight(
+      Collection<T> tsLeft,
+      Collection<T> tsRight
+  ) {
+
+    return compareAlignedLeft(
+        ListsOps.reverse(tsLeft.stream()),
+        ListsOps.reverse(tsRight.stream()));
+  }
+
+  /**
+   * Returns the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedRight(
+      Collection<T> tsLeft,
+      Stream<T> tsRight
+  ) {
+    return compareAlignedRight(tsLeft, tsRight.toList());
+  }
+
+  /**
+   * Returns the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedRight(
+      Stream<T> tsLeft,
+      Collection<T> tsRight
+  ) {
+    return compareAlignedRight(tsLeft.toList(), tsRight);
+  }
+
+  /**
+   * Returns the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedRight(
+      Stream<T> tsLeft,
+      Stream<T> tsRight
+  ) {
+    return compareAlignedRight(tsLeft.toList(), tsRight.toList());
+  }
+
+  /**
+   * Returns the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedLeft(
+      Collection<T> tsLeft,
+      Collection<T> tsRight
+  ) {
+    var tsLeftIterator = tsLeft.iterator();
+    var tsRightIterator = tsRight.iterator();
+    while (tsLeftIterator.hasNext() && tsRightIterator.hasNext()) {
+      var tLeft = tsLeftIterator.next();
+      var tRight = tsRightIterator.next();
+      int comparison = tLeft.compareTo(tRight);
+      if (comparison != 0) {
+
+        return comparison;
+      }
+    }
+
+    //If the loop finishes, all elements matched up to the end of the possibly shorter iterator, and shorter is treated
+    //  as "less than" longer
+    return tsLeftIterator.hasNext()
+        //itRight.hasNext() is necessarily false
+        ? 1
+        : tsRightIterator.hasNext()
+            ? -1
+            : 0;
+  }
+
+  /**
+   * Returns the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedLeft(
+      Collection<T> tsLeft,
+      Stream<T> tsRight
+  ) {
+    return compareAlignedLeft(tsLeft, tsRight.toList());
+  }
+
+  /**
+   * Returns the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedLeft(
+      Stream<T> tsLeft,
+      Collection<T> tsRight
+  ) {
+    return compareAlignedLeft(tsLeft.toList(), tsRight);
+  }
+
+  /**
+   * Returns the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent.
+   *
+   * @param tsLeft  the source of the left side elements
+   * @param tsRight the source of the right side elements
+   * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
+   *                interface
+   * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
+   */
+  public static <T extends Comparable<T>> int compareAlignedLeft(
+      Stream<T> tsLeft,
+      Stream<T> tsRight
+  ) {
+    return compareAlignedLeft(tsLeft.toList(), tsRight.toList());
   }
 
   /**
