@@ -2,7 +2,7 @@
 
 - Copyright (C) 2025 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.4.0`](#v140)
+- [`v1.5.0`](#v150)
 
 ---
 
@@ -22,6 +22,7 @@
     * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
     * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 * [Version History](#version-history)
+  * [v1.5.0](#v150)
   * [v1.4.0](#v140)
   * [v1.3.0](#v130)
   * [v1.2.0](#v120)
@@ -45,7 +46,7 @@ As a library targeting Java 17, deus-ex-java is a Java augmentation library to e
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
   </dependency>
 ```
 
@@ -154,6 +155,17 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 ---
 
 # Version History
+
+## v1.5.0
+
+- 2025.12.14
+- Removed vestigial FatalThrowable
+- Transitioned Enum*Ops to a FormatBuilder and off of the join method permutations
+- Refactored TryCachesOps to more consistently implement all the various "sneaky" checked exception throwing pathways
+- Completed full test coverage for TryCatchesOps, including for new ControlBreakThrowable
+- Added ControlBreakThrowable as "fatal error tunnel" for future implementation of Break mode based on Scala's pattern of the same name
+- Updated SetsOps.toDistinctAndDupes* to be threadsafe
+- Added collection/stream elements comparisons for both left-to-right and right-to-left scanning
 
 ## v1.4.0
 
