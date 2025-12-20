@@ -405,17 +405,15 @@ public final class SetsOps {
   }
 
   /**
-   * Represents the {@link Map#keySet} values in the returned by the {@code static} function,
-   * {@link SetsOps#contrastSetPair} that is used to obtain the various sub-set views when comparing and contrasting a
-   * pair of {@link Set}s, each of which may be obtained via {@link SetPairViewKey#LEFT} and
-   * {@link SetPairViewKey#RIGHT}.
+   * Represents the {@link Map#keySet} values in the returned by the function, {@link SetPair#toMap} that is used to
+   * obtain the various sub-set views when comparing and contrasting a pair of {@link Set}s, each of which may be
+   * obtained via {@link SetPairViewKey#LEFT} and {@link SetPairViewKey#RIGHT}.
    * <p>
    * Please see each individual value for a more detailed explanation of the associated sub-set view.
    */
   public enum SetPairViewKey {
     /**
-     * The values of both the left and right side of the pair of {@link Set}s, with the common values only represented
-     * once.
+     * The values of both the left and right sides.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -430,8 +428,7 @@ public final class SetsOps {
      */
     UNION,
     /**
-     * The values of the left side of the pair of {@link Set}s being compared, including any possible overlap with the
-     * right side.
+     * The defensively copied <em>original</em> values of the left side.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -446,8 +443,7 @@ public final class SetsOps {
      */
     LEFT,
     /**
-     * The values of the right side of the pair of {@link Set}s being compared, including any possible overlap with the
-     * left side.
+     * The defensively copied <em>original</em> values of the right side.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -462,7 +458,7 @@ public final class SetsOps {
      */
     RIGHT,
     /**
-     * The values in common from both the left side and right side of the pair of {@link Set}s being compared.
+     * The values in common from both the left side and right sides.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -477,7 +473,7 @@ public final class SetsOps {
      */
     INTERSECTION,
     /**
-     * The values not in common from both the left side and right side of the pair of {@link Set}s being compared.
+     * The values not in common from both the left side and right sides.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -492,7 +488,7 @@ public final class SetsOps {
      */
     DIFFERENCE,
     /**
-     * The values unique to the left side of the pair of {@link Set}s being compared.
+     * The values unique to the left side.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -507,7 +503,7 @@ public final class SetsOps {
      */
     LEFT_DIFFERENCE,
     /**
-     * The values unique to the right side of the pair of {@link Set}s being compared.
+     * The values unique to the right side.
      * <p>
      * <ul>
      *  <li>Consider the following example code snippet:
@@ -547,101 +543,217 @@ public final class SetsOps {
    *     the two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison described by
    *     said {@link SetPairViewKey}
    * @throws NullPointerException if {@code leftTs} or {@code rightTs} contains any {@code null}s
+   * @deprecated Has been replaced by the {@link SetPair#toMap} function.
    */
-  @SuppressWarnings("unchecked")
+  @Deprecated
   public static <T> Map<SetPairViewKey, Set<T>> contrastSetPair(
       Set<T> leftTs,
       Set<T> rightTs
   ) {
-    if (!leftTs.isEmpty()) {
-      if (!rightTs.isEmpty()) {
-        var leftTsDefensiveCopy = Set.copyOf(leftTs);
-        var rightTsDefensiveCopy = Set.copyOf(rightTs);
-        var accumulators = new Set[]{
-            new HashSet<T>(),  //union
-            new HashSet<T>(),  //intersection
-            new HashSet<T>(),  //difference
-            new HashSet<T>(),  //leftDifference
-            new HashSet<T>()}; //rightDifference
-        Stream.concat(
-                leftTsDefensiveCopy.stream(),
-                rightTsDefensiveCopy.stream())
-            .forEachOrdered(t -> {
-              if (accumulators[CONTRAST_SET_PAIR_INDEX_UNION].add(t)) {
-                //can only get here if t hadn't been added in a prior iteration
-                var tInLeft = leftTs.contains(t);
-                var tInRight = rightTs.contains(t);
-                if (tInLeft) {
-                  if (tInRight) {
-                    accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION].add(t);
-                  } else { //!tInRight
-                    accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE].add(t);
-                    accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE].add(t);
-                  }
-                } else { //!tInLeft
-                  if (tInRight) {
-                    accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE].add(t);
-                    accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE].add(t);
-                  } else { //!tInRight
-                    //given the contents of this was derived from the two defensive copies, this is
-                    //  an unreachable, and therefore an insane, state
-                    throw new IllegalStateException("should never get here");
+    return SetPair.from(leftTs, rightTs).toMap();
+  }
+
+  /**
+   * Returns an {@link SetPair} of the contrast between the {@code left} and {@code right} defensively copied
+   * {@link Set}s, where for each property, the value associated is an unmodifiable {@link Set} containing the relevant
+   * elements of type {@code T} based on the comparison described by the property's name.
+   * <p>
+   * This implementation minimizes the amount of iterations, comparisons, and insertions necessary (single pass over
+   * each element in both {@link Set}s) to produce the discrete results, explicitly short-circuit optimizing in the
+   * event of either or both sets return true for {@link Set#isEmpty}.
+   * <p>
+   * <b>WARNING: </b> Prefer using the static factory {@link #from} instead of this constructor.
+   *
+   * @param isEqual         the result of {@code left.equals(right)} (without any additional iteration)
+   * @param union           the values of both the left and right sides
+   * @param left            the defensively copied <em>original</em> values of the left side
+   * @param right           the defensively copied <em>original</em> values of the right side
+   * @param intersection    the values in common from both the left side and right sides
+   * @param difference      the values not in common from both the left side and right sides
+   * @param leftDifference  the values unique to the left side
+   * @param rightDifference the values unique to the right side
+   * @param <T>             the type of instances contained in the sets
+   */
+  @SuppressWarnings("DeprecatedIsStillUsed")
+  public record SetPair<T>(
+      boolean isEqual,
+      Set<T> union,
+      Set<T> left,
+      Set<T> right,
+      Set<T> intersection,
+      Set<T> leftDifference,
+      Set<T> rightDifference,
+      Set<T> difference
+  ) {
+
+    /**
+     * Returns a {@link SetPair} reflecting the contrast between two defensively copied {@link Set}s, where for each
+     * property, the value associated is an unmodifiable {@link Set} containing the relevant elements of type {@code T}
+     * based on the part of the comparison described by the property's name.
+     * <p>
+     * This implementation minimizes the amount of iterations, comparisons, and insertions necessary (single pass over
+     * each element in each {@link Set}) to produce the discrete results, explicitly short-circuit optimizing in the
+     * event of either or both sets return true for {@link Set#isEmpty}.
+     *
+     * @param leftTs  the defensively copied left set of instances
+     * @param rightTs the defensively copied right set of instances
+     * @param <T>     the type of instances contained in the sets
+     * @return an {@link SetPair} of the contrast between two defensively copied {@link Set}s, where for each property,
+     *     the value associated is an unmodifiable {@link Set} containing the relevant elements of type {@code T} based
+     *     on the comparison described by the property's name
+     * @throws NullPointerException if either {@code leftTs} or {@code rightTs} contains any {@code null}s
+     */
+    public static <T> SetPair<T> from(
+        Set<T> leftTs,
+        Set<T> rightTs
+    ) {
+      return new SetPair<T>(
+          false,
+          Set.of(),
+          leftTs,
+          rightTs,
+          Set.of(),
+          Set.of(),
+          Set.of(),
+          Set.of());
+    }
+
+    /**
+     * Returns an unmodifiable {@link Map} of the contrast between two {@link Set}s, where for each key of type
+     * {@link SetPairViewKey}, the value associated is an unmodifiable {@link Set} (which includes defensively copying
+     * the two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison described by said
+     * {@link SetPairViewKey}
+     *
+     * @return an unmodifiable {@link Map} of the contrast between two {@link Set}s, where for each key of type
+     *     {@link SetPairViewKey}, the value associated is an unmodifiable {@link Set} (which includes defensively
+     *     copying the two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison
+     *     described by said {@link SetPairViewKey}
+     */
+    public Map<SetPairViewKey, Set<T>> toMap() {
+      return Map.of(
+          SetPairViewKey.UNION, union,
+          SetPairViewKey.LEFT, left,
+          SetPairViewKey.RIGHT, right,
+          SetPairViewKey.INTERSECTION, intersection,
+          SetPairViewKey.LEFT_DIFFERENCE, leftDifference,
+          SetPairViewKey.RIGHT_DIFFERENCE, rightDifference,
+          SetPairViewKey.DIFFERENCE, difference);
+    }
+
+    /**
+     * <b>WARNING: </b> Prefer using the static factory {@link #from} instead of this {@code new} constructor.
+     * <p>
+     * This {@code new} constructor discards any values passed in any of the properties, excluding {@code left} and
+     * {@code right}, and replaces the discarded properties with the results of running the contrasting algorithm on the
+     * {@code left} and {@code right} properties.
+     * <p>
+     * Essentially, this constructor behaves as though you called it as such:
+     * <pre>{@code
+     * var setPair = new SetPair<>(Set.of(), left, right, Set.of(), Set.of(), Set.of(), Set.of());
+     * } </pre>
+     * <p>This is literally how the static factory {@link #from} method is implemented.
+     *
+     * @param union           <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
+     *                        {@code right}
+     * @param left            the source of the left elements
+     * @param right           the source of the right elements
+     * @param intersection    <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
+     *                        {@code right}
+     * @param leftDifference  <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
+     *                        {@code right}
+     * @param rightDifference <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
+     *                        {@code right}
+     * @param difference      <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
+     *                        {@code right}
+     * @deprecated Prefer using the static factory {@link #from} instead of this constructor (please see <b>WARNING:
+     *     </b>)
+     */
+    @SuppressWarnings("unchecked")
+    @Deprecated
+    public SetPair {
+      if (!left.isEmpty()) {
+        var leftTsDefensiveCopy = Set.copyOf(left);
+        if (!right.isEmpty()) {
+          var rightTsDefensiveCopy = Set.copyOf(right);
+          var accumulators = new Set[]{
+              new HashSet<T>(),  //union
+              new HashSet<T>(),  //intersection
+              new HashSet<T>(),  //difference
+              new HashSet<T>(),  //leftDifference
+              new HashSet<T>()}; //rightDifference
+          Stream.concat(
+                  leftTsDefensiveCopy.stream(),
+                  rightTsDefensiveCopy.stream())
+              .forEachOrdered(t -> {
+                if (accumulators[CONTRAST_SET_PAIR_INDEX_UNION].add(t)) {
+                  //can only get here if t hadn't been added in a prior iteration
+                  var tInLeft = leftTsDefensiveCopy.contains(t);
+                  var tInRight = rightTsDefensiveCopy.contains(t);
+                  if (tInLeft) {
+                    if (tInRight) {
+                      accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION].add(t);
+                    } else { //!tInRight
+                      accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE].add(t);
+                      accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE].add(t);
+                    }
+                  } else { //!tInLeft
+                    if (tInRight) {
+                      accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE].add(t);
+                      accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE].add(t);
+                    } else { //!tInRight
+                      //given the contents of this was derived from the two defensive copies, this is
+                      //  an unreachable, and therefore an insane, state
+                      throw new IllegalStateException("should never get here");
+                    }
                   }
                 }
-              }
-            });
-
-        return Map.of(
-            SetPairViewKey.UNION,
-            Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_UNION]),
-            SetPairViewKey.LEFT, leftTsDefensiveCopy,
-            SetPairViewKey.RIGHT, rightTsDefensiveCopy,
-            SetPairViewKey.INTERSECTION,
-            Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION]),
-            SetPairViewKey.LEFT_DIFFERENCE,
-            Collections.<Set<T>>unmodifiableSet(
-                accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE]),
-            SetPairViewKey.RIGHT_DIFFERENCE,
-            Collections.<Set<T>>unmodifiableSet(
-                accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE]),
-            SetPairViewKey.DIFFERENCE,
-            Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE]));
+              });
+          union = Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_UNION]);
+          left = leftTsDefensiveCopy;
+          right = rightTsDefensiveCopy;
+          intersection = Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION]);
+          leftDifference = Collections.<Set<T>>unmodifiableSet(
+              accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE]);
+          rightDifference = Collections.<Set<T>>unmodifiableSet(
+              accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE]);
+          difference = Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE]);
+          isEqual = difference.isEmpty();
+        } else {
+          //left.isEmpty() is false, and right.isEmpty() is true
+          isEqual = false;
+          union = leftTsDefensiveCopy;
+          left = leftTsDefensiveCopy;
+          right = Set.of();
+          intersection = Set.of();
+          leftDifference = leftTsDefensiveCopy;
+          rightDifference = Set.of();
+          difference = leftTsDefensiveCopy;
+        }
+      } else {
+        if (!right.isEmpty()) {
+          //leftTs.isEmpty() is true, and rightTs.isEmpty() is false
+          var rightTsDefensiveCopy = Set.copyOf(right);
+          isEqual = false;
+          union = rightTsDefensiveCopy;
+          left = Set.of();
+          right = rightTsDefensiveCopy;
+          intersection = Set.of();
+          leftDifference = Set.of();
+          rightDifference = rightTsDefensiveCopy;
+          difference = rightTsDefensiveCopy;
+        } else {
+          //leftTs.isEmpty() is true, and rightTs.isEmpty() is true
+          isEqual = true;
+          union = Set.of();
+          left = Set.of();
+          right = Set.of();
+          intersection = Set.of();
+          leftDifference = Set.of();
+          rightDifference = Set.of();
+          difference = Set.of();
+        }
       }
-      //leftTs.isEmpty() is false, and rightTs.isEmpty() is true
-      var leftTsDefensiveCopy = Set.copyOf(leftTs);
-
-      return Map.of(
-          SetPairViewKey.UNION, leftTsDefensiveCopy,
-          SetPairViewKey.LEFT, leftTsDefensiveCopy,
-          SetPairViewKey.RIGHT, Set.of(),
-          SetPairViewKey.INTERSECTION, Set.of(),
-          SetPairViewKey.LEFT_DIFFERENCE, leftTsDefensiveCopy,
-          SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
-          SetPairViewKey.DIFFERENCE, leftTsDefensiveCopy);
     }
-    if (!rightTs.isEmpty()) {
-      //leftTs.isEmpty() is true, and rightTs.isEmpty() is false
-      var rightTsDefensiveCopy = Set.copyOf(rightTs);
-
-      return Map.of(
-          SetPairViewKey.UNION, rightTsDefensiveCopy,
-          SetPairViewKey.LEFT, Set.of(),
-          SetPairViewKey.RIGHT, rightTsDefensiveCopy,
-          SetPairViewKey.INTERSECTION, Set.of(),
-          SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
-          SetPairViewKey.RIGHT_DIFFERENCE, rightTsDefensiveCopy,
-          SetPairViewKey.DIFFERENCE, rightTsDefensiveCopy);
-    }
-    //leftTs.isEmpty() is true, and rightTs.isEmpty() is true
-
-    return Map.of(
-        SetPairViewKey.UNION, Set.of(),
-        SetPairViewKey.LEFT, Set.of(),
-        SetPairViewKey.RIGHT, Set.of(),
-        SetPairViewKey.INTERSECTION, Set.of(),
-        SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
-        SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
-        SetPairViewKey.DIFFERENCE, Set.of());
   }
 
   /**

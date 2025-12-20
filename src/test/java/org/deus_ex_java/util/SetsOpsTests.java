@@ -1,5 +1,6 @@
 package org.deus_ex_java.util;
 
+import org.deus_ex_java.util.SetsOps.SetPair;
 import org.deus_ex_java.util.SetsOps.SetPairViewKey;
 import org.deus_ex_java.util.tuple.Tuple2;
 import org.jspecify.annotations.NonNull;
@@ -321,6 +322,146 @@ public class SetsOpsTests {
             SetPairViewKey.RIGHT_DIFFERENCE, Set.of(1),
             SetPairViewKey.DIFFERENCE, Set.of(1, 4)),
         SetsOps.contrastSetPair(setB, setA));
+  }
+
+  private <T> void validateSetPair(
+      Map<SetPairViewKey, Set<T>> expectedTsBySetPairViewKey,
+      boolean expectedIsEqual,
+      SetPair<T> actualSetPair
+  ) {
+    assertEquals(expectedIsEqual, actualSetPair.isEqual());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.UNION), actualSetPair.union());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.LEFT), actualSetPair.left());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.RIGHT), actualSetPair.right());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.INTERSECTION), actualSetPair.intersection());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.LEFT_DIFFERENCE), actualSetPair.leftDifference());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.RIGHT_DIFFERENCE), actualSetPair.rightDifference());
+    assertEquals(expectedTsBySetPairViewKey.get(SetPairViewKey.DIFFERENCE), actualSetPair.difference());
+    var actualTsBySetPairViewKey = actualSetPair.toMap();
+    assertEquals(expectedTsBySetPairViewKey, actualTsBySetPairViewKey);
+    assertTrue(CollectionsOps.isUnmodifiable(actualTsBySetPairViewKey));
+    actualTsBySetPairViewKey.values()
+        .forEach(ts ->
+            assertTrue(CollectionsOps.isUnmodifiable(ts)));
+  }
+
+  @Test
+  public void testSetPair() {
+    var empty = Set.<Integer>of();
+    var set123 = Set.of(1, 2, 3);
+    var set234 = Set.of(2, 3, 4);
+    var set567 = Set.of(5, 6, 7);
+    var set012345678 = Set.of(0, 1, 2, 3, 4, 5, 6, 7, 8);
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, Set.of(),
+            SetPairViewKey.LEFT, Set.of(),
+            SetPairViewKey.RIGHT, Set.of(),
+            SetPairViewKey.INTERSECTION, Set.of(),
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
+            SetPairViewKey.DIFFERENCE, Set.of()),
+        true,
+        SetPair.from(empty, empty));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, set123,
+            SetPairViewKey.LEFT, set123,
+            SetPairViewKey.RIGHT, Set.of(),
+            SetPairViewKey.INTERSECTION, Set.of(),
+            SetPairViewKey.LEFT_DIFFERENCE, set123,
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
+            SetPairViewKey.DIFFERENCE, set123),
+        false,
+        SetPair.from(set123, empty));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, set123,
+            SetPairViewKey.LEFT, set123,
+            SetPairViewKey.RIGHT, set123,
+            SetPairViewKey.INTERSECTION, set123,
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
+            SetPairViewKey.DIFFERENCE, Set.of()),
+        true,
+        SetPair.from(set123, set123));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, Set.of(1, 2, 3, 4),
+            SetPairViewKey.LEFT, set123,
+            SetPairViewKey.RIGHT, set234,
+            SetPairViewKey.INTERSECTION, Set.of(2, 3),
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(1),
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(4),
+            SetPairViewKey.DIFFERENCE, Set.of(1, 4)),
+        false,
+        SetPair.from(set123, set234));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, Set.of(1, 2, 3, 5, 6, 7),
+            SetPairViewKey.LEFT, set123,
+            SetPairViewKey.RIGHT, set567,
+            SetPairViewKey.INTERSECTION, Set.of(),
+            SetPairViewKey.LEFT_DIFFERENCE, set123,
+            SetPairViewKey.RIGHT_DIFFERENCE, set567,
+            SetPairViewKey.DIFFERENCE, Set.of(1, 2, 3, 5, 6, 7)),
+        false,
+        SetPair.from(set123, set567));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, set012345678,
+            SetPairViewKey.LEFT, set123,
+            SetPairViewKey.RIGHT, set012345678,
+            SetPairViewKey.INTERSECTION, set123,
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(0, 4, 5, 6, 7, 8),
+            SetPairViewKey.DIFFERENCE, Set.of(0, 4, 5, 6, 7, 8)),
+        false,
+        SetPair.from(set123, set012345678));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, set123,
+            SetPairViewKey.LEFT, Set.of(),
+            SetPairViewKey.RIGHT, set123,
+            SetPairViewKey.INTERSECTION, Set.of(),
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
+            SetPairViewKey.RIGHT_DIFFERENCE, set123,
+            SetPairViewKey.DIFFERENCE, set123),
+        false,
+        SetPair.from(empty, set123));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, Set.of(1, 2, 3, 4),
+            SetPairViewKey.LEFT, set234,
+            SetPairViewKey.RIGHT, set123,
+            SetPairViewKey.INTERSECTION, Set.of(2, 3),
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(4),
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(1),
+            SetPairViewKey.DIFFERENCE, Set.of(1, 4)),
+        false,
+        SetPair.from(set234, set123));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, Set.of(1, 2, 3, 5, 6, 7),
+            SetPairViewKey.LEFT, set567,
+            SetPairViewKey.RIGHT, set123,
+            SetPairViewKey.INTERSECTION, Set.of(),
+            SetPairViewKey.LEFT_DIFFERENCE, set567,
+            SetPairViewKey.RIGHT_DIFFERENCE, set123,
+            SetPairViewKey.DIFFERENCE, Set.of(1, 2, 3, 5, 6, 7)),
+        false,
+        SetPair.from(set567, set123));
+    validateSetPair(
+        Map.of(
+            SetPairViewKey.UNION, set012345678,
+            SetPairViewKey.LEFT, set012345678,
+            SetPairViewKey.RIGHT, set123,
+            SetPairViewKey.INTERSECTION, set123,
+            SetPairViewKey.LEFT_DIFFERENCE, Set.of(0, 4, 5, 6, 7, 8),
+            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
+            SetPairViewKey.DIFFERENCE, Set.of(0, 4, 5, 6, 7, 8)),
+        false,
+        SetPair.from(set012345678, set123));
   }
 
   @Test
