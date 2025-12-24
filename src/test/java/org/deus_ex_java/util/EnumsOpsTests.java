@@ -201,6 +201,11 @@ public class EnumsOpsTests {
     assertEquals(TrafficLightBased.RED,
         TrafficLightBased.enumOps()
             .valueOf("yElLoWx", TrafficLightBased.RED));
+    assertEquals(TrafficLightBased.YELLOW,
+        TrafficLightBased.enumOps().valueOf("yElLoW").orElse(TrafficLightBased.RED));
+    assertEquals(TrafficLightBased.RED,
+        TrafficLightBased.enumOps()
+            .valueOf("yElLoWx").orElse(TrafficLightBased.RED));
     assertEquals(Optional.of(TrafficLightBased.YELLOW),
         TrafficLightBased.enumOps().valueOf("yElLoW"));
     assertEquals(Optional.empty(),
@@ -236,13 +241,24 @@ public class EnumsOpsTests {
         "GREEN, YELLOW, RED",
         formatBuilderDefaults
             .join());
-    //filtering the enum set
+    //filtering the enum set - predicate
     assertEquals(
         "GREEN, RED",
         formatBuilderDefaults
-            .setFilter(stream ->
-                stream.filter(trafficLightBased ->
-                    trafficLightBased.toString().contains("R")))
+            .setFilter(trafficLightBased ->
+                trafficLightBased.toString().contains("R"))
+            .join());
+    //filtering the enum set - collection
+    assertEquals(
+        "YELLOW, RED",
+        formatBuilderDefaults
+            .setFilter(List.of(TrafficLightBased.YELLOW, TrafficLightBased.RED))
+            .join());
+    //filtering the enum set - stream
+    assertEquals(
+        "GREEN, YELLOW",
+        formatBuilderDefaults
+            .setFilter(Stream.of(TrafficLightBased.GREEN, TrafficLightBased.YELLOW))
             .join());
     //sorting the enum set on the default (by ordinal) in reverse
     assertEquals(
@@ -271,9 +287,8 @@ public class EnumsOpsTests {
     assertEquals(
         "1 -> YELLOW|0 -> GREEN",
         formatBuilderDefaults
-            .setFilter(stream ->
-                stream.filter(trafficLightBased ->
-                    trafficLightBased.ordinal() < 2))
+            .setFilter(trafficLightBased ->
+                trafficLightBased.ordinal() < 2)
             .setSortStrategy(formatBuilderDefaults.getSortStrategy().reversed())
             .setReformat(trafficLightBased ->
                 "%d -> %s".formatted(

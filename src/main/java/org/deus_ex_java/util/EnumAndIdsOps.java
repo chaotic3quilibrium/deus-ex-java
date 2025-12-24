@@ -10,6 +10,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -561,7 +562,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param orElseDefault         the entry to provide if the search returns nothing
    * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
    *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}
+   * @deprecated use the {@link Optional#orElse(Object)} method upon the result of the {@link #valueOf(String)} method
    */
+  @Deprecated
   public Entry<E, ID> valueOf(
       String nameOrIdOrAltToString,
       Entry<E, ID> orElseDefault
@@ -607,14 +610,14 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     public static final String DEFAULT_SEPARATOR = EnumsOps.FormatBuilder.DEFAULT_SEPARATOR;
 
     private final EnumAndIdsOps<E, ID> enumAndIdsOps;
-    private final Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> filter;
+    private final Predicate<Entry<E, ID>> filter;
     private final Comparator<Entry<E, ID>> sortStrategy;
     private final Function<Entry<E, ID>, String> reformat;
     private final String separator;
 
     private FormatBuilder(
         EnumAndIdsOps<E, ID> enumAndIdsOps,
-        Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> filter,
+        Predicate<Entry<E, ID>> filter,
         Comparator<Entry<E, ID>> sortStrategy,
         Function<Entry<E, ID>, String> reformat,
         String separator
@@ -667,7 +670,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     ) {
       return new FormatBuilder<>(
           enumAndIdsOps,
-          Function.identity(),
+          enumValueAndId ->
+              true,
           Comparator.comparingInt(
               (Entry<E, ID> enumValueAndId) ->
                   enumValueAndId.getKey().ordinal()),
@@ -685,34 +689,66 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     }
 
     /**
-     * Returns the {@code filter} {@link Function} property this {@link FormatBuilder} instance is using to
+     * Returns the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      * include/exclude {@link EnumAndIdsOps} entries.
      * <p>
-     * The default {@code filter} {@link Function} property includes all the {@link EnumAndIdsOps} entries; i.e., no
+     * The default {@code filter} {@link Predicate} property includes all the {@link EnumAndIdsOps} entries; i.e., no
      * filtering.
      *
-     * @return the {@code filter} {@link Function} property this {@link FormatBuilder} instance is using to
+     * @return the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      *     include/exclude {@link EnumAndIdsOps} entries
      */
-    public Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> getFilter() {
+    public Predicate<Entry<E, ID>> getFilter() {
       return this.filter;
     }
 
     /**
-     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Function} property that defines how to
-     * include/exclude {@link EnumAndIdsOps} entries.
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     * to include/exclude {@link EnumAndIdsOps} entries.
      *
-     * @param filter a {@link Function} property that defines how to include/exclude {@link EnumAndIdsOps} entries
-     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Function} property that defines how to
-     *     include/exclude {@link EnumAndIdsOps} entries
+     * @param filter a {@link Predicate} property that defines how to include/exclude {@link EnumAndIdsOps} entries
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     *     to include/exclude {@link EnumAndIdsOps} entries
      */
-    public FormatBuilder<E, ID> setFilter(Function<Stream<Entry<E, ID>>, Stream<Entry<E, ID>>> filter) {
+    public FormatBuilder<E, ID> setFilter(Predicate<Entry<E, ID>> filter) {
       return new FormatBuilder<>(
           this.enumAndIdsOps,
           filter,
           this.sortStrategy,
           this.reformat,
           this.separator);
+    }
+
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     * to include/exclude entries, each entry composed of an {@link Enum} and {@link ID}, based their presence within a
+     * source.
+     *
+     * @param collection a source that is defensively copied into a {@link Set}, and via the {@link Set#contains}
+     *                   method, determines what entries to include/exclude
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     *     to include/exclude entries, each entry composed of an {@link Enum} and {@link ID}, based their presence
+     *     within a source
+     */
+    public FormatBuilder<E, ID> setFilter(Collection<Entry<E, ID>> collection) {
+      return setFilter(collection.stream());
+    }
+
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     * to include/exclude entries, each entry composed of an {@link Enum} and {@link ID}, based their presence within a
+     * source.
+     *
+     * @param stream a source that is defensively copied into a {@link Set}, and via the {@link Set#contains} method,
+     *               determines what entries to include/exclude
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     *     to include/exclude entries, each entry composed of an {@link Enum} and {@link ID}, based their presence
+     *     within a source
+     */
+    public FormatBuilder<E, ID> setFilter(Stream<Entry<E, ID>> stream) {
+      var defensiveCopy = stream.collect(Collectors.toUnmodifiableSet());
+
+      return setFilter(defensiveCopy::contains);
     }
 
     /**
@@ -819,10 +855,10 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      * @return the {@link Stream} used by {@code join} to obtain the filtered and reordered {@link Entry} values
      */
     public Stream<Entry<E, ID>> toFilteredAndSorted() {
-      return this.getFilter().apply(
-          this.getEnumAndIdsOps()
-              .stream()
-              .sorted(this.sortStrategy));
+      return this.getEnumAndIdsOps()
+          .stream()
+          .filter(this.getFilter())
+          .sorted(this.getSortStrategy());
     }
 
     /**

@@ -147,6 +147,9 @@ public final class StreamsOps {
   /**
    * Returns a new lazy Stream of Entry where each entry is composed of the next element at the same index in both
    * streams, terminating with the shorter of the two Streams.
+   * <p>
+   * Note: The second parameter invokes {@code streamRs.iterator()}, a terminal operation, which may result in the
+   * immediate loading of its elements.
    *
    * @param streamLs the source of the left side (key) elements
    * @param streamRs the source of the right side (value) elements
@@ -160,7 +163,7 @@ public final class StreamsOps {
       Stream<L> streamLs,
       Stream<R> streamRs
   ) {
-    Iterator<R> iteratorRs = streamRs.iterator();
+    var iteratorRs = streamRs.iterator();
 
     return streamLs
         .filter(l ->
