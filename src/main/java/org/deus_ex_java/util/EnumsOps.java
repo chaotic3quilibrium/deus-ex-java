@@ -8,6 +8,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -79,13 +80,14 @@ public final class EnumsOps<E extends Enum<E>> {
   }
 
   private final Class<E> classE;
-  private final List<E> enumsValues;
+  private final List<E> enumsList;
+  private final Set<E> enumsSet;
   private final FormatBuilder<E> formatBuilder = FormatBuilder.from(this);
   private final Map<String, E> enumValueByNameLowerCase;
 
   private EnumsOps(Class<E> classE) {
-    var enumsValues = Collections.unmodifiableList(Arrays.asList(classE.getEnumConstants()));
-    var nameLowerCaseAndEnumValues = enumsValues
+    var enumsList = List.of(classE.getEnumConstants());
+    var nameLowerCaseAndEnumValues = enumsList
         .stream()
         .map(enumValue ->
             entry(
@@ -125,13 +127,10 @@ public final class EnumsOps<E extends Enum<E>> {
     }
     //all preconditions have been validated, so assign the instance fields
     this.classE = classE;
-    this.enumsValues = enumsValues;
-    this.enumValueByNameLowerCase = enumsValues
+    this.enumsList = enumsList;
+    this.enumsSet = Collections.unmodifiableSet(EnumSet.allOf(this.classE));
+    this.enumValueByNameLowerCase = nameLowerCaseAndEnumValues
         .stream()
-        .map(enumValue ->
-            entry(
-                enumValue.name().toLowerCase(),
-                enumValue))
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
@@ -150,7 +149,7 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable {@link List}
    */
   public List<E> toList() {
-    return this.enumsValues;
+    return this.enumsList;
   }
 
   /**
@@ -159,18 +158,18 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return the {@link Enum}'s mutable array {@code values} as a {@link Stream}
    */
   public Stream<E> stream() {
-    return this.enumsValues.stream();
+    return this.enumsList.stream();
   }
 
   /**
-   * Returns the {@link Enum}'s mutable array {@code values} as an unmodifiable {@link Set} specifically wrapping with
-   * the highly performant {@link EnumSet}.
+   * Returns the {@link Enum}'s mutable array {@code values} as an unmodifiable <i>ordered</i> {@link Set} specifically
+   * wrapping with the highly performant {@link EnumSet}.
    *
-   * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable {@link Set} specifically wrapping with
-   *     the highly performant {@link EnumSet}
+   * @return the {@link Enum}'s mutable array {@code values} as an unmodifiable <i>ordered</i> {@link Set} specifically
+   *     wrapping with the highly performant {@link EnumSet}
    */
   public Set<E> toOrderedSet() {
-    return Collections.unmodifiableSet(EnumSet.allOf(this.classE));
+    return this.enumsSet;
   }
 
   /**
@@ -217,7 +216,8 @@ public final class EnumsOps<E extends Enum<E>> {
   public E valueOfOrDefaultToFirst(
       String search
   ) {
-    return valueOf(search, this.enumsValues.get(0));
+    return valueOf(search)
+        .orElse(this.enumsList.get(0));
   }
 
   /**
@@ -226,7 +226,9 @@ public final class EnumsOps<E extends Enum<E>> {
    * @param search        the name used to locate the enum value, case-insensitive
    * @param orElseDefault the value to provide if the enum value cannot be found by its case-insensitive name
    * @return the case-insensitive search by name for the enum value, otherwise the {@code orElseDefault}
+   * @deprecated use the {@link Optional#orElse(Object)} method upon the result of the {@link #valueOf(String)} method
    */
+  @Deprecated
   public E valueOf(
       String search,
       E orElseDefault
@@ -269,14 +271,14 @@ public final class EnumsOps<E extends Enum<E>> {
     public static final String DEFAULT_SEPARATOR = ", ";
 
     private final EnumsOps<E> enumsOps;
-    private final Function<Stream<E>, Stream<E>> filter;
+    private final Predicate<E> filter;
     private final Comparator<E> sortStrategy;
     private final Function<E, String> reformat;
     private final String separator;
 
     private FormatBuilder(
         EnumsOps<E> enumsOps,
-        Function<Stream<E>, Stream<E>> filter,
+        Predicate<E> filter,
         Comparator<E> sortStrategy,
         Function<E, String> reformat,
         String separator
@@ -310,7 +312,8 @@ public final class EnumsOps<E extends Enum<E>> {
     ) {
       return new FormatBuilder<>(
           enumsOps,
-          Function.identity(),
+          e ->
+              true,
           Comparator.comparingInt(Enum::ordinal),
           Enum::name,
           DEFAULT_SEPARATOR);
@@ -326,33 +329,61 @@ public final class EnumsOps<E extends Enum<E>> {
     }
 
     /**
-     * Returns the {@code filter} {@link Function} property this {@link FormatBuilder} instance is using to
+     * Returns the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      * include/exclude {@link Enum} values.
      * <p>
-     * The default {@code filter} {@link Function} property includes all the {@link Enum} values; i.e., no filtering.
+     * The default {@code filter} {@link Predicate} property includes all the {@link Enum} values; i.e., no filtering.
      *
-     * @return the {@code filter} {@link Function} property this {@link FormatBuilder} instance is using to
+     * @return the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      *     include/exclude {@link Enum} values
      */
-    public Function<Stream<E>, Stream<E>> getFilter() {
+    public Predicate<E> getFilter() {
       return this.filter;
     }
 
     /**
-     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Function} property that defines how to
-     * include/exclude {@link Enum} values.
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     * to include/exclude {@link Enum} values.
      *
-     * @param filter a {@link Function} property that defines how to include/exclude {@link Enum} values
-     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Function} property that defines how to
-     *     include/exclude {@link Enum} values
+     * @param filter a {@link Predicate} property that defines how to include/exclude {@link Enum} values
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     *     to include/exclude {@link Enum} values
      */
-    public FormatBuilder<E> setFilter(Function<Stream<E>, Stream<E>> filter) {
+    public FormatBuilder<E> setFilter(Predicate<E> filter) {
       return new FormatBuilder<>(
           this.enumsOps,
           filter,
           this.sortStrategy,
           this.reformat,
           this.separator);
+    }
+
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     * to include/exclude {@link Enum} values based their presence within a source.
+     *
+     * @param collection a source that is defensively copied into a {@link Set}, and via the {@link Set#contains}
+     *                   method, determines what {@link Enum} values to include/exclude
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     *     to include/exclude {@link Enum} values based their presence within a source
+     */
+    public FormatBuilder<E> setFilter(Collection<E> collection) {
+      return setFilter(collection.stream());
+    }
+
+    /**
+     * Returns a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     * to include/exclude {@link Enum} values based their presence within a source.
+     *
+     * @param stream a source that is defensively copied into a {@link Set}, and via the {@link Set#contains} method,
+     *               determines what {@link Enum} values to include/exclude
+     * @return a copy of the {@link FormatBuilder} with the {@code filter} {@link Predicate} property that defines how
+     *     to include/exclude {@link Enum} values based their presence within a source
+     */
+    public FormatBuilder<E> setFilter(Stream<E> stream) {
+      var defensiveCopy = stream.collect(Collectors.toUnmodifiableSet());
+
+      return setFilter(defensiveCopy::contains);
     }
 
     /**
@@ -458,10 +489,10 @@ public final class EnumsOps<E extends Enum<E>> {
      * @return the {@link Stream} used by {@code join} to obtain the filtered and reordered {@link Enum} values
      */
     public Stream<E> toFilteredAndSorted() {
-      return this.getFilter().apply(
-          this.getEnumsOps()
-              .stream()
-              .sorted(this.sortStrategy));
+      return this.getEnumsOps()
+          .stream()
+          .filter(this.getFilter())
+          .sorted(this.getSortStrategy());
     }
 
     /**

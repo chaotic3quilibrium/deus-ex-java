@@ -5,8 +5,10 @@ import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
@@ -92,6 +94,10 @@ public class EnumAndIdsOpsTests {
 
     public int getEquivalent() {
       return this.equivalent;
+    }
+
+    public Entry<TrafficLightWithIdC, Integer> asEntry() {
+      return entry(this, this.getEquivalent());
     }
   }
 
@@ -230,6 +236,12 @@ public class EnumAndIdsOpsTests {
     assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2a", entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SRED, 5), tlwix.valueOf("5", entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("5a", entry(TrafficLightWithIdE.SYELLOW, 2)));
+    assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOf("1").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
+    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("1a").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
+    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
+    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2a").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
+    assertEquals(entry(TrafficLightWithIdE.SRED, 5), tlwix.valueOf("5").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
+    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("5a").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
   }
 
   private enum TrafficLightWithIdF implements EquivalentInt {
@@ -316,24 +328,6 @@ public class EnumAndIdsOpsTests {
         tlwix.stream().toList());
   }
 
-//  @Test
-//  public void testJoinDirectly() {
-//    var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
-//    assertEquals(
-//        "SGREEN(0), SYELLOW(1), SRED(2)",
-//        tlwixoo
-//            .joinOnIds());
-//    assertEquals(
-//        "SGREEN(0), SRED(2)",
-//        tlwixoo
-//            .joinOnIds(
-//                tlwixoo
-//                    .stream()
-//                    .filter(trafficLightBasedWithIdAAndId ->
-//                        trafficLightBasedWithIdAAndId.toString().contains("R"))
-//                    .map(Map.Entry::getValue)));
-//  }
-
   @Test
   public void testFormatBuilder() {
     var enumAndIdsOps = EnumAndIdsOps.from(
@@ -349,9 +343,26 @@ public class EnumAndIdsOpsTests {
     assertEquals(
         "SGREEN(1), SRED(5)",
         formatBuilderDefaults
-            .setFilter(stream ->
-                stream.filter(trafficLightWithIdAAndId ->
-                    trafficLightWithIdAAndId.getKey().toString().contains("R")))
+            .setFilter(trafficLightWithIdAAndId ->
+                trafficLightWithIdAAndId.getKey().toString().contains("R"))
+            .join());
+    //filtering the enum set - collection
+    assertEquals(
+        "SYELLOW(2), SRED(5)",
+        formatBuilderDefaults
+            .setFilter(
+                List.of(
+                    TrafficLightWithIdC.SYELLOW.asEntry(),
+                    TrafficLightWithIdC.SRED.asEntry()))
+            .join());
+    //filtering the enum set - stream
+    assertEquals(
+        "SGREEN(1), SYELLOW(2)",
+        formatBuilderDefaults
+            .setFilter(
+                Stream.of(
+                    TrafficLightWithIdC.SGREEN.asEntry(),
+                    TrafficLightWithIdC.SYELLOW.asEntry()))
             .join());
     //sorting the enum set on the default (by ordinal) in reverse
     assertEquals(
@@ -380,9 +391,8 @@ public class EnumAndIdsOpsTests {
     assertEquals(
         "2 -> SYELLOW|1 -> SGREEN",
         formatBuilderDefaults
-            .setFilter(stream ->
-                stream.filter(trafficLightWithIdAAndId ->
-                    trafficLightWithIdAAndId.getValue() < 3))
+            .setFilter(trafficLightWithIdAAndId ->
+                trafficLightWithIdAAndId.getValue() < 3)
             .setSortStrategy(formatBuilderDefaults.getSortStrategy().reversed())
             .setReformat(trafficLightWithIdAAndId ->
                 "%d -> %s".formatted(
