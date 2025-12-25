@@ -2,7 +2,7 @@
 
 - Copyright (C) 2025 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.5.0`](#v150)
+- [`v1.6.0`](#v160)
 
 ---
 
@@ -22,6 +22,7 @@
     * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
     * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 * [Version History](#version-history)
+  * [v1.6.0](#v160)
   * [v1.5.0](#v150)
   * [v1.4.0](#v140)
   * [v1.3.0](#v130)
@@ -46,7 +47,7 @@ As a library targeting Java 17, deus-ex-java is a Java augmentation library to e
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
   </dependency>
 ```
 
@@ -155,6 +156,12 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 ---
 
 # Version History
+
+## v1.6.0
+
+- 2025.12.25
+- deprecated SetsOps.contrastSetPair, and added ADT record SetPair<T> with toMap method
+- replaced Enum*sOps.FormatBuilder's filter parameter to Predicate<*> from Function<Stream<*>, Stream<*>> and added two collection/stream helpers
 
 ## v1.5.0
 
