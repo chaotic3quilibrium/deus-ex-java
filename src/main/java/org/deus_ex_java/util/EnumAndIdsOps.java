@@ -5,7 +5,6 @@ import org.deus_ex_java.lang.ClassesOps;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.deus_ex_java.lang.refined.NonEmptyLowerCaseString;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,10 +44,34 @@ import static java.util.Map.entry;
  */
 @NullMarked
 public final class EnumAndIdsOps<E extends Enum<E>, ID> {
-  private static final Object ENUM_ID_OPS_BY_CLASS_E_SYNC = new Object();
+
+  private record ExtendedContext<E extends Enum<E>, ID>(
+      Function<E, ID> fEToId,
+      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
+      Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
+  ) {
+
+  }
+
   private static final Object EXTENDED_CONTEXT_BY_CLASS_E_LOCK = new Object();
   private static final Map<Class<?>, ExtendedContext<?, ?>> EXTENDED_CONTEXT_BY_CLASS_E = new ConcurrentHashMap<>();
-  private static volatile @Nullable Memoizer<Class<?>, EnumAndIdsOps<?, ?>> ENUM_AND_ID_OPS_BY_CLASS_E;
+  private static final ClassValue<EnumAndIdsOps<?, ?>> ENUM_AND_IDS_OPS_CLASS_VALUE_CACHE = new ClassValue<>() {
+    @Override
+    protected EnumAndIdsOps<?, ?> computeValue(Class<?> classE) {
+      if (!classE.isEnum()) {
+
+        throw new IllegalArgumentException("classE [%s] must be an enum".formatted(classE.getName()));
+      }
+      try {
+        var extendedContext = EXTENDED_CONTEXT_BY_CLASS_E.get(classE);
+
+        //noinspection rawtypes,unchecked
+        return new EnumAndIdsOps(classE, extendedContext);
+      } finally {
+        EXTENDED_CONTEXT_BY_CLASS_E.remove(classE);
+      }
+    }
+  };
 
   /**
    * Returns an {@link EnumAndIdsOps} <i>singleton</i> for the provided {@link Enum}'s class using
@@ -233,14 +256,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         Optional.of(fEAndIdToNonEmptyLowerCaseStrings));
   }
 
-  private record ExtendedContext<E extends Enum<E>, ID>(
-      Function<E, ID> fEToId,
-      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
-      Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
-  ) {
-
-  }
-
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private static <E extends Enum<E>, ID> EnumAndIdsOps<E, ID> fromHelper(
       Class<E> classE,
@@ -248,34 +263,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
       Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
       Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
   ) {
-    if (ENUM_AND_ID_OPS_BY_CLASS_E == null) {
-      synchronized (ENUM_ID_OPS_BY_CLASS_E_SYNC) {
-        if (ENUM_AND_ID_OPS_BY_CLASS_E == null) {
-          //noinspection unchecked
-          ENUM_AND_ID_OPS_BY_CLASS_E = Memoizer.from(classWildcard ->
-              ClassesOps.narrow(() ->
-                      (Class<E>) classWildcard)
-                  .map(classWildCardNarrowedToClassE ->
-                      Optional.ofNullable(EXTENDED_CONTEXT_BY_CLASS_E.get(classWildCardNarrowedToClassE))
-                          .map(extendedContextWildcardWildcard ->
-                              ClassesOps.narrow(() ->
-                                      (ExtendedContext<E, ID>) extendedContextWildcardWildcard)
-                                  .map(extendedContextWildcardWildcardNarrowedToExtendedContextEAndID ->
-                                      new EnumAndIdsOps<>(
-                                          classWildCardNarrowedToClassE,
-                                          extendedContextWildcardWildcardNarrowedToExtendedContextEAndID.fEToId,
-                                          extendedContextWildcardWildcardNarrowedToExtendedContextEAndID.fEAndIdToNonEmptyLowerCaseString,
-                                          extendedContextWildcardWildcardNarrowedToExtendedContextEAndID.optionalFEAndIdToNonEmptyLowerCaseStrings))
-                                  .orElseThrow(() ->
-                                      new IllegalStateException("unable to narrow to ExtendedContext<E, ID> for class " + extendedContextWildcardWildcard.getClass().getName())))
-                          .orElseThrow(() ->
-                              new IllegalStateException("unable to obtain extended context for class " + classWildCardNarrowedToClassE.getName())))
-                  .orElseThrow(() ->
-                      new IllegalStateException("unable to narrow to Class<E> to for class " + classWildcard.getName())));
-        }
-      }
-    }
-
     synchronized (EXTENDED_CONTEXT_BY_CLASS_E_LOCK) {
       EXTENDED_CONTEXT_BY_CLASS_E.put(
           classE,
@@ -283,20 +270,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
               fEToId,
               fEAndIdToNonEmptyLowerCaseString,
               optionalFEAndIdToNonEmptyLowerCaseStrings));
-      try {
-        return ClassesOps.narrow(() -> {
-              //noinspection unchecked
-              return Optional.ofNullable(ENUM_AND_ID_OPS_BY_CLASS_E)
-                  .map(enumAndIdOpsByClassE ->
-                      (EnumAndIdsOps<E, ID>) enumAndIdOpsByClassE.get(classE))
-                  .orElseThrow(() ->
-                      new IllegalStateException("ENUM_AND_ID_OPS_BY_CLASS_E is null"));
-            })
-            .orElseThrow(() ->
-                new IllegalStateException("unable to narrow to EnumAndIdsOps<E, ID> for class " + classE.getName()));
-      } finally {
-        EXTENDED_CONTEXT_BY_CLASS_E.remove(classE);
-      }
+
+      //noinspection unchecked
+      return (EnumAndIdsOps<E, ID>) ENUM_AND_IDS_OPS_CLASS_VALUE_CACHE.get(classE);
     }
   }
 
@@ -313,13 +289,15 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     ALTERNATE_STRING_VALUE
   }
 
-  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private EnumAndIdsOps(
       Class<E> classE,
-      Function<E, ID> fEToId,
-      Function<Entry<E, ID>, NonEmptyLowerCaseString> fEAndIdToNonEmptyLowerCaseString,
-      Optional<Function<Entry<E, ID>, Set<NonEmptyLowerCaseString>>> optionalFEAndIdToNonEmptyLowerCaseStrings
+      ExtendedContext<E, ID> extendedContext
   ) {
+    var fEToId = extendedContext.fEToId();
+    var fEAndIdToNonEmptyLowerCaseString =
+        extendedContext.fEAndIdToNonEmptyLowerCaseString();
+    var optionalFEAndIdToNonEmptyLowerCaseStrings =
+        extendedContext.optionalFEAndIdToNonEmptyLowerCaseStrings();
     var enumOps = EnumsOps.from(classE);
     var enumsValues = enumOps.toList();
     var orderedMapIdByEnumValue = MapsOps.toMapOrdered(

@@ -1,9 +1,7 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.ClassesOps;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.jspecify.annotations.NullMarked;
-import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -35,8 +33,18 @@ import static java.util.Map.entry;
 @NullMarked
 public final class EnumsOps<E extends Enum<E>> {
 
-  private static final Object ENUM_OPS_BY_CLASS_E_SYNC = new Object();
-  private static volatile @Nullable Memoizer<Class<?>, EnumsOps<?>> ENUMS_OPS_BY_CLASS_E;
+  private static final ClassValue<EnumsOps<?>> ENUMS_OPS_CLASS_VALUE_CACHE = new ClassValue<>() {
+    @Override
+    protected EnumsOps<?> computeValue(Class<?> classE) {
+      if (!classE.isEnum()) {
+
+        throw new IllegalArgumentException("classE [%s] must be an enum".formatted(classE.getName()));
+      }
+
+      //noinspection rawtypes,unchecked
+      return new EnumsOps(classE);
+    }
+  };
 
   /**
    * Returns an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class.
@@ -52,31 +60,8 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class
    */
   public static <E extends Enum<E>> EnumsOps<E> from(Class<E> classE) {
-    if (ENUMS_OPS_BY_CLASS_E == null) {
-      synchronized (ENUM_OPS_BY_CLASS_E_SYNC) {
-        if (ENUMS_OPS_BY_CLASS_E == null) {
-          //noinspection unchecked
-          ENUMS_OPS_BY_CLASS_E = Memoizer.from(classWildcard ->
-              ClassesOps.narrow(() ->
-                      new EnumsOps<>((Class<E>) classWildcard))
-                  .orElseThrow(() ->
-                      new IllegalStateException("unable to narrow to Class<E> for class " + classWildcard.getName())));
-        }
-      }
-    }
-
-    return ClassesOps.narrow(() -> {
-          //noinspection unchecked
-          return Optional.ofNullable(ENUMS_OPS_BY_CLASS_E)
-              .map(enumsOpsByClassE ->
-                  (EnumsOps<E>) enumsOpsByClassE.get(classE))
-              .orElseThrow(() ->
-                  new IllegalStateException("ENUMS_OPS_BY_CLASS_E is null"));
-        })
-
-        //(EnumsOps<E>) ENUM_OPS_BY_CLASS_E.get(classE))
-        .orElseThrow(() ->
-            new IllegalStateException("unable to narrow to EnumsOps<E> for class " + classE.getName()));
+    //noinspection unchecked
+    return (EnumsOps<E>) ENUMS_OPS_CLASS_VALUE_CACHE.get(classE);
   }
 
   private final Class<E> classE;
