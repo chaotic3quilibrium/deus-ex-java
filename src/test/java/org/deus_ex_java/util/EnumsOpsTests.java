@@ -190,6 +190,7 @@ public class EnumsOpsTests {
 
   //As it is fairly difficult, decided to forgo testing of forEach and forEachOrdered, as both are forward to java.util.Stream's methods
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testValueOfThroughenumOps() {
     assertEquals(TrafficLightBased.YELLOW,
@@ -229,6 +230,33 @@ public class EnumsOpsTests {
         ENUMS_OPS_TRAFFIC_LIGHT.valueOf("SyElLoW"));
     assertEquals(Optional.empty(),
         ENUMS_OPS_TRAFFIC_LIGHT.valueOf("SyElLoWx"));
+  }
+
+  @SuppressWarnings("NonAsciiCharacters")
+  private enum RegionMatch {
+    ıGNORED,
+    QUİT
+  }
+
+  @SuppressWarnings("NonAsciiCharacters")
+  @Test
+  public void testInstanceValueOfRegionMatches() {
+    assertEquals(Optional.of(RegionMatch.QUİT),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("QUİT"));
+    assertEquals(Optional.of(RegionMatch.QUİT),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("QUIT"));
+    assertEquals(Optional.of(RegionMatch.QUİT),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("quit"));
+    assertEquals(Optional.of(RegionMatch.QUİT),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("quıt"));
+    assertEquals(Optional.of(RegionMatch.ıGNORED),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("İGNORED"));
+    assertEquals(Optional.of(RegionMatch.ıGNORED),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("IGNORED"));
+    assertEquals(Optional.of(RegionMatch.ıGNORED),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("ignored"));
+    assertEquals(Optional.of(RegionMatch.ıGNORED),
+        EnumsOps.from(RegionMatch.class).valueOfByRegionMatches("ıgnored"));
   }
 
   @Test

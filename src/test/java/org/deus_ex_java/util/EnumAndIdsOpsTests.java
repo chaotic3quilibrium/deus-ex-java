@@ -169,6 +169,7 @@ public class EnumAndIdsOpsTests {
     }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testTrafficLightWithIdX4() {
     var tlwix = EnumAndIdsOps.from(
