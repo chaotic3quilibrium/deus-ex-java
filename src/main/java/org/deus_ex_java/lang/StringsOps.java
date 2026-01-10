@@ -59,28 +59,19 @@ public final class StringsOps {
       //empty string is always found by convention at index 0
       return 0;
 
-    var subStringFirstCharLowerCase = Character.toLowerCase(subString.charAt(0));
-    var subStringFirstCharUpperCase = Character.toUpperCase(subString.charAt(0));
-
     //stop advancing right when there isn't enough room left for 'subString'
     for (var i = 0; i <= source.length() - subStringLength; i++) {
-      //quick first character check before calling the more expensive regionMatches() method
-      var sourceCharAtI = source.charAt(i);
-      if ((sourceCharAtI == subStringFirstCharLowerCase) ||
-          (sourceCharAtI == subStringFirstCharUpperCase)
-      ) {
+      //language independent match
+      if (source.regionMatches(
+          true,
+          i,
+          subString,
+          0,
+          subStringLength))
 
-        //language independent match
-        if (source.regionMatches(
-            true,
-            i,
-            subString,
-            0,
-            subStringLength))
-
-          //return the current index 'i' immediately
-          return i;
-      }
+        //return the current index 'i' immediately
+        return i;
+//      }
     }
 
     //no match found is by convention at index -1
@@ -112,28 +103,18 @@ public final class StringsOps {
       //empty string is always found by convention at index source.length()
       return source.length();
 
-    var subStringFirstCharLowerCase = Character.toLowerCase(subString.charAt(0));
-    var subStringFirstCharUpperCase = Character.toUpperCase(subString.charAt(0));
-
     //stop advancing left when there isn't enough room left for 'subString'
     for (var i = source.length() - subStringLength; i >= 0; i--) {
-      //quick first character check before calling the more expensive regionMatches() method
-      var sourceCharAtI = source.charAt(i);
-      if ((sourceCharAtI == subStringFirstCharLowerCase) ||
-          (sourceCharAtI == subStringFirstCharUpperCase)
-      ) {
+      //language independent match
+      if (source.regionMatches(
+          true,
+          i,
+          subString,
+          0,
+          subStringLength))
 
-        //language independent match
-        if (source.regionMatches(
-            true,
-            i,
-            subString,
-            0,
-            subStringLength))
-
-          //return the current index 'i' immediately
-          return i;
-      }
+        //return the current index 'i' immediately
+        return i;
     }
 
     //no match found is by convention at index -1
@@ -163,13 +144,15 @@ public final class StringsOps {
   }
 
   /**
-   * Returns {@code true} if both {@code stringA} and {@code stringB} are {@code null}, or if
-   * {@code equalsIgnoreCase(stringA, stringB)} returns {@code true}, otherwise {@code false}.
+   * Returns {@code true} if both {@code stringA} and {@code stringB} are {@code null}, or if the Unicode
+   * case-insensitive aware function, {@code equalsIgnoreCase(stringA, stringB)}, returns {@code true}, otherwise
+   * {@code false}.
    *
    * @param stringA possibly null string
    * @param stringB possibly null string
-   * @return {@code true} if both {@code stringA} and {@code stringB} are {@code null}, or if
-   *     {@code equalsIgnoreCase(stringA, stringB)} returns {@code true}, otherwise {@code false}
+   * @return {@code true} if both {@code stringA} and {@code stringB} are {@code null}, or if the Unicode
+   *     case-insensitive aware function, {@code equalsIgnoreCase(stringA, stringB)}, returns {@code true}, otherwise
+   *     {@code false}
    */
   public static boolean equalsIgnoreCaseNullable(
       @Nullable String stringA,

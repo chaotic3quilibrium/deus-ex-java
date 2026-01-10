@@ -1,6 +1,7 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ParametersValidationException;
+import org.deus_ex_java.lang.StringsOps;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
@@ -236,6 +237,25 @@ public final class EnumsOps<E extends Enum<E>> {
     return Optional.ofNullable(
         this.enumValueByNameLowerCase
             .get(search.toLowerCase()));
+  }
+
+  /**
+   * Returns an {@link Optional} wrapping the using the Unicode case-insensitive aware function,
+   * {@link StringsOps#indexOfIgnoreCase(String, String)}, to search O(N) by name for the enum, otherwise an empty
+   * {@link Optional}.
+   *
+   * @param search the name used to locate the enum value, Unicode case-insensitive
+   * @return an {@link Optional} wrapping the using the Unicode case-insensitive aware function,
+   *     {@link StringsOps#indexOfIgnoreCase(String, String)}, to search O(N) by name for the enum, otherwise an empty
+   *     {@link Optional}
+   */
+  public Optional<E> valueOfByRegionMatches(
+      String search
+  ) {
+    return stream()
+        .filter(enumValue ->
+            StringsOps.equalsIgnoreCase(enumValue.name(), search))
+        .findFirst();
   }
 
   /**

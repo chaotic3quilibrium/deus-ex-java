@@ -1,6 +1,12 @@
 package org.deus_ex_java.lang;
 
+import org.deus_ex_java.util.SetsOps;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,7 +52,7 @@ public class StringsOpsTests {
   }
 
   @Test
-  public void testEqualsIgnoreCase() {
+  public void testEqualsIgnoreCaseEnglish() {
     assertTrue(StringsOps.equalsIgnoreCase("", ""));
     assertFalse(StringsOps.equalsIgnoreCase("a", ""));
     assertFalse(StringsOps.equalsIgnoreCase("", "a"));
@@ -54,6 +60,41 @@ public class StringsOpsTests {
     assertTrue(StringsOps.equalsIgnoreCase("a", "A"));
     assertTrue(StringsOps.equalsIgnoreCase("A", "a"));
     assertTrue(StringsOps.equalsIgnoreCase("A", "A"));
+  }
+
+  public static Stream<Arguments> testEqualsIgnoreCaseTurkish() {
+    var turkishIsUpperCase = SetsOps.ofOrdered("İ", "I"); //U+0130, U+0049
+    var turkishIsLowerCase = SetsOps.ofOrdered("i", "ı"); //U+0069, U+0131
+    var turkishIs = SetsOps.appendSets(turkishIsUpperCase, turkishIsLowerCase);
+    var quitUpperCase = "QUIT";
+    var quitLowerCase = "quit";
+    var quitMixedCase = "Quit";
+    var quits = SetsOps.ofOrdered(quitUpperCase, quitLowerCase, quitMixedCase);
+
+    return quits
+        .stream()
+        .flatMap(quitA ->
+            quits
+                .stream()
+                .flatMap(quitB ->
+                    turkishIs
+                        .stream()
+                        .flatMap(turkishIA ->
+                            turkishIs
+                                .stream()
+                                .map(turkishIB ->
+                                    Arguments.of(
+                                        quitA.substring(0, 2) + turkishIA + quitA.substring(3),
+                                        quitB.substring(0, 2) + turkishIB + quitB.substring(3))))));
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void testEqualsIgnoreCaseTurkish(
+      String stringA,
+      String stringB
+  ) {
+    assertTrue(StringsOps.equalsIgnoreCase(stringA, stringB));
   }
 
   @Test
