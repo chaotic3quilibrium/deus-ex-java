@@ -37,7 +37,15 @@ public class EnumAndIdsOpsTests {
 
   @Test
   public void testOrdinal() {
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class).isEmpty());
+    var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdA.class);
+    assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
+    var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdA.class);
+    assertFalse(enumAndIdsOpsAndIsCachingB.isCaching());
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), enumAndIdsOpsAndIsCachingB.enumAndIdsOps());
     var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwixoo);
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class).isPresent());
     assertEquals("SGREEN(0), SYELLOW(1), SRED(2)", tlwixoo.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdA.SGREEN), tlwixoo.get(0));
     assertEquals(Optional.of(entry(TrafficLightWithIdA.SGREEN, 0)), tlwixoo.valueOf("0"));
@@ -68,7 +76,15 @@ public class EnumAndIdsOpsTests {
 
   @Test
   public void testOrdinalOffset() {
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdB.class).isEmpty());
+    var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdB.class, 1);
+    assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
+    var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdB.class, 1);
+    assertFalse(enumAndIdsOpsAndIsCachingB.isCaching());
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), enumAndIdsOpsAndIsCachingB.enumAndIdsOps());
     var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdB.class, 1);
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwixoo);
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdB.class).isPresent());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(3)", tlwixoo.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdB.SGREEN), tlwixoo.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdB.SGREEN, 1)), tlwixoo.valueOf("1"));
@@ -103,9 +119,21 @@ public class EnumAndIdsOpsTests {
 
   @Test
   public void testTrafficLightWithIdX2() {
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdC.class).isEmpty());
+    var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(
+        TrafficLightWithIdC.class,
+        TrafficLightWithIdC::getEquivalent);
+    assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
+    var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(
+        TrafficLightWithIdC.class,
+        TrafficLightWithIdC::getEquivalent);
+    assertFalse(enumAndIdsOpsAndIsCachingB.isCaching());
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), enumAndIdsOpsAndIsCachingB.enumAndIdsOps());
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdC.class,
         TrafficLightWithIdC::getEquivalent);
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwix);
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdC.class).isPresent());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdC.SGREEN), tlwix.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("1"));
@@ -136,11 +164,27 @@ public class EnumAndIdsOpsTests {
 
   @Test
   public void testTrafficLightWithIdX3() {
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdD.class).isEmpty());
+    var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(
+        TrafficLightWithIdD.class,
+        TrafficLightWithIdD::getEquivalent,
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(("C" + enumValueAndId.getValue() + "!").toLowerCase()));
+    assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
+    var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(
+        TrafficLightWithIdD.class,
+        TrafficLightWithIdD::getEquivalent,
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(("C" + enumValueAndId.getValue() + "!").toLowerCase()));
+    assertFalse(enumAndIdsOpsAndIsCachingB.isCaching());
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), enumAndIdsOpsAndIsCachingB.enumAndIdsOps());
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdD.class,
         TrafficLightWithIdD::getEquivalent,
         enumValueAndId ->
             new NonEmptyLowerCaseString(("C" + enumValueAndId.getValue() + "!").toLowerCase()));
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwix);
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdD.class).isPresent());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdD.SGREEN), tlwix.get(1));
     assertEquals(Optional.of(entry(TrafficLightWithIdD.SGREEN, 1)), tlwix.valueOf("c1!"));
@@ -172,6 +216,24 @@ public class EnumAndIdsOpsTests {
   @SuppressWarnings("deprecation")
   @Test
   public void testTrafficLightWithIdX4() {
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdE.class).isEmpty());
+    var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(
+        TrafficLightWithIdE.class,
+        TrafficLightWithIdE::getEquivalent,
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()),
+        enumValueAndId ->
+            Set.of(new NonEmptyLowerCaseString("X%d".formatted(enumValueAndId.getKey().name().length()).toLowerCase())));
+    assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
+    var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(
+        TrafficLightWithIdE.class,
+        TrafficLightWithIdE::getEquivalent,
+        enumValueAndId ->
+            new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()),
+        enumValueAndId ->
+            Set.of(new NonEmptyLowerCaseString("X%d".formatted(enumValueAndId.getKey().name().length()).toLowerCase())));
+    assertFalse(enumAndIdsOpsAndIsCachingB.isCaching());
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), enumAndIdsOpsAndIsCachingB.enumAndIdsOps());
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdE.class,
         TrafficLightWithIdE::getEquivalent,
@@ -179,6 +241,8 @@ public class EnumAndIdsOpsTests {
             new NonEmptyLowerCaseString(enumValueAndId.getValue().toString()),
         enumValueAndId ->
             Set.of(new NonEmptyLowerCaseString("X%d".formatted(enumValueAndId.getKey().name().length()).toLowerCase())));
+    assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwix);
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdE.class).isPresent());
     assertEquals(TrafficLightWithIdE.class, tlwix.getEnumsOps().getClassE());
     assertEquals(Integer.class, tlwix.getClassId());
     assertEquals(
@@ -306,6 +370,7 @@ public class EnumAndIdsOpsTests {
 
   @Test
   public void testTrafficLightWithIdAndAcceptableNameAndIdAndAltNameDuplicates() {
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdG.class).isEmpty());
     var tlwix = EnumAndIdsOps.from(
         TrafficLightWithIdG.class,
         TrafficLightWithIdG::getEquivalent,
@@ -313,6 +378,7 @@ public class EnumAndIdsOpsTests {
             new NonEmptyLowerCaseString(enumValueAndId.getValue().toLowerCase()),
         enumValueAndId ->
             Set.of(new NonEmptyLowerCaseString(enumValueAndId.getKey().name().toLowerCase())));
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdG.class).isPresent());
     assertEquals(TrafficLightWithIdG.class, tlwix.getEnumsOps().getClassE());
     assertEquals(String.class, tlwix.getClassId());
     assertEquals(
@@ -329,11 +395,31 @@ public class EnumAndIdsOpsTests {
         tlwix.stream().toList());
   }
 
+  private enum TrafficLightWithIdFb implements EquivalentInt {
+    SGREEN(1),
+    SYELLOW(2),
+    SRED(5);
+
+    private final int equivalent;
+
+    TrafficLightWithIdFb(int equivalent) {
+      this.equivalent = equivalent;
+    }
+
+    public int getEquivalent() {
+      return this.equivalent;
+    }
+
+    public Entry<TrafficLightWithIdFb, Integer> asEntry() {
+      return entry(this, this.getEquivalent());
+    }
+  }
+
   @Test
   public void testFormatBuilder() {
     var enumAndIdsOps = EnumAndIdsOps.from(
-        TrafficLightWithIdC.class,
-        TrafficLightWithIdC::getEquivalent);
+        TrafficLightWithIdFb.class,
+        TrafficLightWithIdFb::getEquivalent);
     var formatBuilderDefaults = enumAndIdsOps.getFormatBuilder();
     //the four defaults
     assertEquals(
@@ -353,8 +439,8 @@ public class EnumAndIdsOpsTests {
         formatBuilderDefaults
             .setFilter(
                 List.of(
-                    TrafficLightWithIdC.SYELLOW.asEntry(),
-                    TrafficLightWithIdC.SRED.asEntry()))
+                    TrafficLightWithIdFb.SYELLOW.asEntry(),
+                    TrafficLightWithIdFb.SRED.asEntry()))
             .join());
     //filtering the enum set - stream
     assertEquals(
@@ -362,8 +448,8 @@ public class EnumAndIdsOpsTests {
         formatBuilderDefaults
             .setFilter(
                 Stream.of(
-                    TrafficLightWithIdC.SGREEN.asEntry(),
-                    TrafficLightWithIdC.SYELLOW.asEntry()))
+                    TrafficLightWithIdFb.SGREEN.asEntry(),
+                    TrafficLightWithIdFb.SYELLOW.asEntry()))
             .join());
     //sorting the enum set on the default (by ordinal) in reverse
     assertEquals(
