@@ -2,7 +2,7 @@
 
 - Copyright (C) 2025 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.6.0`](#v160)
+- [`v1.7.0`](#v170)
 
 ---
 
@@ -22,6 +22,7 @@
     * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
     * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 * [Version History](#version-history)
+  * [v1.7.0](#v170)
   * [v1.6.0](#v160)
   * [v1.5.0](#v150)
   * [v1.4.0](#v140)
@@ -47,7 +48,7 @@ As a library targeting Java 17, deus-ex-java is a Java augmentation library to e
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
   </dependency>
 ```
 
@@ -156,6 +157,14 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 ---
 
 # Version History
+
+## v1.7.0
+
+- 2026.01.17
+- Added TernaryOps, a utility class reifying the if statement and ?: (a.k.a. ternary) operator
+- Refactored EnumAndIdsOps to surface caching status, and expanded tests to cover additional surface area
+- Added to StringsOps the String.regionMatches versions of ignore case for indexOf, lastIndexof, and equals to better handle Unicode comparison issues, especially around other languages like the Turkish
+- Refactored Enum*sOps to use ClassValue as caching, and entirely removed the Memoizer dependency
 
 ## v1.6.0
 
