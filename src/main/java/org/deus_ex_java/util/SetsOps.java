@@ -598,34 +598,6 @@ public final class SetsOps {
   private static final int CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE = 4;
 
   /**
-   * Returns an unmodifiable {@link Map} of the contrast between two {@link Set}s, where for each key of type
-   * {@link SetPairViewKey}, the value associated is an unmodifiable {@link Set} (which includes defensively copying the
-   * two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison described by said
-   * {@link SetPairViewKey}.
-   * <p>
-   * This implementation minimizes the amount of iterations, comparisons, and insertions necessary (single pass over
-   * each element in both {@link Set}s) to produce the discrete results, explicitly short-circuit optimizing in the
-   * event of either or both sets return true for {@link Set#isEmpty}.
-   *
-   * @param leftTs  the set of instances as the left side
-   * @param rightTs the set of instances as the right side
-   * @param <T>     the type of instances contained in the sets
-   * @return an unmodifiable {@link Map} of the contrast between two {@link Set}s, where for each key of type
-   *     {@link SetPairViewKey}, the value associated is an unmodifiable {@link Set} (which includes defensively copying
-   *     the two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison described by
-   *     said {@link SetPairViewKey}
-   * @throws NullPointerException if {@code leftTs} or {@code rightTs} contains any {@code null}s
-   * @deprecated Has been replaced by the {@link SetPair#toMap} function.
-   */
-  @Deprecated
-  public static <T> Map<SetPairViewKey, Set<T>> contrastSetPair(
-      Set<T> leftTs,
-      Set<T> rightTs
-  ) {
-    return SetPair.from(leftTs, rightTs).toMap();
-  }
-
-  /**
    * Returns an {@link SetPair} of the contrast between the {@code left} and {@code right} defensively copied
    * {@link Set}s, where for each property, the value associated is an unmodifiable {@link Set} containing the relevant
    * elements of type {@code T} based on the comparison described by the property's name.
