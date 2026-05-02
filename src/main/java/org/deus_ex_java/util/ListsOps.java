@@ -25,7 +25,7 @@ public final class ListsOps {
    * <p>
    * This enables specifying a function in the shape of {@code ListsOps::<T>newArrayList()} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code ArrayList::new}
-   * which returns the <em>class implementation</em> type of {@link ArrayList}{@code <T>}.
+   * which returns the <em>class specific implementation</em> type of {@link ArrayList}{@code <T>}.
    *
    * @param <T> the type of instances contained in the {@link List}
    * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}
@@ -40,7 +40,7 @@ public final class ListsOps {
    * <p>
    * This enables specifying a function in the shape of {@code () -> ListsOps.newArrayList(T.class)} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code ArrayList::new}
-   * which returns the <em>class implementation</em> type of {@link ArrayList}{@code <T>}.
+   * which returns the <em>class specific implementation</em> type of {@link ArrayList}{@code <T>}.
    *
    * @param clazz the class of the type
    * @param <T>   the type of instances contained in the {@link List}
@@ -57,7 +57,7 @@ public final class ListsOps {
    * <p>
    * This enables specifying a function in the shape of {@code ListsOps::<T>newLinkedList} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code LinkedList::new}
-   * which returns the <em>class implementation</em> type of {@link LinkedList}{@code <T>}.
+   * which returns the <em>class specific implementation</em> type of {@link LinkedList}{@code <T>}.
    *
    * @param <T> the type of instances contained in the {@link List}
    * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}
@@ -72,7 +72,7 @@ public final class ListsOps {
    * <p>
    * This enables specifying a function in the shape of {@code () -> ListsOps.newLinkedList(T.class)} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code LinkedList::new}
-   * which returns the <em>class implementation</em> type of {@link LinkedList}{@code <T>}.
+   * which returns the <em>class specific implementation</em> type of {@link LinkedList}{@code <T>}.
    *
    * @param clazz the class of the type
    * @param <T>   the type of instances contained in the {@link List}

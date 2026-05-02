@@ -24,7 +24,7 @@ public final class SetsOps {
    * <p>
    * This enables specifying a function in the shape of {@code SetsOps::HashSet} which returns the
    * <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying {@code HashSet::new}
-   * which returns the <em>class implementation</em> type of {@link HashSet}{@code <T>}.
+   * which returns the <em>class specific implementation</em> type of {@link HashSet}{@code <T>}.
    *
    * @param <T> the type of instances contained in the {@link Set}
    * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link HashSet}{@code <T>}
@@ -39,7 +39,7 @@ public final class SetsOps {
    * <p>
    * This enables specifying a function in the shape of {@code () -> SetsOps.newHashSet(T.class)} which returns the
    * <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying {@code HashSet::new} which
-   * returns the <em>class implementation</em> type of {@link HashSet}{@code <T>}.
+   * returns the <em>class specific implementation</em> type of {@link HashSet}{@code <T>}.
    *
    * @param clazz the class of the type
    * @param <T>   the type of instances contained in the {@link Set}
@@ -56,7 +56,7 @@ public final class SetsOps {
    * <p>
    * This enables specifying a function in the shape of {@code SetsOps::newLinkedHashSet} which returns the
    * <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying {@code LinkedHashSet::new}
-   * which returns the <em>class implementation</em> type of {@link LinkedHashSet}{@code <T>}.
+   * which returns the <em>class specific implementation</em> type of {@link LinkedHashSet}{@code <T>}.
    *
    * @param <T> the type of instances contained in the {@link Set}
    * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}
@@ -71,7 +71,7 @@ public final class SetsOps {
    * <p>
    * This enables specifying a function in the shape of {@code () -> SetsOps.newLinkedHashSet(T.class)} which returns
    * the <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying
-   * {@code LinkedHashSet::new} which returns the <em>class implementation</em> type of
+   * {@code LinkedHashSet::new} which returns the <em>class specific implementation</em> type of
    * {@link LinkedHashSet}{@code <T>}.
    *
    * @param clazz the class of the type
