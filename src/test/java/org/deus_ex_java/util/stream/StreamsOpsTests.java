@@ -2,12 +2,12 @@ package org.deus_ex_java.util.stream;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Map.entry;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StreamsOpsTests {
 
@@ -68,5 +68,179 @@ public class StreamsOpsTests {
     assertTrue(listEmpty.isEmpty());
     var stringAndIndexes = StreamsOps.zipWithIndex(Stream.of("x0", "x1", "x2")).toList();
     assertEquals(List.of(entry("x0", 0), entry("x1", 1), entry("x2", 2)), stringAndIndexes);
+  }
+
+  @Test
+  void testFilterMatchesType() {
+    var input = "Hello World";
+    var resultList = StreamsOps.filter(String.class)
+        .apply(input)
+        .toList();
+    assertEquals(1, resultList.size(), "Stream should contain exactly one element");
+    assertEquals("Hello World", resultList.get(0), "Stream element should match the input");
+  }
+
+  @Test
+  void testFilterDoesNotMatchType() {
+    var input = 123; // Mismatched type
+    var resultList = StreamsOps.filter(String.class)
+        .apply(input)
+        .toList();
+    assertTrue(resultList.isEmpty(), "Stream should be empty for a mismatched type");
+  }
+
+  @Test
+  void testFilterNullInput() {
+    //noinspection DataFlowIssue
+    var resultList = StreamsOps.filter(String.class).apply(null).toList();
+    assertTrue(resultList.isEmpty(), "Stream should be empty when evaluating a null input");
+  }
+
+  @Test
+  void testFilterNullClassType() {
+    var input = "Test";
+    //noinspection DataFlowIssue
+    assertThrows(
+        NullPointerException.class,
+        () -> StreamsOps.filter(null).apply(input),
+        "Expected NullPointerException when the target class type is null");
+  }
+
+  @Test
+  void testFilterIntegrationWithFlatMap() {
+    var mixedList = List.of(
+        "Apple",
+        42,
+        "Banana",
+        3.14,
+        "Cherry");
+    var stringOnlyList = mixedList.stream()
+        .flatMap(StreamsOps.filter(String.class))
+        .toList();
+    var expected = List.of("Apple", "Banana", "Cherry");
+    assertEquals(
+        expected,
+        stringOnlyList,
+        "Should successfully filter out non-String elements");
+  }
+
+  @Test
+  void testFilterNotDoesNotMatchType() {
+    var input = 123; // Mismatched type
+    var resultList = StreamsOps.filterNot(String.class)
+        .apply(input)
+        .toList();
+    assertEquals(1, resultList.size(), "Stream should contain exactly one element");
+    assertEquals(123, resultList.get(0), "Stream element should be retained");
+  }
+
+  @Test
+  void testFilterNotMatchesType() {
+    var input = "Hello World"; // Matched type
+    var resultList = StreamsOps.filterNot(String.class)
+        .apply(input)
+        .toList();
+    assertTrue(resultList.isEmpty(), "Stream should be empty for a matched type");
+  }
+
+  @Test
+  void testFilterNotNullInput() {
+    //noinspection DataFlowIssue
+    var resultList = StreamsOps.filterNot(String.class).apply(null).toList();
+    assertEquals(1, resultList.size(), "Stream should retain null as Class.isInstance(null) is false");
+    //noinspection DataFlowIssue
+    assertNull(resultList.get(0), "Retained element should be null");
+  }
+
+  @Test
+  void testFilterNotNullClassType() {
+    var input = "Test";
+    //noinspection DataFlowIssue
+    assertThrows(
+        NullPointerException.class,
+        () ->
+            StreamsOps.filterNot(null).apply(input),
+        "Expected NullPointerException when the target class type is null");
+  }
+
+  @Test
+  void testFilterNotIntegrationWithFlatMap() {
+    var mixedList = List.of(
+        "Apple",
+        42,
+        "Banana",
+        3.14,
+        "Cherry");
+    var nonStringList = mixedList.stream()
+        .flatMap(StreamsOps.filterNot(String.class))
+        .toList();
+    var expected = List.of(42, 3.14);
+    assertEquals(
+        expected,
+        nonStringList,
+        "Should successfully filter out String elements");
+  }
+
+  @Test
+  void testZipWithIndexParallelism() {
+    var parallelStream = Stream.of("A", "B", "C", "D", "E").parallel();
+    var result = StreamsOps.zipWithIndex(parallelStream).toList();
+    var expected = List.of(
+        entry("A", 0),
+        entry("B", 1),
+        entry("C", 2),
+        entry("D", 3),
+        entry("E", 4));
+    assertEquals(
+        expected,
+        result,
+        "Stream should be forced sequential, assigning ordered indices");
+  }
+
+  @Test
+  void testZipAsymmetricStreams() {
+    var shortList = List.of(1, 2);
+    var longList = List.of("A", "B", "C", "D");
+    var leftShorter = StreamsOps.zip(shortList.stream(), longList.stream()).toList();
+    var expectedLeftShorter = List.of(entry(1, "A"), entry(2, "B"));
+    assertEquals(
+        expectedLeftShorter,
+        leftShorter,
+        "Stream should terminate gracefully when the left stream ends first"
+    );
+    var rightShorter = StreamsOps.zip(longList.stream(), shortList.stream()).toList();
+    var expectedRightShorter = List.of(entry("A", 1), entry("B", 2));
+    assertEquals(
+        expectedRightShorter,
+        rightShorter,
+        "Stream should terminate gracefully when the right stream ends first"
+    );
+  }
+
+  @SuppressWarnings("DataFlowIssue")
+  @Test
+  void testFromNullValidations() {
+    assertThrows(
+        NullPointerException.class,
+        () -> StreamsOps.from((Iterator<Object>) null),
+        "Expected NPE when providing a null Iterator"
+    );
+    assertThrows(
+        NullPointerException.class,
+        () -> StreamsOps.from((Iterator<Object>) null, true),
+        "Expected NPE when providing a null Iterator with parallel flag"
+    );
+
+    // Validate fail-fast Iterable factories
+    assertThrows(
+        NullPointerException.class,
+        () -> StreamsOps.from((Iterable<Object>) null),
+        "Expected NPE when providing a null Iterable"
+    );
+    assertThrows(
+        NullPointerException.class,
+        () -> StreamsOps.from((Iterable<Object>) null, true),
+        "Expected NPE when providing a null Iterable with parallel flag"
+    );
   }
 }
