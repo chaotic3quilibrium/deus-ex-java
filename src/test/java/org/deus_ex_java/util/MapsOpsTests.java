@@ -12,6 +12,64 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MapsOpsTests {
   @Test
+  public void testNewHashMap() {
+    var map = MapsOps.<String, Integer>newHashMap();
+    assertNotNull(map);
+    assertTrue(map.isEmpty());
+    assertInstanceOf(HashMap.class, map);
+    var checkedMap = MapsOps.newHashMap(String.class, Integer.class);
+    assertNotNull(checkedMap);
+    assertTrue(checkedMap.isEmpty());
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawMap = (Map) checkedMap;
+          //noinspection unchecked
+          rawMap.put("ValidKey", "InvalidValue");
+        },
+        "Checked map should reject invalid value types");
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawMap = (Map) checkedMap;
+          //noinspection unchecked
+          rawMap.put(123, 456);
+        },
+        "Checked map should reject invalid key types");
+  }
+
+  @Test
+  public void testNewLinkedHashMap() {
+    var map = MapsOps.<String, Double>newLinkedHashMap();
+    assertNotNull(map);
+    assertTrue(map.isEmpty());
+    assertInstanceOf(LinkedHashMap.class, map);
+    var checkedMap = MapsOps.newLinkedHashMap(String.class, Double.class);
+    assertNotNull(checkedMap);
+    assertTrue(checkedMap.isEmpty());
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawMap = (Map) checkedMap;
+          //noinspection unchecked
+          rawMap.put("ValidKey", "InvalidValue");
+        },
+        "Checked map should reject invalid value types");
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawMap = (Map) checkedMap;
+          //noinspection unchecked
+          rawMap.put(123, 45.6);
+        },
+        "Checked map should reject invalid key types");
+  }
+
+  @Test
   public void testNullToEmpty() {
     var mapEmptyNull = MapsOps.nullToEmpty(null);
     assertNotNull(mapEmptyNull);
@@ -26,6 +84,26 @@ public class MapsOpsTests {
     assertFalse(mapEmptyMapOfIntegerAndString.isEmpty());
     assertTrue(CollectionsOps.isUnmodifiable(mapEmptyMapOfIntegerAndString));
     assertEquals(Map.of(1, "x"), mapEmptyMapOfIntegerAndString);
+  }
+
+  @Test
+  void toNonEmptyWithNullReturnsEmpty() {
+    var result = MapsOps.<String, Integer>toNonEmpty(null);
+    assertTrue(result.isEmpty(), "Expected an empty Optional for a null input");
+  }
+
+  @Test
+  void toNonEmptyWithEmptyListReturnsEmpty() {
+    var result = MapsOps.<String, Integer>toNonEmpty(Map.of());
+    assertTrue(result.isEmpty(), "Expected an empty Optional for an empty map input");
+  }
+
+  @Test
+  void toNonEmptyWithElementsReturnsOccupiedOptional() {
+    var populatedMap = Map.of("apple", 1, "banana", 2);
+    var result = MapsOps.toNonEmpty(populatedMap);
+    assertTrue(result.isPresent(), "Expected an occupied Optional for a non-empty map");
+    assertEquals(populatedMap, result.get().map());
   }
 
   @Test
@@ -185,6 +263,20 @@ public class MapsOpsTests {
   }
 
   @Test
+  public void testAddMapsCollisionResolution() {
+    var map1 = Map.of(1, "Original_1", 2, "Original_2");
+    var map2 = Map.of(2, "Overwritten_2", 3, "Original_3");
+    var map3 = Map.of(3, "Overwritten_3", 4, "Original_4");
+    var result = MapsOps.addMaps(map1, map2, map3);
+    assertEquals(4, result.size());
+    assertEquals("Original_1", result.get(1));
+    assertEquals("Overwritten_2", result.get(2), "map2 should overwrite key 2 from map1");
+    assertEquals("Overwritten_3", result.get(3), "map3 should overwrite key 3 from map2");
+    assertEquals("Original_4", result.get(4));
+    assertTrue(CollectionsOps.isUnmodifiable(result));
+  }
+
+  @Test
   public void testAppendMaps() {
     assertEquals(Map.of(), MapsOps.appendMaps());
     //noinspection DataFlowIssue
@@ -204,6 +296,23 @@ public class MapsOpsTests {
     assertEquals(
         List.of(entry(1, "x1"), entry(2, "x2"), entry(3, "x3"), entry(4, "x4"), entry(5, "x5"), entry(6, "x6")),
         mapAppendB.entrySet().stream().toList());
+  }
+
+  @Test
+  public void testAppendMapsCollisionResolution() {
+    var map1 = MapsOps.ofOrdered(1, "A1", 2, "B1");
+    var map2 = MapsOps.ofOrdered(2, "B2", 3, "C1");
+    var result = MapsOps.appendMaps(map1, map2);
+    assertEquals(3, result.size());
+    assertEquals("A1", result.get(1));
+    assertEquals("B2", result.get(2), "map2 should overwrite the value for key 2");
+    assertEquals("C1", result.get(3));
+    var entries = result.entrySet().stream().toList();
+    assertEquals(1, entries.get(0).getKey());
+    assertEquals(2, entries.get(1).getKey(), "Key 2 should remain in its original encounter position");
+    assertEquals("B2", entries.get(1).getValue());
+    assertEquals(3, entries.get(2).getKey());
+    assertTrue(CollectionsOps.isUnmodifiable(result));
   }
 
   @Test
@@ -366,6 +475,34 @@ public class MapsOpsTests {
   }
 
   @Test
+  public void testSwapDuplicateValuesCollision() {
+    var mapWithDuplicateValues = Map.of(
+        1, "unique_value",
+        2, "duplicate_value",
+        3, "duplicate_value");
+    var swappedMap = MapsOps.swap(mapWithDuplicateValues);
+    assertEquals(2, swappedMap.size(), "The swapped map should silently drop one of the duplicate entries");
+    assertTrue(swappedMap.containsKey("unique_value"));
+    assertTrue(swappedMap.containsKey("duplicate_value"));
+    assertTrue(CollectionsOps.isUnmodifiable(swappedMap));
+  }
+
+  @Test
+  public void testSwapOrderedDuplicateValuesCollision() {
+    var mapWithDuplicateValues = MapsOps.ofOrdered(
+        1, "unique_value",
+        2, "duplicate_value",
+        3, "duplicate_value");
+    var swappedMap = MapsOps.swapOrdered(mapWithDuplicateValues);
+    assertEquals(2, swappedMap.size(), "The swapped map should silently drop one of the duplicate entries");
+    var entries = swappedMap.entrySet().stream().toList();
+    assertEquals("unique_value", entries.get(0).getKey());
+    assertEquals("duplicate_value", entries.get(1).getKey());
+    assertEquals(2, entries.get(1).getValue(), "The first encountered key (2) should be retained for the duplicate value");
+    assertTrue(CollectionsOps.isUnmodifiable(swappedMap));
+  }
+
+  @Test
   public void testReverse() {
     assertEquals(Map.of(), MapsOps.reverse(Map.of()));
     assertEquals(Map.of(), MapsOps.reverse(Stream.empty()));
@@ -404,7 +541,9 @@ public class MapsOpsTests {
   public void testOfEntriesOrdered() {
     var mapNoArg = MapsOps.ofEntriesOrdered();
     assertTrue(mapNoArg.isEmpty());
+    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.ofEntriesOrdered(null, ENTRY_NULL_NULL, null));
+    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "test"), MapsOps.ofEntriesOrdered(null, entry(1, "test"), ENTRY_NULL_NULL, null));
     var illegalArgumentException = assertThrows(
         IllegalArgumentException.class,

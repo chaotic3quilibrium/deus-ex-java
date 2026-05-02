@@ -9,7 +9,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -20,6 +19,80 @@ public final class MapsOps {
 
   private MapsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
+  }
+
+  /**
+   * Returns a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link HashMap}{@code <K, V>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code () -> MapsOps::newHashMap} which returns the
+   * <em>interface</em> type of {@link Map}{@code <K, V>}, which is preferable over specifying {@code HashMap::new}
+   * which returns the <em>class specific implementation</em> type of {@link HashMap}{@code <K, V>}.
+   *
+   * @param <K> the type of the key instances contained in the {@link Map}
+   * @param <V> the type of the value instances contained in the {@link Map}
+   * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link HashMap}{@code <K, V>}
+   */
+  public static <K, V> Map<K, V> newHashMap() {
+    //noinspection Convert2Diamond
+    return new HashMap<K, V>();
+  }
+
+  /**
+   * Returns a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link HashMap}{@code <K, V>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code () -> MapsOps.newHashMap(K.class, T.class)} which returns
+   * the <em>interface</em> type of {@link Map}{@code <K, V>}, which is preferable over specifying {@code HashMap::new}
+   * which returns the <em>class specific implementation</em> type of {@link HashMap}{@code <K, V>}.
+   *
+   * @param clazzK the class of the type for the key
+   * @param clazzV the class of the type for the value
+   * @param <K>    the type of the key instances contained in the {@link Map}
+   * @param <V>    the type of the value instances contained in the {@link Map}
+   * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link HashMap}{@code <K, V>}
+   */
+  public static <K, V> Map<K, V> newHashMap(Class<K> clazzK, Class<V> clazzV) {
+    Objects.requireNonNull(clazzK);
+    Objects.requireNonNull(clazzV);
+
+    return Collections.checkedMap(new HashMap<>(), clazzK, clazzV);
+  }
+
+  /**
+   * Returns a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link LinkedHashMap}{@code <K, V>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code () -> MapsOps::newLinkedHashMap} which returns the
+   * <em>interface</em> type of {@link Map}{@code <K, V>}, which is preferable over specifying
+   * {@code LinkedHashMap::new} which returns the <em>class specific implementation</em> type of
+   * {@link LinkedHashMap}{@code <K, V>}.
+   *
+   * @param <K> the type of the key instances contained in the {@link Map}
+   * @param <V> the type of the value instances contained in the {@link Map}
+   * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link LinkedHashMap}{@code <K, V>}
+   */
+  public static <K, V> Map<K, V> newLinkedHashMap() {
+    //noinspection Convert2Diamond
+    return new LinkedHashMap<K, V>();
+  }
+
+  /**
+   * Returns a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link LinkedHashMap}{@code <K, V>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code () -> MapsOps.newLinkedHashMap(K.class, T.class)} which
+   * returns the <em>interface</em> type of {@link Map}{@code <K, V>}, which is preferable over specifying
+   * {@code LinkedHashMap::new} which returns the <em>class specific implementation</em> type of
+   * {@link LinkedHashMap}{@code <K, V>}.
+   *
+   * @param clazzK the class of the type for the key
+   * @param clazzV the class of the type for the value
+   * @param <K>    the type of the key instances contained in the {@link Map}
+   * @param <V>    the type of the value instances contained in the {@link Map}
+   * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link LinkedHashMap}{@code <K, V>}
+   */
+  public static <K, V> Map<K, V> newLinkedHashMap(Class<K> clazzK, Class<V> clazzV) {
+    Objects.requireNonNull(clazzK);
+    Objects.requireNonNull(clazzV);
+
+    return Collections.checkedMap(new LinkedHashMap<>(), clazzK, clazzV);
   }
 
   /**
@@ -39,6 +112,22 @@ public final class MapsOps {
     return mapKv != null
         ? mapKv
         : Map.of();
+  }
+
+  /**
+   * Returns an occupied {@link Optional} containing a {@link NonEmptyMap} if {@code map.isEmpty} is {@code false},
+   * otherwise an {@link Optional#empty()}.
+   *
+   * @param map the possibly {@code null} or empty source to wrap
+   * @param <K> the type of the key instances contained in the source
+   * @param <V> the type of the value instances contained in the source
+   * @return an occupied {@link Optional} containing a {@link NonEmptyMap} if {@code map.isEmpty} is {@code false},
+   *     otherwise an {@link Optional#empty()}
+   */
+  public static <K, V> Optional<NonEmptyMap<K, V>> toNonEmpty(@Nullable Map<K, V> map) {
+    return (map != null)
+        ? NonEmptyMap.wrap(map).toOptional()
+        : Optional.empty();
   }
 
   /**
@@ -93,13 +182,13 @@ public final class MapsOps {
   }
 
   /**
-   * Returns a new unmodifiable unordered {@link Map} from an existing {@code map}, removing every {@link Entry} from
+   * Returns a new unmodifiable unordered {@link Map} from an existing {@link Map}, removing every {@link Entry} from
    * {@code entrySet} where either the key or the value is {@code null}.
    *
    * @param map the source of the existing key/value pairs
    * @param <K> the type of the keys contained in the {@code map}
    * @param <V> the type of the values contained in the {@code map}
-   * @return a new unmodifiable unordered {@link Map} from an existing {@code map}, removing every {@link Entry} from
+   * @return a new unmodifiable unordered {@link Map} from an existing {@link Map}, removing every {@link Entry} from
    *     {@code entrySet} where either the key or the value is {@code null}
    */
   public static <K, V> Map<K, V> nullSanitize(
@@ -113,19 +202,26 @@ public final class MapsOps {
   }
 
   /**
-   * Returns a new unmodifiable unordered {@link Map} from an existing {@code map}, adding/updating an {@link Entry}.
+   * Returns a new unmodifiable unordered {@link Map} from an existing {@link Map}, adding/updating an {@link Entry}.
    *
    * @param map   the source of the existing key/value pairs
    * @param entry the key/value pair as an {@link Entry}
    * @param <K>   the type of the keys contained in the {@code map}
    * @param <V>   the type of the values contained in the {@code map}
-   * @return a new unmodifiable unordered {@link Map} from an existing {@code map}, adding/updating an {@link Entry}
+   * @return a new unmodifiable unordered {@link Map} from an existing {@link Map}, adding/updating an {@link Entry}
    * @throws NullPointerException if the provided {@link Entry} contains {@code null} in either its key or value.
    */
   public static <K, V> Map<K, V> addEntry(
       Map<K, V> map,
-      Entry<K, V> entry
+      @Nullable Entry<K, V> entry
   ) {
+    Objects.requireNonNull(map);
+    if (entry == null) {
+
+      return map.isEmpty()
+          ? Map.of()
+          : Map.copyOf(map);
+    }
     validate(entry)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
@@ -135,7 +231,7 @@ public final class MapsOps {
   }
 
   /**
-   * Returns a new unmodifiable unordered {@link Map} from an existing {@code map}, adding/updating a {@code key} and
+   * Returns a new unmodifiable unordered {@link Map} from an existing {@link Map}, adding/updating a {@code key} and
    * its associated {@code value}.
    *
    * @param map   the source of the existing key/value pairs
@@ -143,7 +239,7 @@ public final class MapsOps {
    * @param value the value with which to associate with the key
    * @param <K>   the type of the keys contained in the {@code map}
    * @param <V>   the type of the values contained in the {@code map}
-   * @return a new unmodifiable unordered {@link Map} from an existing {@code map}, adding/updating a {@code key} and
+   * @return a new unmodifiable unordered {@link Map} from an existing {@link Map}, adding/updating a {@code key} and
    *     its associated {@code value}
    */
   public static <K, V> Map<K, V> addKeyAndValue(
@@ -151,6 +247,9 @@ public final class MapsOps {
       K key,
       V value
   ) {
+    Objects.requireNonNull(map);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(value);
     var result = new HashMap<>(map);
     result.put(key, value);
 
@@ -158,22 +257,34 @@ public final class MapsOps {
 
   }
 
+  private static final Map<?, ?> UNMODIFIABLE_LINKED_HASH_MAP_EMPTY = Collections.unmodifiableMap(new LinkedHashMap<>());
+
   /**
-   * Returns a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@code map}, appending (or if the key
+   * Returns a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@link Map}, appending (or if the key
    * is already present, updating) an {@link Entry}.
    *
    * @param map   the (assumed to be) <u><i>ordered</i></u> source of the existing key/value pairs
    * @param entry the key/value pair as an {@link Entry}
    * @param <K>   the type of the keys contained in the {@code map}
    * @param <V>   the type of the values contained in the {@code map}
-   * @return a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@code map}, appending (or if the key
+   * @return a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@link Map}, appending (or if the key
    *     is already present, updating) an {@link Entry}
    * @throws NullPointerException if the provided {@link Entry} contains {@code null} in either its key or value.
    */
   public static <K, V> Map<K, V> appendEntry(
       Map<K, V> map,
-      Entry<K, V> entry
+      @Nullable Entry<K, V> entry
   ) {
+    Objects.requireNonNull(map);
+    if (map.isEmpty() && (entry == null)) {
+
+      //noinspection unchecked
+      return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
+    }
+    if (entry == null) {
+
+      return Collections.unmodifiableMap(new LinkedHashMap<>(map));
+    }
     validate(entry)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
@@ -183,7 +294,7 @@ public final class MapsOps {
   }
 
   /**
-   * Returns a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@code map}, appending (or if the key
+   * Returns a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@link Map}, appending (or if the key
    * is already present, updating) a {@code key} and its associated {@code value}.
    *
    * @param map   the (assumed to be) <u><i>ordered</i></u> source of the existing key/value pairs
@@ -191,7 +302,7 @@ public final class MapsOps {
    * @param value the value with which to associate with the key
    * @param <K>   the type of the keys contained in the {@code map}
    * @param <V>   the type of the values contained in the {@code map}
-   * @return a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@code map}, appending (or if the key
+   * @return a new unmodifiable <u><i>ordered</i></u> {@link Map} from an existing {@link Map}, appending (or if the key
    *     is already present, updating) a {@code key} and its associated {@code value}
    */
   public static <K, V> Map<K, V> appendKeyAndValue(
@@ -199,86 +310,90 @@ public final class MapsOps {
       K key,
       V value
   ) {
-    if (!map.isEmpty()) {
-      var result = new LinkedHashMap<>(map);
-      result.put(key, value);
+    Objects.requireNonNull(map);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(value);
+    var result = map.isEmpty()
+        ? new LinkedHashMap<K, V>()
+        : new LinkedHashMap<>(map);
+    result.put(key, value);
 
-      return Collections.unmodifiableMap(result);
-    }
-
-    return Map.of(key, value);
+    return Collections.unmodifiableMap(result);
   }
 
   /**
-   * Returns an unmodifiable unordered map consisting of each map, filtered to non-null in both the keys and the values,
-   * from maps added together.
+   * Returns an unmodifiable unordered {@link Map} consisting of each {@link Map}, filtered to non-null in both the keys
+   * and the values, from maps added together.
    *
    * @param maps the maps to append
    * @param <K>  the type of the keys contained in the {@code map}
    * @param <V>  the type of the values contained in the {@code map}
-   * @return an unmodifiable unordered map consisting of each map ,filtered to non-null in both the keys and the values,
-   *     from maps added together
+   * @return an unmodifiable unordered {@link Map} consisting of each {@link Map}, filtered to non-null in both the keys
+   *     and the values, from maps added together
    */
   @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <K, V> Map<K, V> addMaps(
       Map<K, V>... maps
   ) {
-    if (maps.length > 0) {
-      var result = new HashMap<K, V>();
-      IntStream.range(0, maps.length)
-          .forEach(index -> {
-            var map = maps[index];
-            if (map != null) {
-              var resolvedMap = nullSanitize(map);
-              if (!resolvedMap.isEmpty()) {
-                result.putAll(resolvedMap);
-              }
-            }
-          });
-
-      return !result.isEmpty()
-          ? Collections.unmodifiableMap(result)
-          : Map.of();
+    Objects.requireNonNull(maps);
+    if (maps.length == 0) {
+      return Map.of();
     }
+    var result = Arrays.stream(maps)
+        .filter(Objects::nonNull)
+        .flatMap(map ->
+            map.entrySet().stream())
+        .filter(MapsOps::isNonNulls)
+        .collect(Collectors.toMap(
+            Entry::getKey,
+            Entry::getValue,
+            (vOld, vNew) ->
+                vNew)); //last-wins: later maps overwrite earlier maps
 
-    return Map.of();
+    return result.isEmpty()
+        ? Map.of()
+        : Collections.unmodifiableMap(result);
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> map consisting of each map, filtered to non-null in both the keys and
-   * the values, from maps appended together.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of each {@link Map}, filtered to non-null in
+   * both the keys and the values, from maps appended together.
    *
    * @param maps the (assumed to be) <u><i>ordered</i></u> maps to append
    * @param <K>  the type of the keys contained in the {@code map}
    * @param <V>  the type of the values contained in the {@code map}
-   * @return an unmodifiable <u><i>ordered</i></u> map consisting of each map, filtered to non-null in both the keys and
-   *     the values, from maps appended together
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of each {@link Map}, filtered to non-null in
+   *     both the keys and the values, from maps appended together
    */
   @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <K, V> Map<K, V> appendMaps(
       Map<K, V>... maps
   ) {
-    if (maps.length > 0) {
-      var result = new LinkedHashMap<K, V>();
-      IntStream.range(0, maps.length)
-          .forEach(index -> {
-            var map = maps[index];
-            if (map != null) {
-              var resolvedMap = toMapOrdered(map.entrySet().stream());
-              if (!resolvedMap.isEmpty()) {
-                result.putAll(resolvedMap);
-              }
-            }
-          });
+    Objects.requireNonNull(maps);
+    if (maps.length == 0) {
 
-      return !result.isEmpty()
-          ? Collections.unmodifiableMap(result)
-          : Map.of();
+      //noinspection unchecked
+      return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
+    var result = Arrays.stream(maps)
+        .filter(Objects::nonNull)
+        .flatMap(map ->
+            map.entrySet().stream())
+        .filter(MapsOps::isNonNulls)
+        .collect(Collectors.toMap(
+            Entry::getKey,
+            Entry::getValue,
+            (vOld, vNew) ->
+                vNew, //last-wins: later maps overwrite earlier maps
+            LinkedHashMap::new
+        ));
 
-    return Map.of();
+    //noinspection unchecked
+    return result.isEmpty()
+        ? (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY
+        : Collections.unmodifiableMap(result);
   }
 
   /**
@@ -501,18 +616,23 @@ public final class MapsOps {
   public static <K, V> Map<V, K> swap(
       Map<K, V> map
   ) {
-    return !map.isEmpty()
-        //@formatter:off
-        ? map.entrySet()
-            .stream()
-            .peek(entry ->
-                validate(entry)
-                    .ifPresent(parametersValidationException -> {
-                      throw parametersValidationException;
-                    }))
-            .collect(Collectors.toUnmodifiableMap(Entry::getValue, Entry::getKey))
-        : Map.of();
-        //@formatter:on
+    if (map.isEmpty()) {
+
+      return Map.of();
+    }
+    var result = map.entrySet()
+        .stream()
+        .peek(entry ->
+            validate(entry).ifPresent(parametersValidationException -> {
+              throw parametersValidationException;
+            }))
+        .collect(Collectors.toMap(
+            Entry::getValue,
+            Entry::getKey,
+            (kOld, kNew) ->
+                kOld)); //first-wins collision resolution
+
+    return Collections.unmodifiableMap(result);
   }
 
   /**
@@ -538,24 +658,25 @@ public final class MapsOps {
   public static <K, V> Map<V, K> swapOrdered(
       Map<K, V> map
   ) {
-    if (!map.isEmpty()) {
-      var result = new LinkedHashMap<V, K>();
-      //noinspection SimplifyStreamApiCallChains
-      map.entrySet()
-          .stream()
-          .forEachOrdered(
-              entry -> {
-                validate(entry)
-                    .ifPresent(parametersValidationException -> {
-                      throw parametersValidationException;
-                    });
-                result.put(entry.getValue(), entry.getKey());
-              });
+    if (map.isEmpty()) {
 
-      return Collections.unmodifiableMap(result);
+      return Map.of();
     }
+    var result = map.entrySet()
+        .stream()
+        .peek(entry ->
+            validate(entry).ifPresent(parametersValidationException -> {
+              throw parametersValidationException;
+            }))
+        .collect(Collectors.toMap(
+            Entry::getValue,
+            Entry::getKey,
+            (kOld, kNew) ->
+                kOld, //first-wins collision resolution
+            LinkedHashMap::new
+        ));
 
-    return Map.of();
+    return Collections.unmodifiableMap(result);
   }
 
   /**

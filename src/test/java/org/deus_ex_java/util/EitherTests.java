@@ -418,4 +418,56 @@ public class EitherTests {
     assertNull(throwableEitherLeftIOException.getCause());
     assertEquals(string, eitherRightString.getRightOrThrowLeftCheckedException());
   }
+
+  @Test
+  public void testFlatMapRightToLeft() {
+    Either<Integer, String> eitherRight = Either.right("41");
+    Either<Integer, String> eitherRightTransformed = eitherRight.flatMapRight(r ->
+        Either.left(500));
+    assertTrue(eitherRightTransformed.isLeft());
+    assertFalse(eitherRightTransformed.isRight());
+    assertEquals(500, eitherRightTransformed.getLeft());
+  }
+
+  @Test
+  public void testFlatMapLeftToRight() {
+    Either<Integer, String> eitherLeft = Either.left(40);
+    Either<Integer, String> eitherLeftTransformed = eitherLeft.flatMapLeft(l ->
+        Either.right("Recovered"));
+    assertFalse(eitherLeftTransformed.isLeft());
+    assertTrue(eitherLeftTransformed.isRight());
+    assertEquals("Recovered", eitherLeftTransformed.getRight());
+  }
+
+  @Test
+  public void testFlatMapToLeft() {
+    Either<Integer, String> eitherRight = Either.right("40");
+    Either<Integer, String> eitherRightTransformed = eitherRight.flatMap(r ->
+        Either.left(500));
+    assertTrue(eitherRightTransformed.isLeft());
+    assertFalse(eitherRightTransformed.isRight());
+    assertEquals(500, eitherRightTransformed.getLeft());
+  }
+
+  @Test
+  public void testFlatMapRightGenericsCovariance() {
+    Either<Number, String> eitherRight = Either.right("Success");
+    Either<Integer, Boolean> specificError = Either.left(404);
+    Either<Number, Boolean> result = eitherRight.flatMapRight(str ->
+        specificError);
+    assertTrue(result.isLeft());
+    assertFalse(result.isRight());
+    assertEquals(404, result.getLeft());
+  }
+
+  @Test
+  public void testFlatMapLeftGenericsCovariance() {
+    Either<String, Number> eitherLeft = Either.left("Error occurred");
+    Either<String, Integer> specificRecovery = Either.right(200);
+    Either<String, Number> result = eitherLeft.flatMapLeft(err ->
+        specificRecovery);
+    assertFalse(result.isLeft());
+    assertTrue(result.isRight());
+    assertEquals(200, result.getRight());
+  }
 }

@@ -5,6 +5,7 @@ import org.jspecify.annotations.NullMarked;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -35,6 +36,8 @@ public final class StreamsOps {
   public static <T> Stream<T> from(
       Iterator<T> iterator
   ) {
+    Objects.requireNonNull(iterator, "iterator must not be null");
+
     return from(iterator, false);
   }
 
@@ -51,9 +54,12 @@ public final class StreamsOps {
       Iterator<T> iterator,
       boolean isParallel
   ) {
-    return from(
-        () ->
+    Objects.requireNonNull(iterator, "iterator must not be null");
+
+    return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(
             iterator,
+            Spliterator.ORDERED),
         isParallel);
   }
 
@@ -68,6 +74,8 @@ public final class StreamsOps {
   public static <T> Stream<T> from(
       Iterable<T> iterable
   ) {
+    Objects.requireNonNull(iterable, "iterable must not be null");
+
     return from(iterable, false);
   }
 
@@ -84,7 +92,42 @@ public final class StreamsOps {
       Iterable<T> iterable,
       boolean isParallel
   ) {
+    Objects.requireNonNull(iterable, "iterable must not be null");
+
     return StreamSupport.stream(iterable.spliterator(), isParallel);
+  }
+
+  /**
+   * Return a {@link Stream} filtering to only instances of a specific class.
+   *
+   * @param type what the instance must conform to; i.e. isInstance returns true
+   * @param <E>  the type of the elements in the stream.
+   * @param <T>  the type of the element to return
+   * @return a {@link Stream} filtering to only instances of a specific class
+   */
+  public static <E, T> Function<E, Stream<T>> filter(Class<T> type) {
+    Objects.requireNonNull(type, "type must not be null");
+
+    return e ->
+        type.isInstance(e)
+            ? Stream.of(type.cast(e))
+            : Stream.empty();
+  }
+
+  /**
+   * Return a {@link Stream} filtering to only instances <em>not</em> of a specific class.
+   *
+   * @param type what the instance must not conform to; i.e. isInstance returns false
+   * @param <E>  the type of the elements in the stream.
+   * @return a {@link Stream} filtering to only instances <em>not</em> of a specific class
+   */
+  public static <E> Function<E, Stream<E>> filterNot(Class<?> type) {
+    Objects.requireNonNull(type, "type must not be null");
+
+    return e ->
+        type.isInstance(e)
+            ? Stream.empty()
+            : Stream.of(e);
   }
 
   /**
@@ -103,6 +146,9 @@ public final class StreamsOps {
       Collection<L> collectionLs,
       Collection<R> collectionRs
   ) {
+    Objects.requireNonNull(collectionLs, "collectionLs must not be null");
+    Objects.requireNonNull(collectionRs, "collectionRs must not be null");
+
     return zip(collectionLs.stream(), collectionRs.stream());
   }
 
@@ -122,6 +168,9 @@ public final class StreamsOps {
       Stream<L> streamLs,
       Collection<R> collectionRs
   ) {
+    Objects.requireNonNull(streamLs, "streamLs must not be null");
+    Objects.requireNonNull(collectionRs, "collectionRs must not be null");
+
     return zip(streamLs, collectionRs.stream());
   }
 
@@ -141,6 +190,9 @@ public final class StreamsOps {
       Collection<L> collectionLs,
       Stream<R> streamRs
   ) {
+    Objects.requireNonNull(collectionLs, "collectionLs must not be null");
+    Objects.requireNonNull(streamRs, "streamRs must not be null");
+
     return zip(collectionLs.stream(), streamRs);
   }
 
@@ -163,6 +215,9 @@ public final class StreamsOps {
       Stream<L> streamLs,
       Stream<R> streamRs
   ) {
+    Objects.requireNonNull(streamLs, "streamLs must not be null");
+    Objects.requireNonNull(streamRs, "streamRs must not be null");
+
     var iteratorRs = streamRs.iterator();
 
     return streamLs
@@ -173,38 +228,42 @@ public final class StreamsOps {
   }
 
   /**
-   * Returns a new lazy Stream of Entry where each entry is composed of the next element, and its associated zero-based
+   * Returns a new lazy {@link Stream#sequential()} of Entry where each entry is composed of the next element, and its associated zero-based
    * index.
    *
    * @param collectionTs the source of the elements (keys) with which to associate a zero based index
    * @param <T>          the type of the elements in the stream
-   * @return a new lazy Stream of Entry where each entry is composed of the next element, and its associated zero-based
+   * @return a new lazy {@link Stream#sequential()} of Entry where each entry is composed of the next element, and its associated zero-based
    *     index
    * @throws NullPointerException if the stream returns a {@code null}
    */
   public static <T> Stream<Entry<T, Integer>> zipWithIndex(
       Collection<T> collectionTs
   ) {
+    Objects.requireNonNull(collectionTs, "collectionTs must not be null");
+
     return zipWithIndex(collectionTs.stream());
 
   }
 
   /**
-   * Returns a new lazy Stream of Entry where each entry is composed of the next element, and its associated zero-based
+   * Returns a new lazy {@link Stream#sequential()} of Entry where each entry is composed of the next element, and its associated zero-based
    * index.
    *
    * @param streamTs the source of the elements (keys) with which to associate a zero based index
    * @param <T>      the type of the elements in the stream
-   * @return a new lazy Stream of Entry where each entry is composed of the next element, and its associated zero-based
+   * @return a new lazy {@link Stream#sequential()} of Entry where each entry is composed of the next element, and its associated zero-based
    *     index
    * @throws NullPointerException if the stream returns a {@code null}
    */
   public static <T> Stream<Entry<T, Integer>> zipWithIndex(
       Stream<T> streamTs
   ) {
+    Objects.requireNonNull(streamTs, "streamTs must not be null");
     var atomicInteger = new AtomicInteger(0);
 
     return streamTs
+        .sequential()
         .map(t ->
             entry(t, atomicInteger.getAndIncrement()));
   }

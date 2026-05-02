@@ -335,12 +335,12 @@ public final class Either<L, R> {
    * @throws NullPointerException if leftFunction or the value it returns is {@code null}
    */
   public <T> Either<T, R> flatMapLeft(
-      Function<? super L, ? extends Either<? extends T, R>> leftFunction
+      Function<? super L, ? extends Either<? extends T, ? extends R>> leftFunction
   ) {
     //noinspection unchecked
     return this.toOptionalLeft()
-        .<Either<T, R>>map(l ->
-            Either.left(Objects.requireNonNull(leftFunction.apply(l)).getLeft()))
+        .map(l ->
+            (Either<T, R>) Objects.requireNonNull(leftFunction.apply(l)))
         .orElseGet(() ->
             (Either<T, R>) this);
   }
@@ -354,12 +354,12 @@ public final class Either<L, R> {
    * @throws NullPointerException if rightFunction or the value it returns is {@code null}
    */
   public <T> Either<L, T> flatMapRight(
-      Function<? super R, ? extends Either<L, ? extends T>> rightFunction
+      Function<? super R, ? extends Either<? extends L, ? extends T>> rightFunction
   ) {
     //noinspection unchecked
     return this.toOptionalRight()
-        .<Either<L, T>>map(r ->
-            Either.right(Objects.requireNonNull(rightFunction.apply(r)).getRight()))
+        .map(r ->
+            (Either<L, T>) Objects.requireNonNull(rightFunction.apply(r)))
         .orElseGet(() ->
             (Either<L, T>) this);
   }

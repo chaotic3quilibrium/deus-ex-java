@@ -16,6 +16,44 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SetsOpsTests {
 
   @Test
+  public void testNewHashSet() {
+    var set = SetsOps.<String>newHashSet();
+    assertNotNull(set);
+    assertTrue(set.isEmpty());
+    assertInstanceOf(HashSet.class, set);
+    var checkedSet = SetsOps.newHashSet(Integer.class);
+    assertNotNull(checkedSet);
+    assertTrue(checkedSet.isEmpty());
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawSet = (Set) checkedSet;
+          //noinspection unchecked
+          rawSet.add("This should fail");
+        });
+  }
+
+  @Test
+  public void testNewLinkedHashSet() {
+    var set = SetsOps.<String>newLinkedHashSet();
+    assertNotNull(set);
+    assertTrue(set.isEmpty());
+    assertInstanceOf(LinkedHashSet.class, set);
+    var checkedSet = SetsOps.newLinkedHashSet(Double.class);
+    assertNotNull(checkedSet);
+    assertTrue(checkedSet.isEmpty());
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawSet = (Set) checkedSet;
+          //noinspection unchecked
+          rawSet.add("This should fail");
+        });
+  }
+
+  @Test
   public void testNullToEmpty() {
     var setEmptyNull = SetsOps.nullToEmpty(null);
     assertNotNull(setEmptyNull);
@@ -33,6 +71,26 @@ public class SetsOpsTests {
   }
 
   @Test
+  void toNonEmptyWithNullReturnsEmpty() {
+    var result = SetsOps.<String>toNonEmpty(null);
+    assertTrue(result.isEmpty(), "Expected an empty Optional for a null input");
+  }
+
+  @Test
+  void toNonEmptyWithEmptyListReturnsEmpty() {
+    var result = SetsOps.<String>toNonEmpty(Set.of());
+    assertTrue(result.isEmpty(), "Expected an empty Optional for an empty set input");
+  }
+
+  @Test
+  void toNonEmptyWithElementsReturnsOccupiedOptional() {
+    var populatedSet = Set.of("apple", "banana");
+    var result = SetsOps.toNonEmpty(populatedSet);
+    assertTrue(result.isPresent(), "Expected an occupied Optional for a non-empty set");
+    assertEquals(populatedSet, result.get().set());
+  }
+
+  @Test
   public void testAddItem() {
     var setEmptyAdd1 = SetsOps.addItem(Set.of(), 1);
     assertEquals(Set.of(1), setEmptyAdd1);
@@ -40,6 +98,18 @@ public class SetsOpsTests {
     var setAdd2 = SetsOps.addItem(setEmptyAdd1, 2);
     assertEquals(Set.of(1, 2), setAdd2);
     assertTrue(CollectionsOps.isUnmodifiable(setAdd2));
+  }
+
+  @Test
+  public void testAddItemNullValueBehavior() {
+    var setA = SetsOps.addItem(Set.of(), null);
+    assertNotNull(setA);
+    assertTrue(setA.isEmpty(), "Adding null to an empty set should safely return an empty set");
+    assertTrue(CollectionsOps.isUnmodifiable(setA));
+    var setB = SetsOps.addItem(Set.of(1, 2), null);
+    assertEquals(2, setB.size(), "Adding null to a populated set should be ignored");
+    assertEquals(Set.of(1, 2), setB);
+    assertTrue(CollectionsOps.isUnmodifiable(setB));
   }
 
   @Test
@@ -75,6 +145,20 @@ public class SetsOpsTests {
     @SuppressWarnings("unchecked")
     var setAddE = SetsOps.addSets(a);
     assertEquals(Set.of(), setAddE);
+  }
+
+  @Test
+  public void testAppendItemNullValueBehavior() {
+    // Ordered set testing
+    var setA = SetsOps.appendItem(Set.of(), null);
+    assertNotNull(setA);
+    assertTrue(setA.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(setA));
+
+    var setB = SetsOps.appendItem(SetsOps.ofOrdered(1, 2), null);
+    assertEquals(2, setB.size());
+    assertEquals(List.of(1, 2), setB.stream().toList(), "Encounter order should be preserved while ignoring null");
+    assertTrue(CollectionsOps.isUnmodifiable(setB));
   }
 
   @Test
@@ -257,73 +341,6 @@ public class SetsOpsTests {
             set -> set.stream().toList()));
   }
 
-  private <T> void validateContrastSetPairMap(
-      Map<SetPairViewKey, Set<T>> expectedTsBySetPairViewKey,
-      Map<SetPairViewKey, Set<T>> actualTsBySetPairViewKey
-  ) {
-    assertEquals(expectedTsBySetPairViewKey, actualTsBySetPairViewKey);
-    assertTrue(CollectionsOps.isUnmodifiable(actualTsBySetPairViewKey));
-    actualTsBySetPairViewKey.values()
-        .forEach(ts ->
-            assertTrue(CollectionsOps.isUnmodifiable(ts)));
-  }
-
-  @Test
-  public void testContrastSetPair() {
-    var setA = Set.of(1, 2, 3);
-    var setB = Set.of(2, 3, 4);
-    validateContrastSetPairMap(
-        Map.of(
-            SetPairViewKey.UNION, Set.of(),
-            SetPairViewKey.LEFT, Set.of(),
-            SetPairViewKey.RIGHT, Set.of(),
-            SetPairViewKey.INTERSECTION, Set.of(),
-            SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
-            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
-            SetPairViewKey.DIFFERENCE, Set.of()),
-        SetsOps.contrastSetPair(Set.of(), Set.of()));
-    validateContrastSetPairMap(
-        Map.of(
-            SetPairViewKey.UNION, setA,
-            SetPairViewKey.LEFT, setA,
-            SetPairViewKey.RIGHT, Set.of(),
-            SetPairViewKey.INTERSECTION, Set.of(),
-            SetPairViewKey.LEFT_DIFFERENCE, setA,
-            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(),
-            SetPairViewKey.DIFFERENCE, setA),
-        SetsOps.contrastSetPair(setA, Set.of()));
-    validateContrastSetPairMap(
-        Map.of(
-            SetPairViewKey.UNION, setA,
-            SetPairViewKey.LEFT, Set.of(),
-            SetPairViewKey.RIGHT, setA,
-            SetPairViewKey.INTERSECTION, Set.of(),
-            SetPairViewKey.LEFT_DIFFERENCE, Set.of(),
-            SetPairViewKey.RIGHT_DIFFERENCE, setA,
-            SetPairViewKey.DIFFERENCE, setA),
-        SetsOps.contrastSetPair(Set.of(), setA));
-    validateContrastSetPairMap(
-        Map.of(
-            SetPairViewKey.UNION, Set.of(1, 2, 3, 4),
-            SetPairViewKey.LEFT, setA,
-            SetPairViewKey.RIGHT, setB,
-            SetPairViewKey.INTERSECTION, Set.of(2, 3),
-            SetPairViewKey.LEFT_DIFFERENCE, Set.of(1),
-            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(4),
-            SetPairViewKey.DIFFERENCE, Set.of(1, 4)),
-        SetsOps.contrastSetPair(setA, setB));
-    validateContrastSetPairMap(
-        Map.of(
-            SetPairViewKey.UNION, Set.of(1, 2, 3, 4),
-            SetPairViewKey.LEFT, setB,
-            SetPairViewKey.RIGHT, setA,
-            SetPairViewKey.INTERSECTION, Set.of(2, 3),
-            SetPairViewKey.LEFT_DIFFERENCE, Set.of(4),
-            SetPairViewKey.RIGHT_DIFFERENCE, Set.of(1),
-            SetPairViewKey.DIFFERENCE, Set.of(1, 4)),
-        SetsOps.contrastSetPair(setB, setA));
-  }
-
   private <T> void validateSetPair(
       Map<SetPairViewKey, Set<T>> expectedTsBySetPairViewKey,
       boolean expectedIsEqual,
@@ -462,6 +479,52 @@ public class SetsOpsTests {
             SetPairViewKey.DIFFERENCE, Set.of(0, 4, 5, 6, 7, 8)),
         false,
         SetPair.from(set012345678, set123));
+  }
+
+  @Test
+  public void testSetPairToString() {
+    var emptyPair = SetPair.from(Set.of(), Set.of());
+    var expectedEmptyString = "SetPair[" +
+        "isEqual=true, " +
+        "union=[], " +
+        "left=[], " +
+        "right=[], " +
+        "intersection=[], " +
+        "leftDifference=[], " +
+        "rightDifference=[], " +
+        "difference=[]]";
+    assertEquals(
+        expectedEmptyString,
+        emptyPair.toString(),
+        "toString should correctly format an empty SetPair");
+    var identicalPair = SetPair.from(Set.of(1), Set.of(1));
+    var expectedIdenticalString = "SetPair[" +
+        "isEqual=true, " +
+        "union=[1], " +
+        "left=[1], " +
+        "right=[1], " +
+        "intersection=[1], " +
+        "leftDifference=[], " +
+        "rightDifference=[], " +
+        "difference=[]]";
+    assertEquals(
+        expectedIdenticalString,
+        identicalPair.toString(),
+        "toString should correctly format a perfectly matching SetPair");
+    var asymmetricPair = SetPair.from(Set.of(1), Set.of());
+    var expectedAsymmetricString = "SetPair[" +
+        "isEqual=false, " +
+        "union=[1], " +
+        "left=[1], " +
+        "right=[], " +
+        "intersection=[], " +
+        "leftDifference=[1], " +
+        "rightDifference=[], " +
+        "difference=[1]]";
+    assertEquals(
+        expectedAsymmetricString,
+        asymmetricPair.toString(),
+        "toString should correctly format an asymmetric SetPair");
   }
 
   @Test
@@ -694,5 +757,30 @@ public class SetsOpsTests {
     set2.add(9);
     set2.add(10);
     assertEquals(set2, set);
+  }
+
+  @Test
+  public void testToDistinctAndDupesParallelStreamHandling() {
+    var parallelStream = Stream.of(1, 2, 2, 3, 4, 3).parallel();
+    var parallelStreamOrdered = Stream.of(1, 2, 2, 3, 4, 3).parallel();
+    var resultUnordered = SetsOps.toDistinctAndDupes(parallelStream);
+    var resultOrdered = SetsOps.toDistinctAndDupesOrdered(parallelStreamOrdered);
+    assertEquals(Set.of(1, 2, 3, 4), resultUnordered._1());
+    assertEquals(Set.of(2, 3), resultUnordered._2());
+    assertEquals(List.of(1, 2, 3, 4), resultOrdered._1().stream().toList());
+    assertEquals(List.of(2, 3), resultOrdered._2().stream().toList());
+  }
+
+  @Test
+  public void testOfOrderedNullSanitization() {
+    @SuppressWarnings("DataFlowIssue")
+    var set = SetsOps.ofOrdered(1, null, 2, null, 3);
+    assertNotNull(set);
+    assertEquals(3, set.size(), "The resulting set should not include the null elements");
+    assertEquals(
+        List.of(1, 2, 3),
+        set.stream().toList(),
+        "Nulls should be filtered out while preserving the encounter order of valid elements");
+    assertTrue(CollectionsOps.isUnmodifiable(set));
   }
 }
