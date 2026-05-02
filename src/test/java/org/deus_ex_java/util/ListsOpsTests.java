@@ -3,15 +3,52 @@ package org.deus_ex_java.util;
 import org.deus_ex_java.util.tuple.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ListsOpsTests {
+  @Test
+  public void testNewArrayList() {
+    var list = ListsOps.<String>newArrayList();
+    assertNotNull(list);
+    assertTrue(list.isEmpty());
+    assertInstanceOf(ArrayList.class, list);
+    assertInstanceOf(java.util.RandomAccess.class, list);
+    var checkedList = ListsOps.newArrayList(Integer.class);
+    assertNotNull(checkedList);
+    assertTrue(checkedList.isEmpty());
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawList = (List) checkedList;
+          //noinspection unchecked
+          rawList.add("This should fail");
+        });
+  }
+
+  @Test
+  public void testNewLinkedList() {
+    var list = ListsOps.<String>newLinkedList();
+    assertNotNull(list);
+    assertTrue(list.isEmpty());
+    assertInstanceOf(LinkedList.class, list);
+    assertFalse(list instanceof java.util.RandomAccess);
+    var checkedList = ListsOps.newLinkedList(Double.class);
+    assertNotNull(checkedList);
+    assertTrue(checkedList.isEmpty());
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          @SuppressWarnings("rawtypes")
+          var rawList = (List) checkedList;
+          //noinspection unchecked
+          rawList.add("This should fail");
+        });
+  }
+
   @Test
   public void testNullToEmpty() {
     var listEmptyNull = ListsOps.nullToEmpty(null);
@@ -39,6 +76,18 @@ public class ListsOpsTests {
     assertEquals(List.of(1, 2, 3), listB);
     var listC = ListsOps.appendItem(List.of(), 10);
     assertEquals(List.of(10), listC);
+  }
+
+  @Test
+  public void testAppendItemNullValueBehavior() {
+    var listA = ListsOps.appendItem(List.of(), null);
+    assertNotNull(listA);
+    assertTrue(listA.isEmpty(), "Appending null to an empty list should safely return an empty list");
+    assertTrue(CollectionsOps.isUnmodifiable(listA));
+    var listB = ListsOps.appendItem(List.of(1, 2), null);
+    assertEquals(2, listB.size(), "Appending null to a populated list should be ignored");
+    assertEquals(List.of(1, 2), listB);
+    assertTrue(CollectionsOps.isUnmodifiable(listB));
   }
 
   @Test
@@ -76,6 +125,7 @@ public class ListsOpsTests {
     var expectedList = List.of(1, 2, 3);
     var nullContainingList = Arrays.asList(null, 1, null, 2, null, 3, null);
     assertEquals(7, nullContainingList.size());
+    @SuppressWarnings("NullableProblems")
     var actualList = ListsOps.nullSanitize(nullContainingList);
     assertEquals(expectedList, actualList);
     assertTrue(CollectionsOps.isUnmodifiable(actualList));
@@ -146,29 +196,40 @@ public class ListsOpsTests {
   }
 
   @Test
-  public void testToDistinctSortedListIntegerStream() {
+  public void testToDistinctSortedListStream() {
     assertEquals(
         List.of(1, 2, 3, 4),
-        ListsOps.toDistinctSortedListInteger(
+        ListsOps.toDistinctSortedList(
             Stream.of(4, 1, 2, 3)));
     assertEquals(
         List.of(1, 2, 3, 4),
-        ListsOps.toDistinctSortedListInteger(
+        ListsOps.toDistinctSortedList(
             Stream.of("4", "1", "2", "3"),
             Integer::valueOf));
   }
 
   @Test
-  public void testToDistinctSortedListInteger() {
+  public void testToDistinctSortedList() {
     assertEquals(
         List.of(1, 2, 3, 4),
-        ListsOps.toDistinctSortedListInteger(
+        ListsOps.toDistinctSortedList(
             List.of(4, 1, 2, 3)));
     assertEquals(
         List.of(1, 2, 3, 4),
-        ListsOps.toDistinctSortedListInteger(
+        ListsOps.toDistinctSortedList(
             List.of("4", "1", "2", "3"),
             Integer::valueOf));
+  }
+
+  @Test
+  public void testToDistinctSortedListFiltersNulls() {
+    var streamWithNulls = Stream.of(5, null, 1, 5, 2, null, 1);
+    @SuppressWarnings("NullableProblems")
+    var result = ListsOps.toDistinctSortedList(streamWithNulls);
+    assertEquals(
+        List.of(1, 2, 5),
+        result,
+        "Should sort, deduplicate, and drop nulls");
   }
 
   @Test
@@ -210,6 +271,7 @@ public class ListsOpsTests {
                 Optional.empty())));
   }
 
+  @SuppressWarnings("SpellCheckingInspection")
   @Test
   public void testUnzipEithers() {
     var eithersStream = Stream.<Either<String, Integer>>of(
@@ -231,6 +293,7 @@ public class ListsOpsTests {
   }
 
   @Test
+  @SuppressWarnings("SpellCheckingInspection")
   public void testUnzipAndFlattenEithers() {
     var eithersStream = Stream.<Either<String, Integer>>of(
         Either.right(1),
@@ -301,9 +364,9 @@ public class ListsOpsTests {
             stringAndInteger._1().equals("c")
                 ? Optional.empty()
                 : stringAndInteger._2() == 4
-                    ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
+                  ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
                     : stringAndInteger._1().equals("a")
-                        ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
+                      ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
                         : Optional.of(new Tuple2<>(Optional.empty(), Optional.of(stringAndInteger._2()))));
     assertEquals(List.of("a", "d"), tuple2Stream._1());
     assertEquals(List.of(2, 4), tuple2Stream._2());
@@ -326,9 +389,9 @@ public class ListsOpsTests {
             stringAndInteger._1().equals("c")
                 ? Optional.empty()
                 : stringAndInteger._2() == 4
-                    ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
+                  ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
                     : stringAndInteger._1().equals("a")
-                        ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
+                      ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
                         : Optional.of(new Tuple2<>(Optional.empty(), Optional.of(stringAndInteger._2()))));
     assertEquals(List.of("a", "d"), tuple2List._1());
     assertEquals(List.of(2, 4), tuple2List._2());
@@ -375,9 +438,9 @@ public class ListsOpsTests {
             stringAndIntegerAndDouble._1().equals("c")
                 ? Optional.empty()
                 : stringAndIntegerAndDouble._2() == 4
-                    ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.of(stringAndIntegerAndDouble._2()), Optional.of(stringAndIntegerAndDouble._3())))
+                  ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.of(stringAndIntegerAndDouble._2()), Optional.of(stringAndIntegerAndDouble._3())))
                     : stringAndIntegerAndDouble._1().equals("a")
-                        ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.empty(), Optional.of(stringAndIntegerAndDouble._3())))
+                      ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.empty(), Optional.of(stringAndIntegerAndDouble._3())))
                         : Optional.of(new Tuple3<>(Optional.empty(), Optional.of(stringAndIntegerAndDouble._2()), Optional.empty())));
     assertEquals(List.of("a", "d"), tuple3._1());
     assertEquals(List.of(2, 4), tuple3._2());
@@ -1005,5 +1068,17 @@ public class ListsOpsTests {
     assertEquals(List.of(6.0f, 8.0f), tuple10._8());
     assertEquals(List.of(true, false), tuple10._9());
     assertEquals(List.of('x', 'z'), tuple10._10());
+  }
+
+  @Test
+  public void testUnzipNullTupleResilience() {
+    var tuple2sStreamWithNulls = Stream.of(
+        new Tuple2<>("a", 1),
+        null,
+        new Tuple2<>("b", 2));
+    @SuppressWarnings("NullableProblems")
+    var result = ListsOps.unzip(tuple2sStreamWithNulls);
+    assertEquals(List.of("a", "b"), result._1());
+    assertEquals(List.of(1, 2), result._2());
   }
 }

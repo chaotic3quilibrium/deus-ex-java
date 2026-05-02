@@ -8,7 +8,6 @@ import org.jspecify.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -19,6 +18,71 @@ public final class ListsOps {
 
   private ListsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
+  }
+
+  /**
+   * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code ListsOps::<T>newArrayList()} which returns the
+   * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code ArrayList::new}
+   * which returns the <em>class implementation</em> type of {@link ArrayList}{@code <T>}.
+   *
+   * @param <T> the type of instances contained in the {@link List}
+   * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}
+   */
+  public static <T> List<T> newArrayList() {
+    //noinspection Convert2Diamond
+    return new ArrayList<T>();
+  }
+
+  /**
+   * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code ListsOps::newArrayList(T.class)} which returns the
+   * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code ArrayList::new}
+   * which returns the <em>class implementation</em> type of {@link ArrayList}{@code <T>}.
+   *
+   * @param clazz the class of the type
+   * @param <T>   the type of instances contained in the {@link List}
+   * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}
+   */
+  public static <T> List<T> newArrayList(Class<T> clazz) {
+    Objects.requireNonNull(clazz);
+
+    return Collections.checkedList(new ArrayList<>(), clazz);
+  }
+
+  /**
+   * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code ListsOps::<T>newLinkedList()} which returns the
+   * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code LinkedList::new}
+   * which returns the <em>class implementation</em> type of {@link LinkedList}{@code <T>}.
+   *
+   * @param <T> the type of instances contained in the {@link List}
+   * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}
+   */
+  public static <T> List<T> newLinkedList() {
+    return new LinkedList<>();
+  }
+
+  // This enables ListsOps::newLinkedList(T.class)
+
+  /**
+   * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code ListsOps::newLinkedList(T.class)} which returns the
+   * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code LinkedList::new}
+   * which returns the <em>class implementation</em> type of {@link LinkedList}{@code <T>}.
+   *
+   * @param clazz the class of the type
+   * @param <T>   the type of instances contained in the {@link List}
+   * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}
+   */
+  public static <T> List<T> newLinkedList(Class<T> clazz) {
+    Objects.requireNonNull(clazz);
+
+    return Collections.checkedList(new LinkedList<>(), clazz);
   }
 
   /**
@@ -38,17 +102,26 @@ public final class ListsOps {
   }
 
   /**
-   * Returns an unmodifiable list with the {@code value} appended.
+   * Returns an unmodifiable {@link List} with either the {@code value} appended if it is non-null, or an unmodifiable
+   * copy of the original {@code list}.
    *
    * @param list  the source from which the copy is made
    * @param value the value to add to the copy of the list
    * @param <T>   the type of instances contained in the list
-   * @return an unmodifiable list with the {@code value} appended
+   * @return an unmodifiable {@link List} with either the {@code value} appended if it is non-null, or an unmodifiable
+   * copy of the original {@code list}
    */
   public static <T> List<T> appendItem(
       List<T> list,
-      T value
+      @Nullable T value
   ) {
+    Objects.requireNonNull(list);
+    if (value == null) {
+      return list.isEmpty()
+          ? List.of()
+          : List.copyOf(list);
+    }
+
     if (!list.isEmpty()) {
       var result = new ArrayList<>(list);
       result.add(value);
@@ -66,33 +139,21 @@ public final class ListsOps {
    * @param lists the lists to append
    * @param <T>   the type of instances contained within all the lists
    * @return an unmodifiable {@link List} consisting of each filtered of {@code null}s list from lists appended in
-   *     iteration order
+   * iteration order
    */
   @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <T> List<T> appendLists(List<T>... lists) {
-    if (lists.length > 0) {
-      var result = new ArrayList<T>();
-      IntStream.range(0, lists.length)
-          .forEach(index -> {
-            var list = lists[index];
-            if (list != null) {
-              var listFilteredToNonNulls = list
-                  .stream()
-                  .filter(Objects::nonNull)
-                  .toList();
-              if (!listFilteredToNonNulls.isEmpty()) {
-                result.addAll(listFilteredToNonNulls);
-              }
-            }
-          });
+    Objects.requireNonNull(lists);
 
-      return !result.isEmpty()
-          ? Collections.unmodifiableList(result)
-          : List.of();
+    if (lists.length == 0) {
+      return List.of();
     }
-
-    return List.of();
+    return Arrays.stream(lists)
+        .filter(Objects::nonNull)
+        .flatMap(Collection::stream)
+        .filter(Objects::nonNull)
+        .toList();
   }
 
   /**
@@ -118,6 +179,7 @@ public final class ListsOps {
   public static <T> List<T> nullSanitize(
       Stream<@Nullable T> stream
   ) {
+    //noinspection RedundantCast
     return stream
         .filter(t ->
             !Objects.isNull(t))
@@ -139,11 +201,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
-   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Collection<T> tsLeft,
@@ -168,11 +230,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
-   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Collection<T> tsLeft,
@@ -194,11 +256,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
-   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Stream<T> tsLeft,
@@ -220,11 +282,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
-   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
+   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Stream<T> tsLeft,
@@ -246,11 +308,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   *     considered equivalent
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Collection<T> tsLeft,
@@ -274,7 +336,7 @@ public final class ListsOps {
         //itRight.hasNext() is necessarily false
         ? 1
         : tsRightIterator.hasNext()
-            ? -1
+          ? -1
             : 0;
   }
 
@@ -291,11 +353,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   *     considered equivalent
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Collection<T> tsLeft,
@@ -317,11 +379,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   *     considered equivalent
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Stream<T> tsLeft,
@@ -343,11 +405,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   *     considered equivalent
+   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   * considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Stream<T> tsLeft,
@@ -357,66 +419,65 @@ public final class ListsOps {
   }
 
   /**
-   * Returns an unmodifiable {@link List} from a source of {@code integers} with the {@code null} elements filtered
-   * out.
+   * Returns an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, and then sorted.
    *
-   * @param collection the source of the derived {@link Integer} values
-   * @return an unmodifiable {@link List} from a source of {@code integers} filtered of {@code null}s
+   * @param collection the source of the {@code T} values
+   * @return an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, and then sorted
    */
-  public static List<Integer> toDistinctSortedListInteger(
-      Collection<Integer> collection
+  public static <T extends Comparable<T>> List<T> toDistinctSortedList(
+      Collection<T> collection
   ) {
-    return toDistinctSortedListInteger(collection.stream());
+    return toDistinctSortedList(collection.stream());
   }
 
   /**
-   * Returns an unmodifiable {@link List} from a source of {@code integers} with the {@code null} elements filtered
-   * out.
+   * Returns an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, and then sorted.
    *
-   * @param stream the source of the derived {@link Integer} values
-   * @return an unmodifiable {@link List} from a source of {@code integers} filtered of {@code null}s
+   * @param stream the source of the {@code T} values
+   * @return an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, and then sorted
    */
-  public static List<Integer> toDistinctSortedListInteger(
-      Stream<Integer> stream
+  public static <T extends Comparable<T>> List<T> toDistinctSortedList(
+      Stream<T> stream
   ) {
-    return toDistinctSortedListInteger(stream, Function.identity());
+    return toDistinctSortedList(stream, Function.identity());
   }
 
   /**
-   * Returns a new {@link List} from a collection of {@code ts} deriving the {@link Integer} value via the function
-   * {@code fTToId} filtered of {@code null}s.
+   * Returns an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, deriving the
+   * {@code R} value via the function {@code fTToR}, and then sorted.
    *
-   * @param collection the source of the derived {@link Integer} values
-   * @param fTToId     the function to use to extract the {@link Integer} value from an element
-   * @param <T>        the type of instances contained in the source
-   * @return a new {@link List} from a collection of {@code ts} deriving the {@link Integer} value via the function
-   *     {@code fTToId} filtered of {@code null}s
+   * @param collection the source of the {@code T} values
+   * @param fTToR      the function to use to extract the {@code R} value from an {@code T} element
+   * @param <T>        the type of source instances
+   * @param <R>        the type of target instances, which must extend {@link Comparable}
+   * @return an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, and then deriving
+   * the {@code R} value via the function {@code fTToR}
    */
-  public static <T> List<Integer> toDistinctSortedListInteger(
+  public static <T, R extends Comparable<R>> List<R> toDistinctSortedList(
       Collection<T> collection,
-      Function<T, Integer> fTToId
+      Function<T, R> fTToR
   ) {
-    return toDistinctSortedListInteger(collection.stream(), fTToId);
+    return toDistinctSortedList(collection.stream(), fTToR);
   }
 
   /**
-   * Returns a new {@link List} from a collection of {@code ts} deriving the {@link Integer} value via the function
-   * {@code fTToId} filtered of {@code null}s.
+   * Returns an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, deriving the
+   * {@code R} value via the function {@code fTToR}, and then sorted.
    *
-   * @param stream the source of the derived {@link Integer} values
-   * @param fTToId the function to use to extract the {@link Integer} value from an element
-   * @param <T>    the type of instances contained in the source
-   * @return a new {@link List} from a collection of {@code ts} deriving the {@link Integer} value via the function
-   *     {@code fTToId} filtered of {@code null}s
+   * @param stream the source of the {@code T} values
+   * @param fTToR  the function to use to extract the {@code R} value from an {@code T} element
+   * @param <T>    the type of source instances
+   * @param <R>    the type of target instances, which must extend {@link Comparable}
+   * @return an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, deriving the
+   * {@code R} value via the function {@code fTToR}, and then sorted
    */
-  public static <T> List<Integer> toDistinctSortedListInteger(
+  public static <T, R extends Comparable<R>> List<R> toDistinctSortedList(
       Stream<@Nullable T> stream,
-      Function<T, Integer> fTToId
+      Function<T, R> fTToR
   ) {
     return stream
-        .filter(t ->
-            !Objects.isNull(t))
-        .map(fTToId)
+        .filter(Objects::nonNull)
+        .map(fTToR)
         .distinct()
         .sorted()
         .toList();
@@ -447,7 +508,7 @@ public final class ListsOps {
    * @param stream the source of the T elements
    * @param <T>    the type of instances contained in the stream
    * @return an unmodifiable {@link List} of the source's elements in reverse order with the {@code null} elements
-   *     filtered out
+   * filtered out
    */
   public static <T> List<T> reverse(
       Stream<@Nullable T> stream
@@ -475,7 +536,7 @@ public final class ListsOps {
    * @param collection the source from which to extract the non-empty optional values
    * @param <T>        the type of instances contained in the source
    * @return a new {@link List} extracting the non-empty {@link Optional} elements, and filtering out the {@code null}
-   *     and {@link Optional} empty elements
+   * and {@link Optional} empty elements
    */
   public static <T> List<T> flatten(
       Collection<@Nullable Optional<T>> collection
@@ -490,7 +551,7 @@ public final class ListsOps {
    * @param stream the source from which to extract the non-empty optional values
    * @param <T>    the type of instances contained in the stream
    * @return a new {@link List} extracting the non-empty {@link Optional} elements, and filtering out the {@code null}
-   *     and {@link Optional} empty elements
+   * and {@link Optional} empty elements
    */
   public static <T> List<T> flatten(
       Stream<@Nullable Optional<T>> stream
@@ -510,6 +571,7 @@ public final class ListsOps {
    * @param <R>         the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Collection} of {@link Either}s
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static <L, R> Tuple2<List<Optional<L>>, List<Optional<R>>> unzipEithers(
       Collection<@Nullable Either<L, R>> collections
   ) {
@@ -524,6 +586,7 @@ public final class ListsOps {
    * @param <R>    the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Stream} of {@link Either}s
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static <L, R> Tuple2<List<Optional<L>>, List<Optional<R>>> unzipEithers(
       Stream<@Nullable Either<L, R>> stream
   ) {
@@ -545,8 +608,9 @@ public final class ListsOps {
    * @param <L>        the type of instances contained within the left element of each either
    * @param <R>        the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Collection} of {@link Either}s,
-   *     {@link #flatten}ing each returned list
+   * {@link #flatten}ing each returned list
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static <L, R> Tuple2<List<L>, List<R>> unzipAndFlattenEithers(
       Collection<@Nullable Either<L, R>> collection
   ) {
@@ -561,8 +625,9 @@ public final class ListsOps {
    * @param <L>    the type of instances contained within the left element of each either
    * @param <R>    the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Stream} of {@link Either}s, {@link #flatten}ing
-   *     each returned list
+   * each returned list
    */
+  @SuppressWarnings("SpellCheckingInspection")
   public static <L, R> Tuple2<List<L>, List<R>> unzipAndFlattenEithers(
       Stream<@Nullable Either<L, R>> stream
   ) {
@@ -581,7 +646,7 @@ public final class ListsOps {
    * @param <A>        the type of instances contained within the first element of each tuple
    * @param <B>        the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzip(
       Collection<Tuple2<A, B>> collection
@@ -597,13 +662,14 @@ public final class ListsOps {
    * @param <A>    the type of instances contained within the first element of each tuple
    * @param <B>    the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzip(
       Stream<Tuple2<A, B>> stream
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
+    //noinspection ConstantValue
     stream
         .filter(tuple2 ->
             !Objects.isNull(tuple2))
@@ -633,7 +699,7 @@ public final class ListsOps {
    * @param <A>        the type of instances contained within the first element of each tuple
    * @param <B>        the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzipAndFlatten(
       Collection<Tuple2<A, B>> collection,
@@ -654,7 +720,7 @@ public final class ListsOps {
    * @param <A>     the type of instances contained within the first element of each tuple
    * @param <B>     the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzipAndFlatten(
       Stream<Tuple2<A, B>> stream,
@@ -664,6 +730,7 @@ public final class ListsOps {
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
+    //noinspection ConstantValue
     stream
         .filter(tuple2 ->
             !Objects.isNull(tuple2))
@@ -675,8 +742,12 @@ public final class ListsOps {
                 }));
 
     return new Tuple2<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB));
   }
 
   /**
@@ -688,7 +759,7 @@ public final class ListsOps {
    * @param <B>        the type of instances contained within the second element of each tuple
    * @param <C>        the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3(
       Collection<Tuple3<A, B, C>> collection
@@ -705,7 +776,7 @@ public final class ListsOps {
    * @param <B>    the type of instances contained within the second element of each tuple
    * @param <C>    the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3(
       Stream<Tuple3<A, B, C>> stream
@@ -713,6 +784,7 @@ public final class ListsOps {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
+    //noinspection ConstantValue
     stream
         .filter(tuple3 ->
             !Objects.isNull(tuple3))
@@ -746,7 +818,7 @@ public final class ListsOps {
    * @param <B>        the type of instances contained within the second element of each tuple
    * @param <C>        the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3AndFlatten(
       Collection<Tuple3<A, B, C>> collection,
@@ -768,7 +840,7 @@ public final class ListsOps {
    * @param <B>     the type of instances contained within the second element of each tuple
    * @param <C>     the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3AndFlatten(
       Stream<Tuple3<A, B, C>> stream,
@@ -779,6 +851,7 @@ public final class ListsOps {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
+    //noinspection ConstantValue
     stream
         .filter(tuple3 ->
             !Objects.isNull(tuple3))
@@ -791,9 +864,15 @@ public final class ListsOps {
                 }));
 
     return new Tuple3<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC));
   }
 
   /**
@@ -806,7 +885,7 @@ public final class ListsOps {
    * @param <C>        the type of instances contained within the third element of each tuple
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4(
       Collection<Tuple4<A, B, C, D>> collection
@@ -824,7 +903,7 @@ public final class ListsOps {
    * @param <C>    the type of instances contained within the third element of each tuple
    * @param <D>    the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4(
       Stream<Tuple4<A, B, C, D>> stream
@@ -833,6 +912,7 @@ public final class ListsOps {
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
+    //noinspection ConstantValue
     stream
         .filter(tuple4 ->
             !Objects.isNull(tuple4))
@@ -870,7 +950,7 @@ public final class ListsOps {
    * @param <C>        the type of instances contained within the third element of each tuple
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4AndFlatten(
       Collection<Tuple4<A, B, C, D>> collection,
@@ -893,7 +973,7 @@ public final class ListsOps {
    * @param <C>     the type of instances contained within the third element of each tuple
    * @param <D>     the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4AndFlatten(
       Stream<Tuple4<A, B, C, D>> stream,
@@ -905,6 +985,7 @@ public final class ListsOps {
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
+    //noinspection ConstantValue
     stream
         .filter(tuple4 ->
             !Objects.isNull(tuple4))
@@ -918,10 +999,18 @@ public final class ListsOps {
                 }));
 
     return new Tuple4<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD));
   }
 
   /**
@@ -935,7 +1024,7 @@ public final class ListsOps {
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
       Collection<Tuple5<A, B, C, D, E>> collection
@@ -954,7 +1043,7 @@ public final class ListsOps {
    * @param <D>    the type of instances contained within the fourth element of each tuple
    * @param <E>    the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
@@ -965,6 +1054,7 @@ public final class ListsOps {
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
+    //noinspection ConstantValue
     stream
         .filter(tuple5 ->
             !Objects.isNull(tuple5))
@@ -1006,7 +1096,7 @@ public final class ListsOps {
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
       Collection<Tuple5<A, B, C, D, E>> collection,
@@ -1030,7 +1120,7 @@ public final class ListsOps {
    * @param <D>     the type of instances contained within the fourth element of each tuple
    * @param <E>     the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
@@ -1044,6 +1134,7 @@ public final class ListsOps {
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
+    //noinspection ConstantValue
     stream
         .filter(tuple5 ->
             !Objects.isNull(tuple5))
@@ -1058,11 +1149,21 @@ public final class ListsOps {
                 }));
 
     return new Tuple5<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD),
-        listE.isEmpty() ? List.of() : Collections.unmodifiableList(listE));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD),
+        listE.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listE));
   }
 
   /**
@@ -1077,7 +1178,7 @@ public final class ListsOps {
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
       Collection<Tuple6<A, B, C, D, E, F>> collection
@@ -1097,7 +1198,7 @@ public final class ListsOps {
    * @param <E>    the type of instances contained within the fifth element of each tuple
    * @param <F>    the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
@@ -1109,6 +1210,7 @@ public final class ListsOps {
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
+    //noinspection ConstantValue
     stream
         .filter(tuple6 ->
             !Objects.isNull(tuple6))
@@ -1154,7 +1256,7 @@ public final class ListsOps {
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
       Collection<Tuple6<A, B, C, D, E, F>> collection,
@@ -1179,7 +1281,7 @@ public final class ListsOps {
    * @param <E>     the type of instances contained within the fifth element of each tuple
    * @param <F>     the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
@@ -1194,6 +1296,7 @@ public final class ListsOps {
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
+    //noinspection ConstantValue
     stream
         .filter(tuple6 ->
             !Objects.isNull(tuple6))
@@ -1209,12 +1312,24 @@ public final class ListsOps {
                 }));
 
     return new Tuple6<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD),
-        listE.isEmpty() ? List.of() : Collections.unmodifiableList(listE),
-        listF.isEmpty() ? List.of() : Collections.unmodifiableList(listF));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD),
+        listE.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listE),
+        listF.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listF));
   }
 
   /**
@@ -1230,7 +1345,7 @@ public final class ListsOps {
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
       Collection<Tuple7<A, B, C, D, E, F, G>> collection
@@ -1251,7 +1366,7 @@ public final class ListsOps {
    * @param <F>    the type of instances contained within the sixth element of each tuple
    * @param <G>    the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
@@ -1264,6 +1379,7 @@ public final class ListsOps {
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
+    //noinspection ConstantValue
     stream
         .filter(tuple7 ->
             !Objects.isNull(tuple7))
@@ -1313,7 +1429,7 @@ public final class ListsOps {
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
       Collection<Tuple7<A, B, C, D, E, F, G>> collection,
@@ -1339,7 +1455,7 @@ public final class ListsOps {
    * @param <F>     the type of instances contained within the sixth element of each tuple
    * @param <G>     the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
@@ -1355,6 +1471,7 @@ public final class ListsOps {
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
+    //noinspection ConstantValue
     stream
         .filter(tuple7 ->
             !Objects.isNull(tuple7))
@@ -1371,13 +1488,27 @@ public final class ListsOps {
                 }));
 
     return new Tuple7<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD),
-        listE.isEmpty() ? List.of() : Collections.unmodifiableList(listE),
-        listF.isEmpty() ? List.of() : Collections.unmodifiableList(listF),
-        listG.isEmpty() ? List.of() : Collections.unmodifiableList(listG));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD),
+        listE.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listE),
+        listF.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listF),
+        listG.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listG));
   }
 
   /**
@@ -1394,7 +1525,7 @@ public final class ListsOps {
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
       Collection<Tuple8<A, B, C, D, E, F, G, H>> collection
@@ -1416,7 +1547,7 @@ public final class ListsOps {
    * @param <G>    the type of instances contained within the seventh element of each tuple
    * @param <H>    the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
@@ -1430,6 +1561,7 @@ public final class ListsOps {
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
+    //noinspection ConstantValue
     stream
         .filter(tuple8 ->
             !Objects.isNull(tuple8))
@@ -1483,7 +1615,7 @@ public final class ListsOps {
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
       Collection<Tuple8<A, B, C, D, E, F, G, H>> collection,
@@ -1510,7 +1642,7 @@ public final class ListsOps {
    * @param <G>     the type of instances contained within the seventh element of each tuple
    * @param <H>     the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
@@ -1527,6 +1659,7 @@ public final class ListsOps {
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
+    //noinspection ConstantValue
     stream
         .filter(tuple8 ->
             !Objects.isNull(tuple8))
@@ -1544,14 +1677,30 @@ public final class ListsOps {
                 }));
 
     return new Tuple8<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD),
-        listE.isEmpty() ? List.of() : Collections.unmodifiableList(listE),
-        listF.isEmpty() ? List.of() : Collections.unmodifiableList(listF),
-        listG.isEmpty() ? List.of() : Collections.unmodifiableList(listG),
-        listH.isEmpty() ? List.of() : Collections.unmodifiableList(listH));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD),
+        listE.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listE),
+        listF.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listF),
+        listG.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listG),
+        listH.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listH));
   }
 
   /**
@@ -1569,7 +1718,7 @@ public final class ListsOps {
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
       Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection
@@ -1592,7 +1741,7 @@ public final class ListsOps {
    * @param <H>    the type of instances contained within the eighth element of each tuple
    * @param <I>    the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
@@ -1607,6 +1756,7 @@ public final class ListsOps {
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
+    //noinspection ConstantValue
     stream
         .filter(tuple9 ->
             !Objects.isNull(tuple9))
@@ -1664,7 +1814,7 @@ public final class ListsOps {
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
       Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection,
@@ -1692,7 +1842,7 @@ public final class ListsOps {
    * @param <H>     the type of instances contained within the eighth element of each tuple
    * @param <I>     the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
@@ -1710,6 +1860,7 @@ public final class ListsOps {
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
+    //noinspection ConstantValue
     stream
         .filter(tuple9 ->
             !Objects.isNull(tuple9))
@@ -1728,15 +1879,33 @@ public final class ListsOps {
                 }));
 
     return new Tuple9<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD),
-        listE.isEmpty() ? List.of() : Collections.unmodifiableList(listE),
-        listF.isEmpty() ? List.of() : Collections.unmodifiableList(listF),
-        listG.isEmpty() ? List.of() : Collections.unmodifiableList(listG),
-        listH.isEmpty() ? List.of() : Collections.unmodifiableList(listH),
-        listI.isEmpty() ? List.of() : Collections.unmodifiableList(listI));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD),
+        listE.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listE),
+        listF.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listF),
+        listG.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listG),
+        listH.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listH),
+        listI.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listI));
   }
 
   /**
@@ -1755,7 +1924,7 @@ public final class ListsOps {
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @param <J>        the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
       Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection
@@ -1779,7 +1948,7 @@ public final class ListsOps {
    * @param <I>    the type of instances contained within the ninth element of each tuple
    * @param <J>    the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   *     {@code null}s
+   * {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
@@ -1795,6 +1964,7 @@ public final class ListsOps {
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
     var listJ = new ArrayList<J>();
+    //noinspection ConstantValue
     stream
         .filter(tuple10 ->
             !Objects.isNull(tuple10))
@@ -1856,7 +2026,7 @@ public final class ListsOps {
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @param <J>        the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
       Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection,
@@ -1885,7 +2055,7 @@ public final class ListsOps {
    * @param <I>     the type of instances contained within the ninth element of each tuple
    * @param <J>     the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
@@ -1904,6 +2074,7 @@ public final class ListsOps {
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
     var listJ = new ArrayList<J>();
+    //noinspection ConstantValue
     stream
         .filter(tuple10 ->
             !Objects.isNull(tuple10))
@@ -1923,15 +2094,35 @@ public final class ListsOps {
                 }));
 
     return new Tuple10<>(
-        listA.isEmpty() ? List.of() : Collections.unmodifiableList(listA),
-        listB.isEmpty() ? List.of() : Collections.unmodifiableList(listB),
-        listC.isEmpty() ? List.of() : Collections.unmodifiableList(listC),
-        listD.isEmpty() ? List.of() : Collections.unmodifiableList(listD),
-        listE.isEmpty() ? List.of() : Collections.unmodifiableList(listE),
-        listF.isEmpty() ? List.of() : Collections.unmodifiableList(listF),
-        listG.isEmpty() ? List.of() : Collections.unmodifiableList(listG),
-        listH.isEmpty() ? List.of() : Collections.unmodifiableList(listH),
-        listI.isEmpty() ? List.of() : Collections.unmodifiableList(listI),
-        listJ.isEmpty() ? List.of() : Collections.unmodifiableList(listJ));
+        listA.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listA),
+        listB.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listB),
+        listC.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listC),
+        listD.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listD),
+        listE.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listE),
+        listF.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listF),
+        listG.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listG),
+        listH.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listH),
+        listI.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listI),
+        listJ.isEmpty()
+            ? List.of()
+            : Collections.unmodifiableList(listJ));
   }
 }
