@@ -108,8 +108,8 @@ public final class ListsOps {
    * @param list  the source from which the copy is made
    * @param value the value to add to the copy of the list
    * @param <T>   the type of instances contained in the list
-   * @return an unmodifiable {@link List} with either the {@code value} appended if it is non-null, or an unmodifiable
-   * copy of the original {@code list}
+   * @return an  unmodifiable {@link List} with either the {@code value} appended if it is non-null, or an unmodifiable
+   *     copy of the original {@code list}
    */
   public static <T> List<T> appendItem(
       List<T> list,
@@ -139,7 +139,7 @@ public final class ListsOps {
    * @param lists the lists to append
    * @param <T>   the type of instances contained within all the lists
    * @return an unmodifiable {@link List} consisting of each filtered of {@code null}s list from lists appended in
-   * iteration order
+   *     iteration order
    */
   @SuppressWarnings("ConstantValue")
   @SafeVarargs
@@ -201,11 +201,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
-   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Collection<T> tsLeft,
@@ -230,11 +230,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
-   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Collection<T> tsLeft,
@@ -256,11 +256,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
-   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Stream<T> tsLeft,
@@ -282,11 +282,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value, after aligning unequally sized collections to their right sides, from a scan
-   * performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair of
-   * elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
-   * non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
-   * {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
-   * {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
+   *     performed from right to left (i.e. starting with the last element of each collection) and evaluating each pair
+   *     of elements via the {@link Comparable#compareTo(Object)} expression and returning upon encountering the first
+   *     non-{@code 0} result, otherwise a value less than {@code 0} if {@code tsLeft.size()} is less than
+   *     {@code tsRight.size()}, otherwise a value greater than {@code 0} if {@code tsLeft.size()} is greater than
+   *     {@code tsRight.size()}, otherwise {@code 0} because the collections are considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedRight(
       Stream<T> tsLeft,
@@ -308,11 +308,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   * considered equivalent
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Collection<T> tsLeft,
@@ -353,11 +353,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   * considered equivalent
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Collection<T> tsLeft,
@@ -379,11 +379,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   * considered equivalent
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Stream<T> tsLeft,
@@ -405,11 +405,11 @@ public final class ListsOps {
    * @param <T>     the type of instances contained in both collections which implement the {@link Comparable}
    *                interface
    * @return the comparison value from a scan performed from left to right (i.e. starting with the first element of each
-   * collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
-   * returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
-   * {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
-   * {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
-   * considered equivalent
+   *     collection) and evaluating each pair of elements via the {@link Comparable#compareTo(Object)} expression and
+   *     returning upon encountering the first non-{@code 0} result, otherwise a value less than {@code 0} if
+   *     {@code tsLeft.size()} is less than {@code tsRight.size()}, otherwise a value greater than {@code 0} if
+   *     {@code tsLeft.size()} is greater than {@code tsRight.size()}, otherwise {@code 0} because the collections are
+   *     considered equivalent
    */
   public static <T extends Comparable<T>> int compareAlignedLeft(
       Stream<T> tsLeft,
@@ -451,7 +451,7 @@ public final class ListsOps {
    * @param <T>        the type of source instances
    * @param <R>        the type of target instances, which must extend {@link Comparable}
    * @return an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, and then deriving
-   * the {@code R} value via the function {@code fTToR}
+   *     the {@code R} value via the function {@code fTToR}
    */
   public static <T, R extends Comparable<R>> List<R> toDistinctSortedList(
       Collection<T> collection,
@@ -469,7 +469,7 @@ public final class ListsOps {
    * @param <T>    the type of source instances
    * @param <R>    the type of target instances, which must extend {@link Comparable}
    * @return an unmodifiable {@link List} from a collection of {@code ts} filtering out {@code null}s, deriving the
-   * {@code R} value via the function {@code fTToR}, and then sorted
+   *     {@code R} value via the function {@code fTToR}, and then sorted
    */
   public static <T, R extends Comparable<R>> List<R> toDistinctSortedList(
       Stream<@Nullable T> stream,
@@ -508,7 +508,7 @@ public final class ListsOps {
    * @param stream the source of the T elements
    * @param <T>    the type of instances contained in the stream
    * @return an unmodifiable {@link List} of the source's elements in reverse order with the {@code null} elements
-   * filtered out
+   *     filtered out
    */
   public static <T> List<T> reverse(
       Stream<@Nullable T> stream
@@ -536,7 +536,7 @@ public final class ListsOps {
    * @param collection the source from which to extract the non-empty optional values
    * @param <T>        the type of instances contained in the source
    * @return a new {@link List} extracting the non-empty {@link Optional} elements, and filtering out the {@code null}
-   * and {@link Optional} empty elements
+   *     and {@link Optional} empty elements
    */
   public static <T> List<T> flatten(
       Collection<@Nullable Optional<T>> collection
@@ -551,7 +551,7 @@ public final class ListsOps {
    * @param stream the source from which to extract the non-empty optional values
    * @param <T>    the type of instances contained in the stream
    * @return a new {@link List} extracting the non-empty {@link Optional} elements, and filtering out the {@code null}
-   * and {@link Optional} empty elements
+   *     and {@link Optional} empty elements
    */
   public static <T> List<T> flatten(
       Stream<@Nullable Optional<T>> stream
@@ -608,7 +608,7 @@ public final class ListsOps {
    * @param <L>        the type of instances contained within the left element of each either
    * @param <R>        the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Collection} of {@link Either}s,
-   * {@link #flatten}ing each returned list
+   *     {@link #flatten}ing each returned list
    */
   @SuppressWarnings("SpellCheckingInspection")
   public static <L, R> Tuple2<List<L>, List<R>> unzipAndFlattenEithers(
@@ -625,7 +625,7 @@ public final class ListsOps {
    * @param <L>    the type of instances contained within the left element of each either
    * @param <R>    the type of instances contained within the right element of each either
    * @return {@link List}s in a {@link Tuple2} extracted from a {@link Stream} of {@link Either}s, {@link #flatten}ing
-   * each returned list
+   *     each returned list
    */
   @SuppressWarnings("SpellCheckingInspection")
   public static <L, R> Tuple2<List<L>, List<R>> unzipAndFlattenEithers(
@@ -646,7 +646,7 @@ public final class ListsOps {
    * @param <A>        the type of instances contained within the first element of each tuple
    * @param <B>        the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzip(
       Collection<Tuple2<A, B>> collection
@@ -662,7 +662,7 @@ public final class ListsOps {
    * @param <A>    the type of instances contained within the first element of each tuple
    * @param <B>    the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzip(
       Stream<Tuple2<A, B>> stream
@@ -699,7 +699,7 @@ public final class ListsOps {
    * @param <A>        the type of instances contained within the first element of each tuple
    * @param <B>        the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzipAndFlatten(
       Collection<Tuple2<A, B>> collection,
@@ -720,7 +720,7 @@ public final class ListsOps {
    * @param <A>     the type of instances contained within the first element of each tuple
    * @param <B>     the type of instances contained within the second element of each tuple
    * @return a {@link Tuple2} containing the {@link List}s extracted from a source of {@link Tuple2}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   public static <A, B> Tuple2<List<A>, List<B>> unzipAndFlatten(
       Stream<Tuple2<A, B>> stream,
@@ -759,7 +759,7 @@ public final class ListsOps {
    * @param <B>        the type of instances contained within the second element of each tuple
    * @param <C>        the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3(
       Collection<Tuple3<A, B, C>> collection
@@ -776,7 +776,7 @@ public final class ListsOps {
    * @param <B>    the type of instances contained within the second element of each tuple
    * @param <C>    the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3(
       Stream<Tuple3<A, B, C>> stream
@@ -818,7 +818,7 @@ public final class ListsOps {
    * @param <B>        the type of instances contained within the second element of each tuple
    * @param <C>        the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3AndFlatten(
       Collection<Tuple3<A, B, C>> collection,
@@ -840,7 +840,7 @@ public final class ListsOps {
    * @param <B>     the type of instances contained within the second element of each tuple
    * @param <C>     the type of instances contained within the third element of each tuple
    * @return a {@link Tuple3} containing the {@link List}s extracted from a source of {@link Tuple3}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   public static <A, B, C> Tuple3<List<A>, List<B>, List<C>> unzip3AndFlatten(
       Stream<Tuple3<A, B, C>> stream,
@@ -885,7 +885,7 @@ public final class ListsOps {
    * @param <C>        the type of instances contained within the third element of each tuple
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4(
       Collection<Tuple4<A, B, C, D>> collection
@@ -903,7 +903,7 @@ public final class ListsOps {
    * @param <C>    the type of instances contained within the third element of each tuple
    * @param <D>    the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4(
       Stream<Tuple4<A, B, C, D>> stream
@@ -950,7 +950,7 @@ public final class ListsOps {
    * @param <C>        the type of instances contained within the third element of each tuple
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4AndFlatten(
       Collection<Tuple4<A, B, C, D>> collection,
@@ -973,7 +973,7 @@ public final class ListsOps {
    * @param <C>     the type of instances contained within the third element of each tuple
    * @param <D>     the type of instances contained within the fourth element of each tuple
    * @return a {@link Tuple4} containing the {@link List}s extracted from a source of {@link Tuple4}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   public static <A, B, C, D> Tuple4<List<A>, List<B>, List<C>, List<D>> unzip4AndFlatten(
       Stream<Tuple4<A, B, C, D>> stream,
@@ -1024,7 +1024,7 @@ public final class ListsOps {
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
       Collection<Tuple5<A, B, C, D, E>> collection
@@ -1043,7 +1043,7 @@ public final class ListsOps {
    * @param <D>    the type of instances contained within the fourth element of each tuple
    * @param <E>    the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
@@ -1096,7 +1096,7 @@ public final class ListsOps {
    * @param <D>        the type of instances contained within the fourth element of each tuple
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
       Collection<Tuple5<A, B, C, D, E>> collection,
@@ -1120,7 +1120,7 @@ public final class ListsOps {
    * @param <D>     the type of instances contained within the fourth element of each tuple
    * @param <E>     the type of instances contained within the fifth element of each tuple
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
@@ -1178,7 +1178,7 @@ public final class ListsOps {
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
       Collection<Tuple6<A, B, C, D, E, F>> collection
@@ -1198,7 +1198,7 @@ public final class ListsOps {
    * @param <E>    the type of instances contained within the fifth element of each tuple
    * @param <F>    the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
@@ -1256,7 +1256,7 @@ public final class ListsOps {
    * @param <E>        the type of instances contained within the fifth element of each tuple
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
       Collection<Tuple6<A, B, C, D, E, F>> collection,
@@ -1281,7 +1281,7 @@ public final class ListsOps {
    * @param <E>     the type of instances contained within the fifth element of each tuple
    * @param <F>     the type of instances contained within the sixth element of each tuple
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
@@ -1345,7 +1345,7 @@ public final class ListsOps {
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
       Collection<Tuple7<A, B, C, D, E, F, G>> collection
@@ -1366,7 +1366,7 @@ public final class ListsOps {
    * @param <F>    the type of instances contained within the sixth element of each tuple
    * @param <G>    the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
@@ -1429,7 +1429,7 @@ public final class ListsOps {
    * @param <F>        the type of instances contained within the sixth element of each tuple
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
       Collection<Tuple7<A, B, C, D, E, F, G>> collection,
@@ -1455,7 +1455,7 @@ public final class ListsOps {
    * @param <F>     the type of instances contained within the sixth element of each tuple
    * @param <G>     the type of instances contained within the seventh element of each tuple
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
@@ -1525,7 +1525,7 @@ public final class ListsOps {
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
       Collection<Tuple8<A, B, C, D, E, F, G, H>> collection
@@ -1547,7 +1547,7 @@ public final class ListsOps {
    * @param <G>    the type of instances contained within the seventh element of each tuple
    * @param <H>    the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
@@ -1615,7 +1615,7 @@ public final class ListsOps {
    * @param <G>        the type of instances contained within the seventh element of each tuple
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
       Collection<Tuple8<A, B, C, D, E, F, G, H>> collection,
@@ -1642,7 +1642,7 @@ public final class ListsOps {
    * @param <G>     the type of instances contained within the seventh element of each tuple
    * @param <H>     the type of instances contained within the eighth element of each tuple
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
@@ -1718,7 +1718,7 @@ public final class ListsOps {
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
       Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection
@@ -1741,7 +1741,7 @@ public final class ListsOps {
    * @param <H>    the type of instances contained within the eighth element of each tuple
    * @param <I>    the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
@@ -1814,7 +1814,7 @@ public final class ListsOps {
    * @param <H>        the type of instances contained within the eighth element of each tuple
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
       Collection<Tuple9<A, B, C, D, E, F, G, H, I>> collection,
@@ -1842,7 +1842,7 @@ public final class ListsOps {
    * @param <H>     the type of instances contained within the eighth element of each tuple
    * @param <I>     the type of instances contained within the ninth element of each tuple
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
@@ -1924,7 +1924,7 @@ public final class ListsOps {
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @param <J>        the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
       Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection
@@ -1948,7 +1948,7 @@ public final class ListsOps {
    * @param <I>    the type of instances contained within the ninth element of each tuple
    * @param <J>    the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   * {@code null}s
+   *     {@code null}s
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
@@ -2026,7 +2026,7 @@ public final class ListsOps {
    * @param <I>        the type of instances contained within the ninth element of each tuple
    * @param <J>        the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function.
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function.
    */
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
       Collection<Tuple10<A, B, C, D, E, F, G, H, I, J>> collection,
@@ -2055,7 +2055,7 @@ public final class ListsOps {
    * @param <I>     the type of instances contained within the ninth element of each tuple
    * @param <J>     the type of instances contained within the tenth element of each tuple
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
-   * {@code null}s, and then filtered and transformed by the {@code fMapper} function
+   *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
   @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
