@@ -7,7 +7,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -18,6 +17,71 @@ public final class SetsOps {
 
   private SetsOps() {
     throw new UnsupportedOperationException("suppressing class instantiation");
+  }
+
+  /**
+   * Returns a {@link Set}{@code <T>} backed by an empty and modifiable {@link HashSet}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code SetsOps::HashSet} which returns the
+   * <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying {@code HashSet::new}
+   * which returns the <em>class implementation</em> type of {@link HashSet}{@code <T>}.
+   *
+   * @param <T> the type of instances contained in the {@link Set}
+   * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link HashSet}{@code <T>}
+   */
+  public static <T> Set<T> newHashSet() {
+    //noinspection Convert2Diamond
+    return new HashSet<T>();
+  }
+
+  /**
+   * Returns a {@link Set}{@code <T>} backed by an empty and modifiable {@link HashSet}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code () -> SetsOps.newHashSet(T.class)} which returns the
+   * <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying {@code HashSet::new} which
+   * returns the <em>class implementation</em> type of {@link HashSet}{@code <T>}.
+   *
+   * @param clazz the class of the type
+   * @param <T>   the type of instances contained in the {@link Set}
+   * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}
+   */
+  public static <T> Set<T> newHashSet(Class<T> clazz) {
+    Objects.requireNonNull(clazz);
+
+    return Collections.checkedSet(new HashSet<>(), clazz);
+  }
+
+  /**
+   * Returns a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code SetsOps::newLinkedHashSet} which returns the
+   * <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying {@code LinkedHashSet::new}
+   * which returns the <em>class implementation</em> type of {@link LinkedHashSet}{@code <T>}.
+   *
+   * @param <T> the type of instances contained in the {@link Set}
+   * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}
+   */
+  public static <T> Set<T> newLinkedHashSet() {
+    //noinspection Convert2Diamond
+    return new LinkedHashSet<T>();
+  }
+
+  /**
+   * Returns a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}.
+   * <p>
+   * This enables specifying a function in the shape of {@code () -> SetsOps.newLinkedHashSet(T.class)} which returns
+   * the <em>interface</em> type of {@link Set}{@code <T>}, which is preferable over specifying
+   * {@code LinkedHashSet::new} which returns the <em>class implementation</em> type of
+   * {@link LinkedHashSet}{@code <T>}.
+   *
+   * @param clazz the class of the type
+   * @param <T>   the type of instances contained in the {@link Set}
+   * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}
+   */
+  public static <T> Set<T> newLinkedHashSet(Class<T> clazz) {
+    Objects.requireNonNull(clazz);
+
+    return Collections.checkedSet(new LinkedHashSet<>(), clazz);
   }
 
   /**
@@ -37,17 +101,27 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable unordered set with the {@code value} added.
+   * Returns an unmodifiable unordered {@link Set} with either the {@code value} added if it is non-null, or an
+   * unmodifiable unordered copy of the original {@code set}.
    *
    * @param set   the source from which the unordered copy is made
    * @param value the value to add to the copy of the list
    * @param <T>   the type of instances contained in the set
-   * @return an unmodifiable unordered set with the {@code value} added
+   * @return an unmodifiable unordered {@link Set} with either the {@code value} added if it is non-null, or an
+   *     unmodifiable copy of the original {@code set}
    */
   public static <T> Set<T> addItem(
       Set<T> set,
-      T value
+      @Nullable T value
   ) {
+    Objects.requireNonNull(set);
+    if (value == null) {
+
+      return set.isEmpty()
+          ? Set.of()
+          : Set.copyOf(set);
+    }
+
     if (!set.isEmpty()) {
       var result = new HashSet<>(set);
       result.add(value);
@@ -58,97 +132,93 @@ public final class SetsOps {
     return Set.of(value);
   }
 
+  private static final Set<?> UNMODIFIABLE_LINKED_HASH_SET_EMPTY = Collections.unmodifiableSet(new LinkedHashSet<>());
+
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> set with the {@code value} appended.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} with either the {@code value} appended if it is non-null,
+   * or an unmodifiable <u><i>ordered</i></u> copy of the original {@code set}.
    *
    * @param set   the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
    * @param value the value to add to the copy of the set
    * @param <T>   the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> set with the {@code value} appended
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} with either the {@code value} appended if it is non-null,
+   *     or an unmodifiable <u><i>ordered</i></u> copy of the original {@code set}
    */
   public static <T> Set<T> appendItem(
       Set<T> set,
-      T value
+      @Nullable T value
   ) {
-    if (!set.isEmpty()) {
-      var result = new LinkedHashSet<>(set);
-      result.add(value);
+    Objects.requireNonNull(set);
+    if (set.isEmpty() && (value == null)) {
 
-      return Collections.unmodifiableSet(result);
+      //noinspection unchecked
+      return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
+    }
+    var result = set.isEmpty()
+        ? new LinkedHashSet<T>()
+        : new LinkedHashSet<>(set);
+    if (value != null) {
+      result.add(value);
     }
 
-    return Set.of(value);
+    return Collections.unmodifiableSet(result);
   }
 
   /**
-   * Returns an unmodifiable unordered set consisting of each set (filtered to non-null) from sets added together.
+   * Returns an unmodifiable unordered {@link Set} consisting of each {@link Set} (filtered to non-null) from
+   * {@code sets} combined.
    *
-   * @param sets the sets to append
+   * @param sets the sets to combine
    * @param <T>  the type of instances contained in all the sets
-   * @return unmodifiable unordered set consisting of each set (filtered to non-null) from sets added together
+   * @return an unmodifiable unordered {@link Set} consisting of each {@link Set} (filtered to non-null) from
+   *     {@code sets} combined
    */
   @SuppressWarnings("ConstantValue")
   @SafeVarargs
-  public static <T> Set<T> addSets(
-      Set<T>... sets
-  ) {
-    if (sets.length > 0) {
-      var result = new HashSet<T>();
-      IntStream.range(0, sets.length)
-          .forEach(index -> {
-            var set = sets[index];
-            if (set != null) {
-              var resolvedSet =
-                  set.stream()
-                      .filter(Objects::nonNull)
-                      .collect(Collectors.toUnmodifiableSet());
-              if (!resolvedSet.isEmpty()) {
-                result.addAll(resolvedSet);
-              }
-            }
-          });
+  public static <T> Set<T> addSets(Set<T>... sets) {
+    Objects.requireNonNull(sets);
+    if (sets.length == 0) {
 
-      return !result.isEmpty()
-          ? Collections.unmodifiableSet(result)
-          : Set.of();
+      return Set.of();
     }
 
-    return Set.of();
+    return Arrays.stream(sets)
+        .filter(Objects::nonNull)
+        .flatMap(Collection::stream)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> set consisting of each set (filtered to non-null) from sets appended
-   * together.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of each {@link Set} (filtered to non-null)
+   * {@code sets} appended together.
    *
    * @param sets the (assumed to be) <u><i>ordered</i></u> sets to append
    * @param <T>  the type of instances contained in all the sets
-   * @return an unmodifiable <u><i>ordered</i></u> set consisting of each set (filtered to non-null) from sets appended
-   *     together
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of each {@link Set} (filtered to non-null)
+   *     {@code sets} appended together
    */
   @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <T> Set<T> appendSets(
       Set<T>... sets
   ) {
-    if (sets.length > 0) {
-      var result = new LinkedHashSet<T>();
-      IntStream.range(0, sets.length)
-          .forEach(index -> {
-            var set = sets[index];
-            if (set != null) {
-              var resolvedSet = toSetOrdered(set.stream());
-              if (!resolvedSet.isEmpty()) {
-                result.addAll(resolvedSet);
-              }
-            }
-          });
+    Objects.requireNonNull(sets);
+    if (sets.length == 0) {
 
-      return !result.isEmpty()
-          ? Collections.unmodifiableSet(result)
-          : Set.of();
+      //noinspection unchecked
+      return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
+    var result = Arrays.stream(sets)
+        .filter(Objects::nonNull)
+        .flatMap(Collection::stream)
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
 
-    return Set.of();
+    //noinspection unchecked
+    return result.isEmpty()
+        ? (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY
+        : Collections.unmodifiableSet(result);
   }
 
   /**
@@ -203,6 +273,7 @@ public final class SetsOps {
   public static <T> Set<T> toSetOrdered(
       Stream<@Nullable T> stream
   ) {
+    @SuppressWarnings("RedundantCast")
     var set = stream
         .filter(t ->
             !Objects.isNull(t))
@@ -300,6 +371,7 @@ public final class SetsOps {
     return new Tuple2<>(Set.of(), Set.of());
   }
 
+  @SuppressWarnings("SpellCheckingInspection")
   private record ToDistinctAndDupesState<T>(
       Set<T> distincts,
       Set<T> dupes
@@ -561,132 +633,67 @@ public final class SetsOps {
    * This implementation minimizes the amount of iterations, comparisons, and insertions necessary (single pass over
    * each element in both {@link Set}s) to produce the discrete results, explicitly short-circuit optimizing in the
    * event of either or both sets return true for {@link Set#isEmpty}.
-   * <p>
-   * <b>WARNING: </b> Prefer using the static factory {@link #from} instead of this constructor.
    *
-   * @param isEqual         the result of {@code left.equals(right)} (without any additional iteration)
-   * @param union           the values of both the left and right sides
-   * @param left            the defensively copied <em>original</em> values of the left side
-   * @param right           the defensively copied <em>original</em> values of the right side
-   * @param intersection    the values in common from both the left side and right sides
-   * @param difference      the values not in common from both the left side and right sides
-   * @param leftDifference  the values unique to the left side
-   * @param rightDifference the values unique to the right side
-   * @param <T>             the type of instances contained in the sets
+   * @param <T> the type of instances contained in the sets
    */
-  @SuppressWarnings("DeprecatedIsStillUsed")
-  public record SetPair<T>(
-      boolean isEqual,
-      Set<T> union,
-      Set<T> left,
-      Set<T> right,
-      Set<T> intersection,
-      Set<T> leftDifference,
-      Set<T> rightDifference,
-      Set<T> difference
-  ) {
+  public static final class SetPair<T> {
+    private final boolean isEqual;
+    private final Set<T> union;
+    private final Set<T> left;
+    private final Set<T> right;
+    private final Set<T> intersection;
+    private final Set<T> leftDifference;
+    private final Set<T> rightDifference;
+    private final Set<T> difference;
+
+    // Private constructor absolutely prevents illegal states from being instantiated
+    private SetPair(
+        boolean isEqual,
+        Set<T> union,
+        Set<T> left,
+        Set<T> right,
+        Set<T> intersection,
+        Set<T> leftDifference,
+        Set<T> rightDifference,
+        Set<T> difference
+    ) {
+      this.isEqual = isEqual;
+      this.union = union;
+      this.left = left;
+      this.right = right;
+      this.intersection = intersection;
+      this.leftDifference = leftDifference;
+      this.rightDifference = rightDifference;
+      this.difference = difference;
+    }
 
     /**
-     * Returns a {@link SetPair} reflecting the contrast between two defensively copied {@link Set}s, where for each
-     * property, the value associated is an unmodifiable {@link Set} containing the relevant elements of type {@code T}
-     * based on the part of the comparison described by the property's name.
-     * <p>
-     * This implementation minimizes the amount of iterations, comparisons, and insertions necessary (single pass over
-     * each element in each {@link Set}) to produce the discrete results, explicitly short-circuit optimizing in the
-     * event of either or both sets return true for {@link Set#isEmpty}.
+     * Returns a {@link SetPair} reflecting the contrast between two defensively copied {@link Set}s.
      *
      * @param leftTs  the defensively copied left set of instances
      * @param rightTs the defensively copied right set of instances
      * @param <T>     the type of instances contained in the sets
-     * @return an {@link SetPair} of the contrast between two defensively copied {@link Set}s, where for each property,
-     *     the value associated is an unmodifiable {@link Set} containing the relevant elements of type {@code T} based
-     *     on the comparison described by the property's name
+     * @return an {@link SetPair} of the contrast between two defensively copied {@link Set}s
      * @throws NullPointerException if either {@code leftTs} or {@code rightTs} contains any {@code null}s
      */
-    public static <T> SetPair<T> from(
-        Set<T> leftTs,
-        Set<T> rightTs
-    ) {
-      return new SetPair<T>(
-          false,
-          Set.of(),
-          leftTs,
-          rightTs,
-          Set.of(),
-          Set.of(),
-          Set.of(),
-          Set.of());
-    }
-
-    /**
-     * Returns an unmodifiable {@link Map} of the contrast between two {@link Set}s, where for each key of type
-     * {@link SetPairViewKey}, the value associated is an unmodifiable {@link Set} (which includes defensively copying
-     * the two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison described by said
-     * {@link SetPairViewKey}
-     *
-     * @return an unmodifiable {@link Map} of the contrast between two {@link Set}s, where for each key of type
-     *     {@link SetPairViewKey}, the value associated is an unmodifiable {@link Set} (which includes defensively
-     *     copying the two {@link Set}s) contains the relevant elements of type {@code T} based on the comparison
-     *     described by said {@link SetPairViewKey}
-     */
-    public Map<SetPairViewKey, Set<T>> toMap() {
-      return Map.of(
-          SetPairViewKey.UNION, union,
-          SetPairViewKey.LEFT, left,
-          SetPairViewKey.RIGHT, right,
-          SetPairViewKey.INTERSECTION, intersection,
-          SetPairViewKey.LEFT_DIFFERENCE, leftDifference,
-          SetPairViewKey.RIGHT_DIFFERENCE, rightDifference,
-          SetPairViewKey.DIFFERENCE, difference);
-    }
-
-    /**
-     * <b>WARNING: </b> Prefer using the static factory {@link #from} instead of this {@code new} constructor.
-     * <p>
-     * This {@code new} constructor discards any values passed in any of the properties, excluding {@code left} and
-     * {@code right}, and replaces the discarded properties with the results of running the contrasting algorithm on the
-     * {@code left} and {@code right} properties.
-     * <p>
-     * Essentially, this constructor behaves as though you called it as such:
-     * <pre>{@code
-     * var setPair = new SetPair<>(Set.of(), left, right, Set.of(), Set.of(), Set.of(), Set.of());
-     * } </pre>
-     * <p>This is literally how the static factory {@link #from} method is implemented.
-     *
-     * @param union           <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
-     *                        {@code right}
-     * @param left            the source of the left elements
-     * @param right           the source of the right elements
-     * @param intersection    <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
-     *                        {@code right}
-     * @param leftDifference  <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
-     *                        {@code right}
-     * @param rightDifference <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
-     *                        {@code right}
-     * @param difference      <em>discarded and overridden</em> with the result of the evaluation of {@code left} and
-     *                        {@code right}
-     * @deprecated Prefer using the static factory {@link #from} instead of this constructor (please see <b>WARNING:
-     *     </b>)
-     */
     @SuppressWarnings("unchecked")
-    @Deprecated
-    public SetPair {
-      if (!left.isEmpty()) {
-        var leftTsDefensiveCopy = Set.copyOf(left);
-        if (!right.isEmpty()) {
-          var rightTsDefensiveCopy = Set.copyOf(right);
+    public static <T> SetPair<T> from(Set<T> leftTs, Set<T> rightTs) {
+      if (!leftTs.isEmpty()) {
+        var leftTsDefensiveCopy = Set.copyOf(leftTs);
+        if (!rightTs.isEmpty()) {
+          var rightTsDefensiveCopy = Set.copyOf(rightTs);
           var accumulators = new Set[]{
-              new HashSet<T>(),  //union
-              new HashSet<T>(),  //intersection
-              new HashSet<T>(),  //difference
-              new HashSet<T>(),  //leftDifference
-              new HashSet<T>()}; //rightDifference
+              new HashSet<T>(),  // union
+              new HashSet<T>(),  // intersection
+              new HashSet<T>(),  // difference
+              new HashSet<T>(),  // leftDifference
+              new HashSet<T>()}; // rightDifference
           Stream.concat(
                   leftTsDefensiveCopy.stream(),
                   rightTsDefensiveCopy.stream())
               .forEachOrdered(t -> {
                 if (accumulators[CONTRAST_SET_PAIR_INDEX_UNION].add(t)) {
-                  //can only get here if t hadn't been added in a prior iteration
+                  //can only get here if it hadn't been added in a prior iteration
                   var tInLeft = leftTsDefensiveCopy.contains(t);
                   var tInRight = rightTsDefensiveCopy.contains(t);
                   if (tInLeft) {
@@ -708,51 +715,130 @@ public final class SetsOps {
                   }
                 }
               });
-          union = Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_UNION]);
-          left = leftTsDefensiveCopy;
-          right = rightTsDefensiveCopy;
-          intersection = Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION]);
-          leftDifference = Collections.<Set<T>>unmodifiableSet(
-              accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE]);
-          rightDifference = Collections.<Set<T>>unmodifiableSet(
-              accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE]);
-          difference = Collections.<Set<T>>unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE]);
-          isEqual = difference.isEmpty();
+          var differenceSet = Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE]);
+
+          return new SetPair<T>(
+              differenceSet.isEmpty(),
+              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_UNION]),
+              leftTsDefensiveCopy,
+              rightTsDefensiveCopy,
+              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION]),
+              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE]),
+              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE]),
+              differenceSet);
         } else {
-          //left.isEmpty() is false, and right.isEmpty() is true
-          isEqual = false;
-          union = leftTsDefensiveCopy;
-          left = leftTsDefensiveCopy;
-          right = Set.of();
-          intersection = Set.of();
-          leftDifference = leftTsDefensiveCopy;
-          rightDifference = Set.of();
-          difference = leftTsDefensiveCopy;
+          //rightTs.isEmpty() is true
+
+          return new SetPair<>(
+              false,
+              leftTsDefensiveCopy,
+              leftTsDefensiveCopy,
+              Set.of(),
+              Set.of(),
+              leftTsDefensiveCopy,
+              Set.of(),
+              leftTsDefensiveCopy);
+
         }
       } else {
-        if (!right.isEmpty()) {
-          //leftTs.isEmpty() is true, and rightTs.isEmpty() is false
-          var rightTsDefensiveCopy = Set.copyOf(right);
-          isEqual = false;
-          union = rightTsDefensiveCopy;
-          left = Set.of();
-          right = rightTsDefensiveCopy;
-          intersection = Set.of();
-          leftDifference = Set.of();
-          rightDifference = rightTsDefensiveCopy;
-          difference = rightTsDefensiveCopy;
+        //leftTs.isEmpty() is true
+        if (!rightTs.isEmpty()) {
+          var rightTsDefensiveCopy = Set.copyOf(rightTs);
+
+          return new SetPair<>(
+              false,
+              rightTsDefensiveCopy,
+              Set.of(),
+              rightTsDefensiveCopy,
+              Set.of(),
+              Set.of(),
+              rightTsDefensiveCopy,
+              rightTsDefensiveCopy);
         } else {
-          //leftTs.isEmpty() is true, and rightTs.isEmpty() is true
-          isEqual = true;
-          union = Set.of();
-          left = Set.of();
-          right = Set.of();
-          intersection = Set.of();
-          leftDifference = Set.of();
-          rightDifference = Set.of();
-          difference = Set.of();
+          //leftTs.isEmpty() and //rightTs.isEmpty()
+
+          return new SetPair<>(
+              true,
+              Set.of(),
+              Set.of(),
+              Set.of(),
+              Set.of(),
+              Set.of(),
+              Set.of(),
+              Set.of());
         }
       }
+    }
+
+    public Map<SetPairViewKey, Set<T>> toMap() {
+      return Map.of(
+          SetPairViewKey.UNION, union,
+          SetPairViewKey.LEFT, left,
+          SetPairViewKey.RIGHT, right,
+          SetPairViewKey.INTERSECTION, intersection,
+          SetPairViewKey.LEFT_DIFFERENCE, leftDifference,
+          SetPairViewKey.RIGHT_DIFFERENCE, rightDifference,
+          SetPairViewKey.DIFFERENCE, difference);
+    }
+
+    public boolean isEqual() {
+      return isEqual;
+    }
+
+    public Set<T> union() {
+      return union;
+    }
+
+    public Set<T> left() {
+      return left;
+    }
+
+    public Set<T> right() {
+      return right;
+    }
+
+    public Set<T> intersection() {
+      return intersection;
+    }
+
+    public Set<T> leftDifference() {
+      return leftDifference;
+    }
+
+    public Set<T> rightDifference() {
+      return rightDifference;
+    }
+
+    public Set<T> difference() {
+      return difference;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+      return ((this == object) ||
+          ((object instanceof SetPair<?> that) &&
+              left.equals(that.left) &&
+              right.equals(that.right)));
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(
+          left,
+          right);
+    }
+
+    @Override
+    public String toString() {
+      return "SetPair[" +
+          "isEqual=" + isEqual + ", " +
+          "union=" + union + ", " +
+          "left=" + left + ", " +
+          "right=" + right + ", " +
+          "intersection=" + intersection + ", " +
+          "leftDifference=" + leftDifference + ", " +
+          "rightDifference=" + rightDifference + ", " +
+          "difference=" + difference + ']';
     }
   }
 

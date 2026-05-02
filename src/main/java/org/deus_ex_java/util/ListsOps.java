@@ -38,7 +38,7 @@ public final class ListsOps {
   /**
    * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}.
    * <p>
-   * This enables specifying a function in the shape of {@code ListsOps::newArrayList(T.class)} which returns the
+   * This enables specifying a function in the shape of {@code () -> ListsOps.newArrayList(T.class)} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code ArrayList::new}
    * which returns the <em>class implementation</em> type of {@link ArrayList}{@code <T>}.
    *
@@ -55,7 +55,7 @@ public final class ListsOps {
   /**
    * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}.
    * <p>
-   * This enables specifying a function in the shape of {@code ListsOps::<T>newLinkedList()} which returns the
+   * This enables specifying a function in the shape of {@code ListsOps::<T>newLinkedList} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code LinkedList::new}
    * which returns the <em>class implementation</em> type of {@link LinkedList}{@code <T>}.
    *
@@ -63,15 +63,14 @@ public final class ListsOps {
    * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}
    */
   public static <T> List<T> newLinkedList() {
-    return new LinkedList<>();
+    //noinspection Convert2Diamond
+    return new LinkedList<T>();
   }
-
-  // This enables ListsOps::newLinkedList(T.class)
 
   /**
    * Returns a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}.
    * <p>
-   * This enables specifying a function in the shape of {@code ListsOps::newLinkedList(T.class)} which returns the
+   * This enables specifying a function in the shape of {@code () -> ListsOps.newLinkedList(T.class)} which returns the
    * <em>interface</em> type of {@link List}{@code <T>}, which is preferable over specifying {@code LinkedList::new}
    * which returns the <em>class implementation</em> type of {@link LinkedList}{@code <T>}.
    *
@@ -106,7 +105,7 @@ public final class ListsOps {
    * copy of the original {@code list}.
    *
    * @param list  the source from which the copy is made
-   * @param value the value to add to the copy of the list
+   * @param value the value to append to the copy of the list
    * @param <T>   the type of instances contained in the list
    * @return an  unmodifiable {@link List} with either the {@code value} appended if it is non-null, or an unmodifiable
    *     copy of the original {@code list}
@@ -117,6 +116,7 @@ public final class ListsOps {
   ) {
     Objects.requireNonNull(list);
     if (value == null) {
+
       return list.isEmpty()
           ? List.of()
           : List.copyOf(list);
