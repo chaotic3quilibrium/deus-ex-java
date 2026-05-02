@@ -87,6 +87,26 @@ public class MapsOpsTests {
   }
 
   @Test
+  void toNonEmptyWithNullReturnsEmpty() {
+    var result = MapsOps.<String, Integer>toNonEmpty(null);
+    assertTrue(result.isEmpty(), "Expected an empty Optional for a null input");
+  }
+
+  @Test
+  void toNonEmptyWithEmptyListReturnsEmpty() {
+    var result = MapsOps.<String, Integer>toNonEmpty(Map.of());
+    assertTrue(result.isEmpty(), "Expected an empty Optional for an empty map input");
+  }
+
+  @Test
+  void toNonEmptyWithElementsReturnsOccupiedOptional() {
+    var populatedMap = Map.of("apple", 1, "banana", 2);
+    var result = MapsOps.toNonEmpty(populatedMap);
+    assertTrue(result.isPresent(), "Expected an occupied Optional for a non-empty map");
+    assertEquals(populatedMap, result.get().map());
+  }
+
+  @Test
   public void testIsNonNulls() {
     assertTrue(MapsOps.isNonNulls(Map.of(1, "x").entrySet().iterator().next()));
     var map1AndNull = new HashMap<Integer, String>();

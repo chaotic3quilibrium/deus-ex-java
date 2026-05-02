@@ -46,13 +46,18 @@ public record NonEmptySet<T>(Set<T> set) {
   public static <T> Optional<ParametersValidationException> invalidate(
       Set<T> set
   ) {
-    var preconditionFailureMessages = Stream.of(
+    @SuppressWarnings("ConstantValue")
+    //@formatter:off
+    var preconditionFailureMessages = (set == null
+        ? Stream.of("set must not be null")
+        : Stream.of(
             set.isEmpty()
                 ? "set.isEmpty() must be false"
                 : "",
             !CollectionsOps.isUnmodifiable(set)
                 ? "set must be unmodifiable"
-                : "")
+                : ""))
+        //@formatter:off
         .filter(preconditionFailureMessage ->
             !preconditionFailureMessage.isEmpty())
         .toList();

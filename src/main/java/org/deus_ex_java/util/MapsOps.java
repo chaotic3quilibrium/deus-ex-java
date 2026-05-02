@@ -115,6 +115,22 @@ public final class MapsOps {
   }
 
   /**
+   * Returns an occupied {@link Optional} containing a {@link NonEmptyMap} if {@code map.isEmpty} is {@code false},
+   * otherwise an {@link Optional#empty()}.
+   *
+   * @param map the possibly {@code null} or empty source to wrap
+   * @param <K> the type of the key instances contained in the source
+   * @param <V> the type of the value instances contained in the source
+   * @return an occupied {@link Optional} containing a {@link NonEmptyMap} if {@code map.isEmpty} is {@code false},
+   *     otherwise an {@link Optional#empty()}
+   */
+  public static <K, V> Optional<NonEmptyMap<K, V>> toNonEmpty(@Nullable Map<K, V> map) {
+    return (map != null)
+        ? NonEmptyMap.wrap(map).toOptional()
+        : Optional.empty();
+  }
+
+  /**
    * Returns {@code true} if both the key and the value are non-{@code null}, otherwise {@code false}.
    *
    * @param entry the key/value pair as an {@link Entry}

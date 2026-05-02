@@ -91,13 +91,28 @@ public final class ListsOps {
    * {@link NonEmptyList} enable <i>compile-time enforcement</i> of said contract requirements.
    *
    * @param ts  possibly {@code null} {@link List} to reify to make {@code null} safe
-   * @param <T> the type of instances contained in the {@link List}
+   * @param <T> the type of instances contained in the source
    * @return an empty {@link List} using {@link List#of}, if {@code ts} is {@code null}, otherwise returns {@code ts}
    */
   public static <T> List<T> nullToEmpty(@Nullable List<T> ts) {
     return ts != null
         ? ts
         : List.of();
+  }
+
+  /**
+   * Returns an occupied {@link Optional} containing a {@link NonEmptyList} if {@code ts.isEmpty} is {@code false},
+   * otherwise an {@link Optional#empty()}.
+   *
+   * @param ts  the possibly {@code null} or empty source to wrap
+   * @param <T> the type of instances contained in the source
+   * @return an occupied {@link Optional} containing a {@link NonEmptyList} if {@code ts.isEmpty} is {@code false},
+   *     otherwise an {@link Optional#empty()}
+   */
+  public static <T> Optional<NonEmptyList<T>> toNonEmpty(@Nullable List<T> ts) {
+    return (ts != null)
+        ? NonEmptyList.wrap(ts).toOptional()
+        : Optional.empty();
   }
 
   /**

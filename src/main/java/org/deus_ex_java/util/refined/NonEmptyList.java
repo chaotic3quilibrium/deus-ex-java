@@ -45,13 +45,18 @@ public record NonEmptyList<T>(List<T> list) {
   public static <T> Optional<ParametersValidationException> invalidate(
       List<T> list
   ) {
-    var preconditionFailureMessages = Stream.of(
+    @SuppressWarnings("ConstantValue")
+    //@formatter:off
+    var preconditionFailureMessages = (list == null
+        ? Stream.of("list must not be null")
+        : Stream.of(
             list.isEmpty()
                 ? "list.isEmpty() must be false"
                 : "",
             !CollectionsOps.isUnmodifiable(list)
                 ? "list must be unmodifiable"
-                : "")
+                : ""))
+        //@formatter:off
         .filter(preconditionFailureMessage ->
             !preconditionFailureMessage.isEmpty())
         .toList();

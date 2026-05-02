@@ -91,13 +91,28 @@ public final class SetsOps {
    * {@link NonEmptySet} enable <i>compile-time enforcement</i> of said contract requirements.
    *
    * @param ts  possibly {@code null} {@link Set} to reify to make {@code null} safe
-   * @param <T> the type of instances contained in the {@link Set}
+   * @param <T> the type of instances contained in the source
    * @return an empty {@link Set} using {@link Set#of}, if {@code ts} is {@code null}, otherwise returns {@code ts}
    */
   public static <T> Set<T> nullToEmpty(@Nullable Set<T> ts) {
     return ts != null
         ? ts
         : Set.of();
+  }
+
+  /**
+   * Returns an occupied {@link Optional} containing a {@link NonEmptySet} if {@code ts.isEmpty} is {@code false},
+   * otherwise an {@link Optional#empty()}.
+   *
+   * @param ts  the possibly {@code null} or empty source to wrap
+   * @param <T> the type of instances contained in the source
+   * @return an occupied {@link Optional} containing a {@link NonEmptySet} if {@code ts.isEmpty} is {@code false},
+   *     otherwise an {@link Optional#empty()}
+   */
+  public static <T> Optional<NonEmptySet<T>> toNonEmpty(@Nullable Set<T> ts) {
+    return (ts != null)
+        ? NonEmptySet.wrap(ts).toOptional()
+        : Optional.empty();
   }
 
   /**

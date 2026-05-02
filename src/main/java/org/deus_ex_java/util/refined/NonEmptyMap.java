@@ -47,13 +47,18 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
   public static <K, V> Optional<ParametersValidationException> invalidate(
       Map<K, V> map
   ) {
-    var preconditionFailureMessages = Stream.of(
+    @SuppressWarnings("ConstantValue")
+    //@formatter:off
+    var preconditionFailureMessages = (map == null
+        ? Stream.of("map must not be null")
+        : Stream.of(
             map.isEmpty()
                 ? "map.isEmpty() must be false"
                 : "",
             !CollectionsOps.isUnmodifiable(map)
                 ? "map must be unmodifiable"
-                : "")
+                : ""))
+        //@formatter:off
         .filter(preconditionFailureMessage ->
             !preconditionFailureMessage.isEmpty())
         .toList();

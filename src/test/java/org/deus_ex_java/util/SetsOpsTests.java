@@ -71,6 +71,26 @@ public class SetsOpsTests {
   }
 
   @Test
+  void toNonEmptyWithNullReturnsEmpty() {
+    var result = SetsOps.<String>toNonEmpty(null);
+    assertTrue(result.isEmpty(), "Expected an empty Optional for a null input");
+  }
+
+  @Test
+  void toNonEmptyWithEmptyListReturnsEmpty() {
+    var result = SetsOps.<String>toNonEmpty(Set.of());
+    assertTrue(result.isEmpty(), "Expected an empty Optional for an empty set input");
+  }
+
+  @Test
+  void toNonEmptyWithElementsReturnsOccupiedOptional() {
+    var populatedSet = Set.of("apple", "banana");
+    var result = SetsOps.toNonEmpty(populatedSet);
+    assertTrue(result.isPresent(), "Expected an occupied Optional for a non-empty set");
+    assertEquals(populatedSet, result.get().set());
+  }
+
+  @Test
   public void testAddItem() {
     var setEmptyAdd1 = SetsOps.addItem(Set.of(), 1);
     assertEquals(Set.of(1), setEmptyAdd1);

@@ -67,6 +67,26 @@ public class ListsOpsTests {
   }
 
   @Test
+  void toNonEmptyWithNullReturnsEmpty() {
+    var result = ListsOps.<String>toNonEmpty(null);
+    assertTrue(result.isEmpty(), "Expected an empty Optional for a null input");
+  }
+
+  @Test
+  void toNonEmptyWithEmptyListReturnsEmpty() {
+    var result = ListsOps.<String>toNonEmpty(List.of());
+    assertTrue(result.isEmpty(), "Expected an empty Optional for an empty list input");
+  }
+
+  @Test
+  void toNonEmptyWithElementsReturnsOccupiedOptional() {
+    var populatedList = List.of("apple", "banana");
+    var result = ListsOps.toNonEmpty(populatedList);
+    assertTrue(result.isPresent(), "Expected an occupied Optional for a non-empty list");
+    assertEquals(populatedList, result.get().list());
+  }
+
+  @Test
   public void testAppendItem() {
     var listA = ListsOps.appendItem(List.of(1), 2);
     assertTrue(CollectionsOps.isUnmodifiable(listA));
