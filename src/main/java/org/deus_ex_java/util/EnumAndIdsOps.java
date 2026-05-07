@@ -171,9 +171,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @param classE the {@link Class} of the specific enum being augmented
    * @param <E>    the specific Enum's type
    * @return a {@link EnumAndIdsOpsAndIsCaching} containing an {@link EnumAndIdsOps} <i>singleton</i> for the provided
-   *     {@link Enum}'s class using {@link Enum#ordinal()} for the associated
-   *     {@code ID, and whether it was cached by this specific call, or cached by some prior call to a {@link #from} or
-   *     {@link #fromAndIsCaching} method
+   *     {@link Enum}'s class using {@link Enum#ordinal()} for the associated {@code ID}, and whether it was cached by
+   *     this specific call, or cached by some prior call to a {@link #from} or {@link #fromAndIsCaching} method
    */
   public static <E extends Enum<E>> EnumAndIdsOpsAndIsCaching<E, Integer> fromAndIsCaching(
       Class<E> classE
