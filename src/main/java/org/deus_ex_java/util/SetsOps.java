@@ -6,6 +6,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -234,6 +235,253 @@ public final class SetsOps {
     return result.isEmpty()
         ? (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY
         : Collections.unmodifiableSet(result);
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Set} with the {@code value} removed if it is non-null, or an
+   * unmodifiable unordered copy of the original {@code set}.
+   *
+   * @param set   the source from which the unordered copy is made
+   * @param value the value to remove from the copy of the set
+   * @param <T>   the type of instances contained in the set
+   * @return an unmodifiable unordered {@link Set} with the {@code value} removed if it is non-null, or an
+   * unmodifiable copy of the original {@code set}
+   */
+  public static <T> Set<T> removeItem(
+    Set<T> set,
+    @Nullable T value
+  ) {
+    Objects.requireNonNull(set);
+    if (set.isEmpty()) {
+
+      return Set.of();
+    }
+    if (value == null) {
+
+      return Set.copyOf(set);
+    }
+    var result = new HashSet<>(set);
+    result.remove(value);
+
+    return Collections.unmodifiableSet(result);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} with the {@code value} removed if it is non-null,
+   * or an unmodifiable <u><i>ordered</i></u> copy of the original {@code set}.
+   *
+   * @param set   the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param value the value to remove from the copy of the set
+   * @param <T>   the type of instances contained in the set
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} with the {@code value} removed if it is non-null,
+   * or an unmodifiable <u><i>ordered</i></u> copy of the original {@code set}
+   */
+  public static <T> Set<T> removeItemOrdered(
+      Set<T> set,
+      @Nullable T value
+  ) {
+    Objects.requireNonNull(set);
+    if (set.isEmpty()) {
+
+      //noinspection unchecked
+      return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
+    }
+    var result = new LinkedHashSet<>(set);
+    if (value != null) {
+      result.remove(value);
+    }
+
+    return Collections.unmodifiableSet(result);
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
+   * all elements contained within the {@code collection} removed.
+   *
+   * @param set        the source from which the unordered copy is made
+   * @param collection the collection containing the elements to remove from the copy of the set
+   * @param <T>        the type of instances contained in the set and collection
+   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
+   * all elements contained within the {@code collection} removed
+   */
+  public static <T> Set<T> removeAll(
+      Set<T> set,
+      Collection<T> collection
+  ) {
+    Objects.requireNonNull(set);
+    Objects.requireNonNull(collection);
+
+    return removeAll(
+        set,
+        collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
+   * {@code set} with all elements contained within the {@code collection} removed.
+   *
+   * @param set        the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param collection the collection containing the elements to remove from the copy of the set
+   * @param <T>        the type of instances contained in the set and collection
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
+   * {@code set} with all elements contained within the {@code collection} removed
+   */
+  public static <T> Set<T> removeAllOrdered(
+      Set<T> set,
+      Collection<T> collection
+  ) {
+    Objects.requireNonNull(set);
+    Objects.requireNonNull(collection);
+
+    return removeAllOrdered(
+        set,
+        collection.stream());
+  }
+
+  private static <T> Set<T> helperRemoveAllStream(
+      Set<T> set,
+      Stream<T> stream,
+      Set<T> setEmpty,
+      Function<Set<T>, Set<T>> fSetConstructor
+  ) {
+    Objects.requireNonNull(set);
+    Objects.requireNonNull(stream);
+    if (set.isEmpty()) {
+
+      return setEmpty;
+    }
+    var removalsAsSet = stream
+        .collect(Collectors.toUnmodifiableSet());
+    var result = fSetConstructor.apply(set);
+    if (!removalsAsSet.isEmpty()) {
+      result.removeAll(removalsAsSet);
+    }
+
+    return Collections.unmodifiableSet(result);
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
+   * all elements contained within the {@code stream} removed.
+   *
+   * @param set    the source from which the unordered copy is made
+   * @param stream the stream containing the elements to remove from the copy of the set
+   * @param <T>    the type of instances contained in the set and stream
+   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
+   * all elements contained within the {@code stream} removed
+   */
+  public static <T> Set<T> removeAll(
+      Set<T> set,
+      Stream<T> stream
+  ) {
+    return helperRemoveAllStream(
+        set,
+        stream,
+        Set.of(),
+        HashSet::new);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
+   * {@code set} with all elements contained within the {@code stream} removed.
+   *
+   * @param set    the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param stream the stream containing the elements to remove from the copy of the set
+   * @param <T>    the type of instances contained in the set and stream
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
+   * {@code set} with all elements contained within the {@code stream} removed
+   */
+  public static <T> Set<T> removeAllOrdered(
+      Set<T> set,
+      Stream<T> stream
+  ) {
+    //noinspection unchecked
+    return helperRemoveAllStream(
+        set,
+        stream,
+        (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY,
+        LinkedHashSet::new);
+  }
+
+  @SafeVarargs
+  private static <T> Set<T> helperRemoveSets(
+      Set<T> set,
+      Set<T> setEmpty,
+      Function<Set<T>, Set<T>> fSetConstructor,
+      Set<T>... sets
+  ) {
+    Objects.requireNonNull(set);
+    Objects.requireNonNull(sets);
+
+    return TernaryOps.get(
+        set.isEmpty(),
+        () ->
+            setEmpty,
+        () -> {
+          var result = fSetConstructor.apply(set);
+          if (sets.length != 0) {
+            @SuppressWarnings("ConstantValue")
+            var removals = Arrays.stream(sets)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
+            if (!removals.isEmpty()) {
+              result.removeAll(removals);
+            }
+
+            return result.isEmpty()
+                ? Set.of()
+                : Collections.unmodifiableSet(result);
+          }
+
+          return Collections.unmodifiableSet(result);
+        });
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
+   * all elements contained within the {@code sets} removed.
+   *
+   * @param set  the source from which the unordered copy is made
+   * @param sets the sets containing the elements to remove from the copy of the set
+   * @param <T>  the type of instances contained in the set and sets
+   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
+   * all elements contained within the {@code sets} removed
+   */
+  @SafeVarargs
+  public static <T> Set<T> removeSets(
+      Set<T> set,
+      Set<T>... sets
+  ) {
+    return helperRemoveSets(
+        set,
+        Set.of(),
+        HashSet::new,
+        sets);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
+   * {@code set} with all elements contained within the {@code sets} removed.
+   *
+   * @param set  the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param sets the sets containing the elements to remove from the copy of the set
+   * @param <T>  the type of instances contained in the set and sets
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
+   * {@code set} with all elements contained within the {@code sets} removed
+   */
+  @SafeVarargs
+  public static <T> Set<T> removeSetsOrdered(
+      Set<T> set,
+      Set<T>... sets
+  ) {
+    //noinspection unchecked
+    return helperRemoveSets(
+        set,
+        (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY,
+        LinkedHashSet::new,
+        sets);
   }
 
   /**

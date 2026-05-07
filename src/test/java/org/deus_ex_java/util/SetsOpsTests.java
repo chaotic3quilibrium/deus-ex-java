@@ -182,6 +182,180 @@ public class SetsOpsTests {
   }
 
   @Test
+  public void testRemoveItem() {
+    var initialSet = Set.of(1, 2, 3);
+    var setRemove2 = SetsOps.removeItem(initialSet, 2);
+    assertEquals(Set.of(1, 3), setRemove2);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove2));
+
+    var setRemove4 = SetsOps.removeItem(initialSet, 4);
+    assertEquals(Set.of(1, 2, 3), setRemove4);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove4));
+
+    var setEmptyRemove = SetsOps.removeItem(Set.of(), 1);
+    assertEquals(Set.of(), setEmptyRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(setEmptyRemove));
+  }
+
+  @Test
+  public void testRemoveItemNullValueBehavior() {
+    var setA = SetsOps.removeItem(Set.of(), null);
+    assertNotNull(setA);
+    assertTrue(setA.isEmpty(), "Removing null from an empty set should safely return an empty set");
+    assertTrue(CollectionsOps.isUnmodifiable(setA));
+
+    var setB = SetsOps.removeItem(Set.of(1, 2), null);
+    assertEquals(2, setB.size(), "Removing null from a populated set should be ignored");
+    assertEquals(Set.of(1, 2), setB);
+    assertTrue(CollectionsOps.isUnmodifiable(setB));
+  }
+
+  @Test
+  public void testRemoveItemOrdered() {
+    var initialSet = SetsOps.ofOrdered(1, 2, 3);
+    var setRemove2 = SetsOps.removeItemOrdered(initialSet, 2);
+    assertEquals(List.of(1, 3), setRemove2.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove2));
+
+    var setRemove4 = SetsOps.removeItemOrdered(initialSet, 4);
+    assertEquals(List.of(1, 2, 3), setRemove4.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove4));
+
+    var setEmptyRemove = SetsOps.removeItemOrdered(Set.of(), 1);
+    assertEquals(Set.of(), setEmptyRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(setEmptyRemove));
+  }
+
+  @Test
+  public void testRemoveItemOrderedNullValueBehavior() {
+    var setA = SetsOps.removeItemOrdered(Set.of(), null);
+    assertNotNull(setA);
+    assertTrue(setA.isEmpty());
+    assertTrue(CollectionsOps.isUnmodifiable(setA));
+
+    var setB = SetsOps.removeItemOrdered(SetsOps.ofOrdered(1, 2), null);
+    assertEquals(2, setB.size());
+    assertEquals(List.of(1, 2), setB.stream().toList(), "Encounter order should be preserved while ignoring null");
+    assertTrue(CollectionsOps.isUnmodifiable(setB));
+  }
+
+  @Test
+  public void testRemoveAllWithCollection() {
+    var initialSet = Set.of(1, 2, 3, 4);
+    var setRemove = SetsOps.removeAll(initialSet, List.of(2, 4, 5));
+    assertEquals(Set.of(1, 3), setRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove));
+
+    var setRemoveEmpty = SetsOps.removeAll(initialSet, List.of());
+    assertEquals(Set.of(1, 2, 3, 4), setRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveEmpty));
+
+    var emptySetRemove = SetsOps.removeAll(Set.of(), List.of(1, 2));
+    assertEquals(Set.of(), emptySetRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptySetRemove));
+  }
+
+  @Test
+  public void testRemoveAllOrderedWithCollection() {
+    var initialSet = SetsOps.ofOrdered(1, 2, 3, 4);
+    var setRemove = SetsOps.removeAllOrdered(initialSet, Set.of(2, 4, 5));
+    assertEquals(List.of(1, 3), setRemove.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove));
+
+    var setRemoveEmpty = SetsOps.removeAllOrdered(initialSet, List.of());
+    assertEquals(List.of(1, 2, 3, 4), initialSet.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveEmpty));
+
+    var emptySetRemove = SetsOps.removeAllOrdered(Set.of(), List.of(1, 2));
+    assertEquals(Set.of(), emptySetRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptySetRemove));
+  }
+
+  @Test
+  public void testRemoveAllWithStream() {
+    var initialSet = Set.of(1, 2, 3, 4);
+    var setRemove = SetsOps.removeAll(initialSet, Stream.of(2, 4, 5));
+    assertEquals(Set.of(1, 3), setRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove));
+
+    var setRemoveEmpty = SetsOps.removeAll(initialSet, Stream.empty());
+    assertEquals(Set.of(1, 2, 3, 4), setRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveEmpty));
+
+    var emptySetRemove = SetsOps.removeAll(Set.of(), Stream.of(1, 2));
+    assertEquals(Set.of(), emptySetRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptySetRemove));
+  }
+
+  @Test
+  public void testRemoveAllOrderedWithStream() {
+    var initialSet = SetsOps.ofOrdered(1, 2, 3, 4);
+    var setRemove = SetsOps.removeAllOrdered(initialSet, Stream.of(2, 4, 5));
+    assertEquals(List.of(1, 3), setRemove.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove));
+
+    var setRemoveEmpty = SetsOps.removeAllOrdered(initialSet, Stream.empty());
+    assertEquals(List.of(1, 2, 3, 4), setRemoveEmpty.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveEmpty));
+
+    var emptySetRemove = SetsOps.removeAllOrdered(Set.of(), Stream.of(1, 2));
+    assertEquals(Set.of(), emptySetRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptySetRemove));
+  }
+
+  @Test
+  public void testRemoveSets() {
+    var initialSet = Set.of(1, 2, 3, 4, 5, 6);
+
+    var setRemove = SetsOps.removeSets(initialSet, Set.of(2, 4), Set.of(5));
+    assertEquals(Set.of(1, 3, 6), setRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove));
+
+    var setRemoveEmpty = SetsOps.removeSets(initialSet);
+    assertEquals(initialSet, setRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveEmpty));
+
+    var emptySetRemove = SetsOps.removeSets(Set.of(), Set.of(1, 2));
+    assertEquals(Set.of(), emptySetRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptySetRemove));
+
+    var setContainingNull = new HashSet<Integer>();
+    setContainingNull.add(null);
+    setContainingNull.add(6);
+
+    @SuppressWarnings("DataFlowIssue")
+    var setRemoveNulls = SetsOps.removeSets(initialSet, null, Set.of(1), setContainingNull);
+    assertEquals(Set.of(2, 3, 4, 5), setRemoveNulls);
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveNulls));
+  }
+
+  @Test
+  public void testRemoveSetsOrdered() {
+    var initialSet = SetsOps.ofOrdered(1, 2, 3, 4, 5, 6);
+
+    var setRemove = SetsOps.removeSetsOrdered(initialSet, Set.of(2, 4), Set.of(5));
+    assertEquals(List.of(1, 3, 6), setRemove.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemove));
+
+    var setRemoveEmpty = SetsOps.removeSetsOrdered(initialSet);
+    assertEquals(List.of(1, 2, 3, 4, 5, 6), setRemoveEmpty.stream().toList());
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveEmpty));
+
+    var emptySetRemove = SetsOps.removeSetsOrdered(Set.of(), Set.of(1, 2));
+    assertEquals(Set.of(), emptySetRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptySetRemove));
+
+    var setContainingNull = new HashSet<Integer>();
+    setContainingNull.add(null);
+    setContainingNull.add(6);
+
+    @SuppressWarnings("DataFlowIssue")
+    var setRemoveNulls = SetsOps.removeSetsOrdered(initialSet, null, Set.of(1), setContainingNull);
+    assertEquals(List.of(2, 3, 4, 5), setRemoveNulls.stream().toList(), "Encounter order should be preserved");
+    assertTrue(CollectionsOps.isUnmodifiable(setRemoveNulls));
+  }
+
+  @Test
   public void testNullSanitizeStream() {
     var expectedSet = Set.of(3, 2, 1);
     var nullContainingSet = Stream.of(null, 2, null, 1, null, 3, null).collect(Collectors.toSet());
