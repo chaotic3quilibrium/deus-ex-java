@@ -260,8 +260,7 @@ public final class SetsOps {
       Stream<@Nullable T> stream
   ) {
     return stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .collect(Collectors.toUnmodifiableSet());
   }
 
@@ -290,8 +289,7 @@ public final class SetsOps {
   ) {
     @SuppressWarnings("RedundantCast")
     var set = stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .map(t ->
             (T) t)
         .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -334,8 +332,7 @@ public final class SetsOps {
       Stream<@Nullable T> stream
   ) {
     var mutableList = stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
     if (!mutableList.isEmpty()) {
       Collections.reverse(mutableList);

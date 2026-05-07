@@ -476,8 +476,7 @@ public final class MapsOps {
       Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
     var map = ts
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .flatMap(t ->
             fTtoOptionalEntry
                 .apply(t)
@@ -574,8 +573,7 @@ public final class MapsOps {
       Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
     var map = stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .flatMap(t ->
             fTtoOptionalEntry
                 .apply(t)
