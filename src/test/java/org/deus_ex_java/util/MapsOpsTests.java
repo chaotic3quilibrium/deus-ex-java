@@ -316,6 +316,162 @@ public class MapsOpsTests {
   }
 
   @Test
+  public void testRemoveEntry() {
+    var initialMap = Map.of(1, "x1", 2, "x2", 3, "x3");
+    var mapRemove2 = MapsOps.removeEntry(initialMap, 2);
+    assertEquals(Map.of(1, "x1", 3, "x3"), mapRemove2);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove2));
+
+    var mapRemove4 = MapsOps.removeEntry(initialMap, 4);
+    assertEquals(Map.of(1, "x1", 2, "x2", 3, "x3"), mapRemove4);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove4));
+
+    var emptyMapRemove = MapsOps.removeEntry(Map.of(), 1);
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+
+    var mapRemoveNull = MapsOps.removeEntry(initialMap, null);
+    assertEquals(initialMap, mapRemoveNull, "Removing null should be safely ignored");
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveNull));
+  }
+
+  @Test
+  public void testRemoveEntryOrdered() {
+    var initialMap = MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3");
+    var mapRemove2 = MapsOps.removeEntryOrdered(initialMap, 2);
+    assertEquals(MapsOps.ofOrdered(1, "x1", 3, "x3"), mapRemove2);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove2));
+
+    var mapRemove4 = MapsOps.removeEntryOrdered(initialMap, 4);
+    assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3"), mapRemove4);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove4));
+
+    var emptyMapRemove = MapsOps.removeEntryOrdered(Map.of(), 1);
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+
+    var mapRemoveNull = MapsOps.removeEntryOrdered(initialMap, null);
+    assertEquals(initialMap, mapRemoveNull, "Removing null should be safely ignored");
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveNull));
+  }
+
+  @Test
+  public void testRemoveAllWithCollection() {
+    var initialMap = Map.of(1, "x1", 2, "x2", 3, "x3", 4, "x4");
+    var mapRemove = MapsOps.removeAll(initialMap, List.of(2, 4, 5));
+    assertEquals(Map.of(1, "x1", 3, "x3"), mapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove));
+
+    var mapRemoveEmpty = MapsOps.removeAll(initialMap, List.of());
+    assertEquals(Map.of(1, "x1", 2, "x2", 3, "x3", 4, "x4"), mapRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveEmpty));
+
+    var emptyMapRemove = MapsOps.removeAll(Map.of(), List.of(1, 2));
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+  }
+
+  @Test
+  public void testRemoveAllOrderedWithCollection() {
+    var initialMap = MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3", 4, "x4");
+    var mapRemove = MapsOps.removeAllOrdered(initialMap, List.of(2, 4, 5));
+    assertEquals(MapsOps.ofOrdered(1, "x1", 3, "x3"), mapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove));
+
+    var mapRemoveEmpty = MapsOps.removeAllOrdered(initialMap, List.of());
+    assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3", 4, "x4"), mapRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveEmpty));
+
+    var emptyMapRemove = MapsOps.removeAllOrdered(Map.of(), List.of(1, 2));
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+  }
+
+  @Test
+  public void testRemoveAllWithStream() {
+    var initialMap = Map.of(1, "x1", 2, "x2", 3, "x3", 4, "x4");
+    var mapRemove = MapsOps.removeAll(initialMap, Stream.of(2, 4, 5));
+    assertEquals(Map.of(1, "x1", 3, "x3"), mapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove));
+
+    var mapRemoveEmpty = MapsOps.removeAll(initialMap, Stream.empty());
+    assertEquals(Map.of(1, "x1", 2, "x2", 3, "x3", 4, "x4"), mapRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveEmpty));
+
+    var emptyMapRemove = MapsOps.removeAll(Map.of(), Stream.of(1, 2));
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+  }
+
+  @Test
+  public void testRemoveAllOrderedWithStream() {
+    var initialMap = MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3", 4, "x4");
+    var mapRemove = MapsOps.removeAllOrdered(initialMap, Stream.of(2, 4, 5));
+    assertEquals(MapsOps.ofOrdered(1, "x1", 3, "x3"), mapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove));
+
+    var mapRemoveEmpty = MapsOps.removeAllOrdered(initialMap, Stream.empty());
+    assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3", 4, "x4"), mapRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveEmpty));
+
+    var emptyMapRemove = MapsOps.removeAllOrdered(Map.of(), Stream.of(1, 2));
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+  }
+
+  @Test
+  public void testRemoveMaps() {
+    var initialMap = Map.of(1, "x1", 2, "x2", 3, "x3", 4, "x4", 5, "x5", 6, "x6");
+
+    var mapRemove = MapsOps.removeMaps(initialMap, Set.of(2, 4), Set.of(5));
+    assertEquals(Map.of(1, "x1", 3, "x3", 6, "x6"), mapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove));
+
+    var mapRemoveEmpty = MapsOps.removeMaps(initialMap);
+    assertEquals(initialMap, mapRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveEmpty));
+
+    var emptyMapRemove = MapsOps.removeMaps(Map.of(), Set.of(1, 2));
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+
+    var setContainingNull = new HashSet<Integer>();
+    setContainingNull.add(null);
+    setContainingNull.add(6);
+
+    @SuppressWarnings("DataFlowIssue")
+    var mapRemoveNulls = MapsOps.removeMaps(initialMap, null, Set.of(1), setContainingNull);
+    assertEquals(Map.of(2, "x2", 3, "x3", 4, "x4", 5, "x5"), mapRemoveNulls);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveNulls));
+  }
+
+  @Test
+  public void testRemoveMapsOrdered() {
+    var initialMap = MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3", 4, "x4", 5, "x5", 6, "x6");
+
+    var mapRemove = MapsOps.removeMapsOrdered(initialMap, Set.of(2, 4), Set.of(5));
+    assertEquals(MapsOps.ofOrdered(1, "x1", 3, "x3", 6, "x6"), mapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemove));
+
+    var mapRemoveEmpty = MapsOps.removeMapsOrdered(initialMap);
+    assertEquals(MapsOps.ofOrdered(1, "x1", 2, "x2", 3, "x3", 4, "x4", 5, "x5", 6, "x6"), mapRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveEmpty));
+
+    var emptyMapRemove = MapsOps.removeMapsOrdered(Map.of(), Set.of(1, 2));
+    assertEquals(Map.of(), emptyMapRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyMapRemove));
+
+    var setContainingNull = new HashSet<Integer>();
+    setContainingNull.add(null);
+    setContainingNull.add(6);
+
+    @SuppressWarnings("DataFlowIssue")
+    var mapRemoveNulls = MapsOps.removeMapsOrdered(initialMap, null, Set.of(1), setContainingNull);
+    assertEquals(MapsOps.ofOrdered(2, "x2", 3, "x3", 4, "x4", 5, "x5"), mapRemoveNulls, "Encounter order should be preserved");
+    assertTrue(CollectionsOps.isUnmodifiable(mapRemoveNulls));
+  }
+  
+  @Test
   public void testNullSanitizeStream() {
     var mapA = new HashMap<Integer, String>();
     mapA.put(null, "xnull");
@@ -325,7 +481,7 @@ public class MapsOpsTests {
     @SuppressWarnings("SimplifyStreamApiCallChains")
     var entries = mapA.entrySet().stream().collect(Collectors.toList());
     entries.add(1, null);
-    var mapB = MapsOps.nullSanitize(entries.stream());
+    var mapB = MapsOps.toMap(entries.stream());
     assertEquals(Map.of(1, "x1", 2, "x2"), mapB);
     var list = new ArrayList<String>();
     list.add(null);
@@ -359,7 +515,7 @@ public class MapsOpsTests {
     @SuppressWarnings("SimplifyStreamApiCallChains")
     var entries = mapA.entrySet().stream().collect(Collectors.toList());
     entries.add(1, null);
-    var mapB = MapsOps.nullSanitize(entries);
+    var mapB = MapsOps.toMap(entries);
     assertEquals(Map.of(1, "x1", 2, "x2"), mapB);
     var list = new ArrayList<String>();
     list.add(null);

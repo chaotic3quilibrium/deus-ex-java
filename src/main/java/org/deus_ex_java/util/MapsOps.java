@@ -397,6 +397,257 @@ public final class MapsOps {
   }
 
   /**
+   * Returns an unmodifiable unordered {@link Map} with the entry associated with the {@code key} removed if it is
+   * non-null, or an unmodifiable unordered copy of the original {@code map}.
+   *
+   * @param map the source from which the unordered copy is made
+   * @param key the key to remove from the copy of the map
+   * @param <K> the type of the keys contained in the {@code map}
+   * @param <V> the type of the values contained in the {@code map}
+   * @return an unmodifiable unordered {@link Map} with the entry associated with the {@code key} removed if it is
+   *     non-null, or an unmodifiable copy of the original {@code map}
+   */
+  public static <K, V> Map<K, V> removeEntry(
+      Map<K, V> map,
+      @Nullable K key
+  ) {
+    Objects.requireNonNull(map);
+    if (map.isEmpty()) {
+
+      return Map.of();
+    }
+    if (key == null) {
+
+      return Map.copyOf(map);
+    }
+    var result = new HashMap<>(map);
+    result.remove(key);
+
+    return Collections.unmodifiableMap(result);
+
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} with the entry associated with the {@code key} removed if
+   * it is non-null, or an unmodifiable <u><i>ordered</i></u> copy of the original {@code map}.
+   *
+   * @param map the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param key the key to remove from the copy of the map
+   * @param <K> the type of the keys contained in the {@code map}
+   * @param <V> the type of the values contained in the {@code map}
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} with the entry associated with the {@code key} removed if
+   *     it is non-null, or an unmodifiable <u><i>ordered</i></u> copy of the original {@code map}
+   */
+  public static <K, V> Map<K, V> removeEntryOrdered(
+      Map<K, V> map,
+      @Nullable K key
+  ) {
+    Objects.requireNonNull(map);
+    if (map.isEmpty()) {
+
+      //noinspection unchecked
+      return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
+    }
+    var result = new LinkedHashMap<>(map);
+    if (key != null) {
+      result.remove(key);
+    }
+
+    return Collections.unmodifiableMap(result);
+
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Map} consisting of the entries from the original {@code map} with all
+   * entries whose keys are contained within the {@code collection} removed.
+   *
+   * @param map        the source from which the unordered copy is made
+   * @param collection the collection containing the keys to remove from the copy of the map
+   * @param <K>        the type of the keys contained in the {@code map} and {@code collection}
+   * @param <V>        the type of the values contained in the {@code map}
+   * @return an unmodifiable unordered {@link Map} consisting of the entries from the original {@code map} with all
+   *     entries whose keys are contained within the {@code collection} removed
+   */
+  public static <K, V> Map<K, V> removeAll(
+      Map<K, V> map,
+      Collection<K> collection
+  ) {
+    return removeAll(
+        map,
+        collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of the entries from the original {@code map}
+   * with all entries whose keys are contained within the {@code collection} removed.
+   *
+   * @param map        the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param collection the collection containing the keys to remove from the copy of the map
+   * @param <K>        the type of the keys contained in the {@code map} and {@code collection}
+   * @param <V>        the type of the values contained in the {@code map}
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of the entries from the original {@code map}
+   *     with all entries whose keys are contained within the {@code collection} removed
+   */
+  public static <K, V> Map<K, V> removeAllOrdered(
+      Map<K, V> map,
+      Collection<K> collection
+  ) {
+    return removeAllOrdered(
+        map,
+        collection.stream());
+  }
+
+  private static <K, V> Map<K, V> helperRemoveAllStream(
+      Map<K, V> map,
+      Stream<K> stream,
+      Map<K, V> mapEmpty,
+      Function<Map<K, V>, Map<K, V>> fMapConstructor
+  ) {
+    Objects.requireNonNull(map);
+    Objects.requireNonNull(stream);
+    if (map.isEmpty()) {
+
+      return mapEmpty;
+    }
+    var removalsAsSet = stream
+        .collect(Collectors.toUnmodifiableSet());
+    var result = fMapConstructor.apply(map);
+    if (!removalsAsSet.isEmpty()) {
+      removalsAsSet.forEach(result::remove);
+    }
+
+    return Collections.unmodifiableMap(result);
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Map} consisting of the entries from the original {@code map} with all
+   * entries whose keys are contained within the {@code stream} removed.
+   *
+   * @param map    the source from which the unordered copy is made
+   * @param stream the stream containing the keys to remove from the copy of the map
+   * @param <K>    the type of the keys contained in the {@code map} and {@code stream}
+   * @param <V>    the type of the values contained in the {@code map}
+   * @return an unmodifiable unordered {@link Map} consisting of the entries from the original {@code map} with all
+   *     entries whose keys are contained within the {@code stream} removed
+   */
+  public static <K, V> Map<K, V> removeAll(
+      Map<K, V> map,
+      Stream<K> stream
+  ) {
+    return helperRemoveAllStream(
+        map,
+        stream,
+        Map.of(),
+        HashMap::new);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of the entries from the original {@code map}
+   * with all entries whose keys are contained within the {@code stream} removed.
+   *
+   * @param map    the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param stream the stream containing the keys to remove from the copy of the map
+   * @param <K>    the type of the keys contained in the {@code map} and {@code stream}
+   * @param <V>    the type of the values contained in the {@code map}
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of the entries from the original {@code map}
+   *     with all entries whose keys are contained within the {@code stream} removed
+   */
+  public static <K, V> Map<K, V> removeAllOrdered(
+      Map<K, V> map,
+      Stream<K> stream
+  ) {
+    //noinspection unchecked
+    return helperRemoveAllStream(
+        map,
+        stream,
+        (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY,
+        LinkedHashMap::new);
+  }
+
+  @SafeVarargs
+  private static <K, V> Map<K, V> helperRemoveMaps(
+      Map<K, V> map,
+      Map<K, V> mapEmpty,
+      Function<Map<K, V>, Map<K, V>> fMapConstructor,
+      Set<K>... keySets
+  ) {
+    Objects.requireNonNull(map);
+    Objects.requireNonNull(keySets);
+
+    return TernaryOps.get(
+        map.isEmpty(),
+        () ->
+            mapEmpty,
+        () -> {
+          var result = fMapConstructor.apply(map);
+          if (keySets.length != 0) {
+            @SuppressWarnings("ConstantValue")
+            var removalsAsSet = Arrays.stream(keySets)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
+            if (!removalsAsSet.isEmpty()) {
+              removalsAsSet.forEach(result::remove);
+            }
+
+            return result.isEmpty()
+                ? mapEmpty
+                : Collections.unmodifiableMap(result);
+          }
+
+          return Collections.unmodifiableMap(result);
+        });
+  }
+
+  /**
+   * Returns an unmodifiable unordered {@link Map} consisting of the entries from the original {@code map} with all
+   * entries whose keys are contained within the {@code keySets} removed.
+   *
+   * @param map     the source from which the unordered copy is made
+   * @param keySets the sets containing the keys to remove from the copy of the map
+   * @param <K>     the type of the keys contained in the {@code map} and {@code keySets}
+   * @param <V>     the type of the values contained in the {@code map}
+   * @return an unmodifiable unordered {@link Map} consisting of the entries from the original {@code map} with all
+   *     entries whose keys are contained within the {@code keySets} removed
+   */
+  @SafeVarargs
+  public static <K, V> Map<K, V> removeMaps(
+      Map<K, V> map,
+      Set<K>... keySets
+  ) {
+    return helperRemoveMaps(
+        map,
+        Map.of(),
+        HashMap::new,
+        keySets);
+  }
+
+  /**
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of the entries from the original {@code map}
+   * with all entries whose keys are contained within the {@code keySets} removed.
+   *
+   * @param map     the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
+   * @param keySets the sets containing the keys to remove from the copy of the map
+   * @param <K>     the type of the keys contained in the {@code map} and {@code keySets}
+   * @param <V>     the type of the values contained in the {@code map}
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of the entries from the original {@code map}
+   *     with all entries whose keys are contained within the {@code keySets} removed
+   */
+  @SafeVarargs
+  public static <K, V> Map<K, V> removeMapsOrdered(
+      Map<K, V> map,
+      Set<K>... keySets
+  ) {
+    //noinspection unchecked
+    return helperRemoveMaps(
+        map,
+        (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY,
+        LinkedHashMap::new,
+        keySets);
+  }
+
+  /**
    * Returns an unmodifiable unordered map filtering out each {@code Entry} where it is {@code null}, otherwise
    * filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if the
    * entry remains, it is ignored if it contains a duplicate key.
@@ -408,10 +659,10 @@ public final class MapsOps {
    *     filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if
    *     the entry remains, it is ignored if it contains a duplicate key
    */
-  public static <K, V> Map<K, V> nullSanitize(
+  public static <K, V> Map<K, V> toMap(
       Collection<@Nullable Entry<K, V>> collection
   ) {
-    return nullSanitize(collection.stream());
+    return toMap(collection.stream());
   }
 
   /**
@@ -426,7 +677,7 @@ public final class MapsOps {
    *     filtering the entry out where either the contained entry's key and/or the value are {@code null}, and then if
    *     the entry remains, it is ignored if it contains a duplicate key
    */
-  public static <K, V> Map<K, V> nullSanitize(
+  public static <K, V> Map<K, V> toMap(
       Stream<@Nullable Entry<K, V>> kAndVs
   ) {
     return toMap(kAndVs, Optional::of);
@@ -475,6 +726,8 @@ public final class MapsOps {
       Stream<@Nullable T> ts,
       Function<T, Optional<Entry<K, V>>> fTtoOptionalEntry
   ) {
+    Objects.requireNonNull(ts);
+    Objects.requireNonNull(fTtoOptionalEntry);
     var map = ts
         .filter(Objects::nonNull)
         .flatMap(t ->

@@ -172,6 +172,252 @@ public final class ListsOps {
   }
 
   /**
+   * Returns an unmodifiable {@link List} with the first encountered {@code value} removed if it is non-null, or an
+   * unmodifiable copy of the original {@code list}.
+   *
+   * @param list  the source from which the copy is made
+   * @param value the value to remove from the copy of the list
+   * @param <T>   the type of instances contained in the list
+   * @return an unmodifiable {@link List} with the first encountered {@code value} removed if it is non-null, or an
+   *     unmodifiable copy of the original {@code list}
+   */
+  public static <T> List<T> removeItem(
+      List<T> list,
+      @Nullable T value
+  ) {
+    Objects.requireNonNull(list);
+    if (!list.isEmpty()) {
+      if (value != null) {
+        var result = new ArrayList<>(list);
+        result.remove(value);
+
+        return Collections.unmodifiableList(result);
+      }
+
+      return List.copyOf(list);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} with all instances equal to the {@code value} removed if it is non-null, or an
+   * unmodifiable copy of the original {@code list}.
+   *
+   * @param list  the source from which the copy is made
+   * @param value the value to eliminate from the copy of the list
+   * @param <T>   the type of instances contained in the list
+   * @return an unmodifiable {@link List} with all instances equal to the {@code value} removed if it is non-null, or an
+   *     unmodifiable copy of the original {@code list}
+   */
+  public static <T> List<T> eliminateItem(
+      List<T> list,
+      @Nullable T value
+  ) {
+    Objects.requireNonNull(list);
+    if (!list.isEmpty()) {
+      if (value != null) {
+        return list
+            .stream()
+            .filter(t ->
+                !t.equals(value))
+            .toList();
+      }
+
+      return List.copyOf(list);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   * encountered instance of each element contained within the {@code collection} removed.
+   *
+   * @param list       the source from which the copy is made
+   * @param collection the collection containing the elements to remove from the copy of the list
+   * @param <T>        the type of instances contained in the list and collection
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   *     encountered instance of each element contained within the {@code collection} removed
+   */
+  public static <T> List<T> removeAll(
+      List<T> list,
+      Collection<T> collection
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(collection);
+
+    return removeAll(
+        list,
+        collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   * encountered instance of each element contained within the {@code stream} removed.
+   *
+   * @param list   the source from which the copy is made
+   * @param stream the stream containing the elements to remove from the copy of the list
+   * @param <T>    the type of instances contained in the list and stream
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   *     encountered instance of each element contained within the {@code stream} removed
+   */
+  public static <T> List<T> removeAll(
+      List<T> list,
+      Stream<T> stream
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(stream);
+    if (!list.isEmpty()) {
+      var result = new ArrayList<>(list);
+      stream.forEach(result::remove);
+
+      return Collections.unmodifiableList(result);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   * equal to any element contained within the {@code collection} removed.
+   *
+   * @param list       the source from which the copy is made
+   * @param collection the collection containing the elements to eliminate from the copy of the list
+   * @param <T>        the type of instances contained in the list and collection
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   *     equal to any element contained within the {@code collection} removed
+   */
+  public static <T> List<T> eliminateAll(
+      List<T> list,
+      Collection<T> collection
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(collection);
+
+    return eliminateAll(
+        list,
+        collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   * equal to any element contained within the {@code stream} removed.
+   *
+   * @param list   the source from which the copy is made
+   * @param stream the stream containing the elements to eliminate from the copy of the list
+   * @param <T>    the type of instances contained in the list and stream
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   *     equal to any element contained within the {@code stream} removed
+   */
+  public static <T> List<T> eliminateAll(
+      List<T> list,
+      Stream<T> stream
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(stream);
+    if (!list.isEmpty()) {
+      var removalsAsSet = stream.collect(Collectors.toUnmodifiableSet());
+      if (!removalsAsSet.isEmpty()) {
+
+        return list
+            .stream()
+            .filter(t -> !removalsAsSet.contains(t))
+            .toList();
+      }
+
+      return List.copyOf(list);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   * encountered instance of each element contained within the {@code lists} removed.
+   *
+   * @param list  the source from which the copy is made
+   * @param lists the lists containing the elements to remove from the copy of the list
+   * @param <T>   the type of instances contained in the list and lists
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   *     encountered instance of each element contained within the {@code lists} removed
+   */
+  @SafeVarargs
+  public static <T> List<T> removeLists(
+      List<T> list,
+      List<T>... lists
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(lists);
+
+    return TernaryOps.get(
+        list.isEmpty(),
+        List::of,
+        () -> {
+          if (lists.length != 0) {
+            var result = new ArrayList<>(list);
+            @SuppressWarnings("ConstantValue")
+            var removals = Arrays.stream(lists)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .toList();
+            if (!removals.isEmpty()) {
+              removals.forEach(result::remove);
+            }
+
+            return result.isEmpty()
+                ? List.of()
+                : Collections.unmodifiableList(result);
+          }
+
+          return List.copyOf(list);
+        });
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   * equal to any element contained within the {@code lists} eliminated.
+   *
+   * @param list  the source from which the copy is made
+   * @param lists the lists containing the elements to eliminate from the copy of the list
+   * @param <T>   the type of instances contained in the list and lists
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   *     equal to any element contained within the {@code lists} eliminated
+   */
+  @SafeVarargs
+  public static <T> List<T> eliminateLists(
+      List<T> list,
+      List<T>... lists
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(lists);
+
+    return TernaryOps.get(
+        list.isEmpty(),
+        List::of,
+        () -> {
+          if (lists.length != 0) {
+            @SuppressWarnings("ConstantValue")
+            var removalsAsSet = Arrays.stream(lists)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
+            if (!removalsAsSet.isEmpty()) {
+
+              return list
+                  .stream()
+                  .filter(t -> !removalsAsSet.contains(t))
+                  .toList();
+            }
+          }
+
+          return List.copyOf(list);
+        });
+  }
+
+  /**
    * Returns an unmodifiable {@link List} filtered of {@code null}s.
    *
    * @param collection the source of the T elements

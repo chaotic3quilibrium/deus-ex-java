@@ -238,18 +238,18 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable unordered {@link Set} with the {@code value} removed if it is non-null, or an
-   * unmodifiable unordered copy of the original {@code set}.
+   * Returns an unmodifiable unordered {@link Set} with the {@code value} removed if it is non-null, or an unmodifiable
+   * unordered copy of the original {@code set}.
    *
    * @param set   the source from which the unordered copy is made
    * @param value the value to remove from the copy of the set
    * @param <T>   the type of instances contained in the set
-   * @return an unmodifiable unordered {@link Set} with the {@code value} removed if it is non-null, or an
-   * unmodifiable copy of the original {@code set}
+   * @return an unmodifiable unordered {@link Set} with the {@code value} removed if it is non-null, or an unmodifiable
+   *     copy of the original {@code set}
    */
   public static <T> Set<T> removeItem(
-    Set<T> set,
-    @Nullable T value
+      Set<T> set,
+      @Nullable T value
   ) {
     Objects.requireNonNull(set);
     if (set.isEmpty()) {
@@ -267,14 +267,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} with the {@code value} removed if it is non-null,
-   * or an unmodifiable <u><i>ordered</i></u> copy of the original {@code set}.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} with the {@code value} removed if it is non-null, or an
+   * unmodifiable <u><i>ordered</i></u> copy of the original {@code set}.
    *
    * @param set   the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
    * @param value the value to remove from the copy of the set
    * @param <T>   the type of instances contained in the set
-   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} with the {@code value} removed if it is non-null,
-   * or an unmodifiable <u><i>ordered</i></u> copy of the original {@code set}
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} with the {@code value} removed if it is non-null, or an
+   *     unmodifiable <u><i>ordered</i></u> copy of the original {@code set}
    */
   public static <T> Set<T> removeItemOrdered(
       Set<T> set,
@@ -295,14 +295,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
-   * all elements contained within the {@code collection} removed.
+   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with all
+   * elements contained within the {@code collection} removed.
    *
    * @param set        the source from which the unordered copy is made
    * @param collection the collection containing the elements to remove from the copy of the set
    * @param <T>        the type of instances contained in the set and collection
-   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
-   * all elements contained within the {@code collection} removed
+   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with all
+   *     elements contained within the {@code collection} removed
    */
   public static <T> Set<T> removeAll(
       Set<T> set,
@@ -317,14 +317,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
-   * {@code set} with all elements contained within the {@code collection} removed.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original {@code set}
+   * with all elements contained within the {@code collection} removed.
    *
    * @param set        the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
    * @param collection the collection containing the elements to remove from the copy of the set
    * @param <T>        the type of instances contained in the set and collection
-   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
-   * {@code set} with all elements contained within the {@code collection} removed
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original {@code set}
+   *     with all elements contained within the {@code collection} removed
    */
   public static <T> Set<T> removeAllOrdered(
       Set<T> set,
@@ -361,14 +361,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
-   * all elements contained within the {@code stream} removed.
+   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with all
+   * elements contained within the {@code stream} removed.
    *
    * @param set    the source from which the unordered copy is made
    * @param stream the stream containing the elements to remove from the copy of the set
    * @param <T>    the type of instances contained in the set and stream
-   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
-   * all elements contained within the {@code stream} removed
+   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with all
+   *     elements contained within the {@code stream} removed
    */
   public static <T> Set<T> removeAll(
       Set<T> set,
@@ -382,14 +382,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
-   * {@code set} with all elements contained within the {@code stream} removed.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original {@code set}
+   * with all elements contained within the {@code stream} removed.
    *
    * @param set    the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
    * @param stream the stream containing the elements to remove from the copy of the set
    * @param <T>    the type of instances contained in the set and stream
-   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
-   * {@code set} with all elements contained within the {@code stream} removed
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original {@code set}
+   *     with all elements contained within the {@code stream} removed
    */
   public static <T> Set<T> removeAllOrdered(
       Set<T> set,
@@ -431,7 +431,7 @@ public final class SetsOps {
             }
 
             return result.isEmpty()
-                ? Set.of()
+                ? setEmpty
                 : Collections.unmodifiableSet(result);
           }
 
@@ -440,14 +440,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
-   * all elements contained within the {@code sets} removed.
+   * Returns an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with all
+   * elements contained within the {@code sets} removed.
    *
    * @param set  the source from which the unordered copy is made
    * @param sets the sets containing the elements to remove from the copy of the set
    * @param <T>  the type of instances contained in the set and sets
-   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with
-   * all elements contained within the {@code sets} removed
+   * @return an unmodifiable unordered {@link Set} consisting of the elements from the original {@code set} with all
+   *     elements contained within the {@code sets} removed
    */
   @SafeVarargs
   public static <T> Set<T> removeSets(
@@ -462,14 +462,14 @@ public final class SetsOps {
   }
 
   /**
-   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
-   * {@code set} with all elements contained within the {@code sets} removed.
+   * Returns an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original {@code set}
+   * with all elements contained within the {@code sets} removed.
    *
    * @param set  the (assumed to be) <u><i>ordered</i></u> source from which the copy is made
    * @param sets the sets containing the elements to remove from the copy of the set
    * @param <T>  the type of instances contained in the set and sets
-   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original
-   * {@code set} with all elements contained within the {@code sets} removed
+   * @return an unmodifiable <u><i>ordered</i></u> {@link Set} consisting of the elements from the original {@code set}
+   *     with all elements contained within the {@code sets} removed
    */
   @SafeVarargs
   public static <T> Set<T> removeSetsOrdered(
