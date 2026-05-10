@@ -9,7 +9,7 @@ located here:
 <a href="https://github.com/chaotic3quilibrium/deus-ex-java" target="_blank"><span style="font-family:default; font-size:2.35em; color:#5FA845">
 deus-ex-java</span></a>
 
-- Version: 1.8.0 - 2026.05.01
+- Version: 1.9.0 - 2026.05.10
 
 ---
 
@@ -24,7 +24,7 @@ deus-ex-java</span></a>
 * [Support](#support)
     * [License](#license)
         * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
-        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
+        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 
 <!-- TOC -->
 
@@ -45,7 +45,7 @@ legacy Enterprise IT systems via a series of continuous improvements via micro-t
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.8.0</version>
+    <version>1.9.0</version>
   </dependency>
 ```
 
@@ -75,13 +75,15 @@ see <https://www.gnu.org/licenses/>.
 
 ---
 
-### REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?
+### REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?
 
+- It was chosen entirely because of Amazon's/AWS's (and many other wealthy corporations) historic abuses and
+  exploitation of FOSS (Free Open Source Software)
 - No Worries, I'd Love to Work with You
 
 If the AGPLv3 doesn't work for you, I would LOVE to work with you to generate a *
 *custom/different/commercial/non-profit/government license** for deus-ex-java.
 
-Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would prefer. I am happyto discuss
+Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would prefer. I am happy to discuss
 this with you.
 

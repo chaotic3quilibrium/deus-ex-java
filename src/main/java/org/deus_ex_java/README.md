@@ -3,7 +3,7 @@ deus-ex-java</span></a>
 
 - Copyright (C) 2026 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.8.0`](#v180)
+- [`v1.9.0`](#v190)
 
 ---
 
@@ -22,8 +22,9 @@ deus-ex-java</span></a>
 * [Legal](#legal)
     * [License](#license)
         * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
-        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
+        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 * [Version History](#version-history)
+    * [v1.9.0](#v190)
     * [v1.8.0](#v180)
     * [v1.7.0](#v170)
     * [v1.6.0](#v160)
@@ -53,7 +54,7 @@ legacy Enterprise IT systems via a series of continuous improvements via micro-t
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.8.0</version>
+    <version>1.9.0</version>
   </dependency>
 ```
 
@@ -82,7 +83,6 @@ preventing invalid states from being instantiate-able, or even representable.
 
 High level overview:
 
-- Not a single line of this codebase is AI generated, including all tests
 - Strategically simplify Java code by preferring/biasing...
     - Incrementally reducing technical debt over larger/riskier large scale refactor or complete rewrites
     - Pragmatism over purity
@@ -93,7 +93,7 @@ High level overview:
     - YAGNI (You Aren't Going to Need It) over premature abstraction
 - Tactically improve Java code by preferring/biasing...
     - `Optional<T>` over `null`
-    - Referential transparency over allowing side-effects (including throwing an `Exception`)
+    - Referential transparency over allowing side effects (including throwing an `Exception`)
     - Error-by-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
     - Type inference (Ex: `var`) over explicitly specifying types
     - Instantiating only valid states over ambiguous and non-deterministic valid+invalid states
@@ -170,19 +170,27 @@ see <https://www.gnu.org/licenses/>.
 
 ---
 
-### REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a AGPLv3?
+### REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?
 
+- It was chosen entirely because of Amazon's/AWS's (and many other wealthy corporations) historic abuses and
+  exploitation of FOSS (Free Open Source Software)
 - No Worries, I'd Love to Work with You
 
 If the AGPLv3 doesn't work for you, I would LOVE to work with you to generate a *
 *custom/different/commercial/non-profit/government license** for deus-ex-java.
 
-Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would prefer. I am happyto discuss
+Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would prefer. I am happy to discuss
 this with you.
 
 ---
 
 # Version History
+
+## v1.9.0
+
+- 2026.05.10
+- Fixed various small annoyances
+- Added remove* methods to ListsOps, SetsOps, and MapsOps, using Gemini Pro 3.1 to produce the tests and Javadocs
 
 ## v1.8.0
 
@@ -207,7 +215,7 @@ this with you.
 - 2026.01.17
 - Added TernaryOps, a utility class reifying the if statement and ?: (a.k.a. ternary) operator
 - Refactored EnumAndIdsOps to surface caching status, and expanded tests to cover additional surface area
-- Added to StringsOps the String.regionMatches versions of ignore case for indexOf, lastIndexof, and equals to better
+- Added to StringsOps the String.regionMatches versions of ignore case for indexOf, lastIndexOf, and equals to better
   handle Unicode comparison issues, especially around other languages like the Turkish
 - Refactored Enum*sOps to use ClassValue as caching, and entirely removed the Memoizer dependency
 
@@ -235,14 +243,14 @@ this with you.
 - 2025.11.30
 - Added SetsOps x4 methods, toDistinctAndDupes() and toDistinctAndDupesOrdered()
 - Completely refactored away FatalThrowable, and replaced with ForcedFatalThrowable to ensure fatal exceptions (
-  including checked exceptions, like InterruptedException) flow by unhindered by library encapsulaters and guards
+  including checked exceptions, like InterruptedException) flow by unhindered by library encapsulation and guards
 - Refactored remaining try/catch statements to use TryCatchesOps to ensure correct handling using ForcedFatalThrowable
-- Tidied up javadocs for ForcedFatalThrowable and WrappedCheckedException
+- Tidied up Javadocs for ForcedFatalThrowable and WrappedCheckedException
 
 ## v1.3.0
 
 - 2025.11.27
-- Transitioned to JSpecify and off of JetBrains nullability library
+- Transitioned to Jspecify and off of JetBrains nullability library
 - Enhanced the refined collection classes
 - Expanded the testing coverage for the Collection helpers
 - Added SetsOps.containsAny
@@ -256,13 +264,13 @@ this with you.
 - 2025.11.08
 - Added convenient Collection twins for the Stream methods in ListsOps, SetsOps, and MapsOps
 - Expanded more tests
-- Tweaked javadocs
+- Tweaked Javadocs
 
 ## v1.1.0
 
 - 2025.11.01
 - Added tons of tests
-    - Remaining tests needed marked by "TODO:" comments
+    - Remaining tests needed to be marked by "TODO:" comments
 - Fixes and tweaks related to defects exposed by expanded testing surface
 
 ## v1.0.0
