@@ -131,6 +131,166 @@ public class ListsOpsTests {
   }
 
   @Test
+  public void testRemoveItem() {
+    var initialList = List.of(1, 2, 3, 2, 4);
+    var listRemove2 = ListsOps.removeItem(initialList, 2);
+    assertEquals(List.of(1, 3, 2, 4), listRemove2, "Should only remove the first encountered instance of 2");
+    assertTrue(CollectionsOps.isUnmodifiable(listRemove2));
+
+    var listRemove5 = ListsOps.removeItem(initialList, 5);
+    assertEquals(initialList, listRemove5);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemove5));
+
+    var emptyListRemove = ListsOps.removeItem(List.of(), 1);
+    assertEquals(List.of(), emptyListRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListRemove));
+
+    var listRemoveNull = ListsOps.removeItem(initialList, null);
+    assertEquals(initialList, listRemoveNull, "Removing null should be safely ignored");
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoveNull));
+  }
+
+  @Test
+  public void testEliminateItem() {
+    var initialList = List.of(1, 2, 3, 2, 4);
+    var listEliminate2 = ListsOps.eliminateItem(initialList, 2);
+    assertEquals(List.of(1, 3, 4), listEliminate2, "Should remove all instances of 2");
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminate2));
+
+    var listEliminate5 = ListsOps.eliminateItem(initialList, 5);
+    assertEquals(initialList, listEliminate5);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminate5));
+
+    var emptyListEliminate = ListsOps.eliminateItem(List.of(), 1);
+    assertEquals(List.of(), emptyListEliminate);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListEliminate));
+
+    var listEliminateNull = ListsOps.eliminateItem(initialList, null);
+    assertEquals(initialList, listEliminateNull, "Eliminating null should be safely ignored");
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminateNull));
+  }
+
+  @Test
+  public void testRemoveAllWithCollection() {
+    var initialList = List.of(1, 2, 3, 2, 4, 5);
+    var listRemove = ListsOps.removeAll(initialList, List.of(2, 4, 5));
+    assertEquals(List.of(1, 3, 2), listRemove, "Should only remove the first encountered instance of each element in the collection");
+    assertTrue(CollectionsOps.isUnmodifiable(listRemove));
+
+    var listRemoveEmpty = ListsOps.removeAll(initialList, List.of());
+    assertEquals(initialList, listRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoveEmpty));
+
+    var emptyListRemove = ListsOps.removeAll(List.of(), List.of(1, 2));
+    assertEquals(List.of(), emptyListRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListRemove));
+  }
+
+  @Test
+  public void testRemoveAllWithStream() {
+    var initialList = List.of(1, 2, 3, 2, 4, 5);
+    var listRemove = ListsOps.removeAll(initialList, Stream.of(2, 4, 5));
+    assertEquals(List.of(1, 3, 2), listRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemove));
+
+    var listRemoveDuplicateInStream = ListsOps.removeAll(initialList, Stream.of(2, 2));
+    assertEquals(List.of(1, 3, 4, 5), listRemoveDuplicateInStream, "Stream containing duplicates should trigger multiple removals");
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoveDuplicateInStream));
+
+    var listRemoveEmpty = ListsOps.removeAll(initialList, Stream.empty());
+    assertEquals(initialList, listRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoveEmpty));
+
+    var emptyListRemove = ListsOps.removeAll(List.of(), Stream.of(1, 2));
+    assertEquals(List.of(), emptyListRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListRemove));
+  }
+
+  @Test
+  public void testEliminateAllWithCollection() {
+    var initialList = List.of(1, 2, 3, 2, 4, 5);
+    var listEliminate = ListsOps.eliminateAll(initialList, List.of(2, 4, 5));
+    assertEquals(List.of(1, 3), listEliminate, "Should eliminate all matching instances for elements in the collection");
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminate));
+
+    var listEliminateEmpty = ListsOps.eliminateAll(initialList, List.of());
+    assertEquals(initialList, listEliminateEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminateEmpty));
+
+    var emptyListEliminate = ListsOps.eliminateAll(List.of(), List.of(1, 2));
+    assertEquals(List.of(), emptyListEliminate);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListEliminate));
+  }
+
+  @Test
+  public void testEliminateAllWithStream() {
+    var initialList = List.of(1, 2, 3, 2, 4, 5);
+    var listEliminate = ListsOps.eliminateAll(initialList, Stream.of(2, 4, 5));
+    assertEquals(List.of(1, 3), listEliminate);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminate));
+
+    var listEliminateEmpty = ListsOps.eliminateAll(initialList, Stream.empty());
+    assertEquals(initialList, listEliminateEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminateEmpty));
+
+    var emptyListEliminate = ListsOps.eliminateAll(List.of(), Stream.of(1, 2));
+    assertEquals(List.of(), emptyListEliminate);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListEliminate));
+  }
+
+  @Test
+  public void testRemoveLists() {
+    var initialList = List.of(1, 2, 3, 2, 4, 5, 6);
+
+    var listRemove = ListsOps.removeLists(initialList, List.of(2, 4), List.of(5));
+    assertEquals(List.of(1, 3, 2, 6), listRemove, "Should only remove the first encountered instance of each element in the lists");
+    assertTrue(CollectionsOps.isUnmodifiable(listRemove));
+
+    var listRemoveEmpty = ListsOps.removeLists(initialList);
+    assertEquals(initialList, listRemoveEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoveEmpty));
+
+    var emptyListRemove = ListsOps.removeLists(List.of(), List.of(1, 2));
+    assertEquals(List.of(), emptyListRemove);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListRemove));
+
+    var listContainingNull = new ArrayList<Integer>();
+    listContainingNull.add(null);
+    listContainingNull.add(6);
+
+    @SuppressWarnings("DataFlowIssue")
+    var listRemoveNulls = ListsOps.removeLists(initialList, null, List.of(1), listContainingNull);
+    assertEquals(List.of(2, 3, 2, 4, 5), listRemoveNulls);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoveNulls));
+  }
+
+  @Test
+  public void testEliminateLists() {
+    var initialList = List.of(1, 2, 3, 2, 4, 5, 6);
+
+    var listEliminate = ListsOps.eliminateLists(initialList, List.of(2, 4), List.of(5));
+    assertEquals(List.of(1, 3, 6), listEliminate);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminate));
+
+    var listEliminateEmpty = ListsOps.eliminateLists(initialList);
+    assertEquals(initialList, listEliminateEmpty);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminateEmpty));
+
+    var emptyListEliminate = ListsOps.eliminateLists(List.of(), List.of(1, 2));
+    assertEquals(List.of(), emptyListEliminate);
+    assertTrue(CollectionsOps.isUnmodifiable(emptyListEliminate));
+
+    var listContainingNull = new ArrayList<Integer>();
+    listContainingNull.add(null);
+    listContainingNull.add(6);
+
+    @SuppressWarnings("DataFlowIssue")
+    var listEliminateNulls = ListsOps.eliminateLists(initialList, null, List.of(1), listContainingNull);
+    assertEquals(List.of(2, 3, 2, 4, 5), listEliminateNulls);
+    assertTrue(CollectionsOps.isUnmodifiable(listEliminateNulls));
+  }
+
+  @Test
   public void testNullSanitizeStream() {
     var expectedList = List.of(1, 2, 3);
     var nullContainingList = Arrays.asList(null, 1, null, 2, null, 3, null);

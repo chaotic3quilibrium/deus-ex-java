@@ -172,6 +172,252 @@ public final class ListsOps {
   }
 
   /**
+   * Returns an unmodifiable {@link List} with the first encountered {@code value} removed if it is non-null, or an
+   * unmodifiable copy of the original {@code list}.
+   *
+   * @param list  the source from which the copy is made
+   * @param value the value to remove from the copy of the list
+   * @param <T>   the type of instances contained in the list
+   * @return an unmodifiable {@link List} with the first encountered {@code value} removed if it is non-null, or an
+   *     unmodifiable copy of the original {@code list}
+   */
+  public static <T> List<T> removeItem(
+      List<T> list,
+      @Nullable T value
+  ) {
+    Objects.requireNonNull(list);
+    if (!list.isEmpty()) {
+      if (value != null) {
+        var result = new ArrayList<>(list);
+        result.remove(value);
+
+        return Collections.unmodifiableList(result);
+      }
+
+      return List.copyOf(list);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} with all instances equal to the {@code value} removed if it is non-null, or an
+   * unmodifiable copy of the original {@code list}.
+   *
+   * @param list  the source from which the copy is made
+   * @param value the value to eliminate from the copy of the list
+   * @param <T>   the type of instances contained in the list
+   * @return an unmodifiable {@link List} with all instances equal to the {@code value} removed if it is non-null, or an
+   *     unmodifiable copy of the original {@code list}
+   */
+  public static <T> List<T> eliminateItem(
+      List<T> list,
+      @Nullable T value
+  ) {
+    Objects.requireNonNull(list);
+    if (!list.isEmpty()) {
+      if (value != null) {
+        return list
+            .stream()
+            .filter(t ->
+                !t.equals(value))
+            .toList();
+      }
+
+      return List.copyOf(list);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   * encountered instance of each element contained within the {@code collection} removed.
+   *
+   * @param list       the source from which the copy is made
+   * @param collection the collection containing the elements to remove from the copy of the list
+   * @param <T>        the type of instances contained in the list and collection
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   *     encountered instance of each element contained within the {@code collection} removed
+   */
+  public static <T> List<T> removeAll(
+      List<T> list,
+      Collection<T> collection
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(collection);
+
+    return removeAll(
+        list,
+        collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   * encountered instance of each element contained within the {@code stream} removed.
+   *
+   * @param list   the source from which the copy is made
+   * @param stream the stream containing the elements to remove from the copy of the list
+   * @param <T>    the type of instances contained in the list and stream
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   *     encountered instance of each element contained within the {@code stream} removed
+   */
+  public static <T> List<T> removeAll(
+      List<T> list,
+      Stream<T> stream
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(stream);
+    if (!list.isEmpty()) {
+      var result = new ArrayList<>(list);
+      stream.forEach(result::remove);
+
+      return Collections.unmodifiableList(result);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   * equal to any element contained within the {@code collection} removed.
+   *
+   * @param list       the source from which the copy is made
+   * @param collection the collection containing the elements to eliminate from the copy of the list
+   * @param <T>        the type of instances contained in the list and collection
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   *     equal to any element contained within the {@code collection} removed
+   */
+  public static <T> List<T> eliminateAll(
+      List<T> list,
+      Collection<T> collection
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(collection);
+
+    return eliminateAll(
+        list,
+        collection.stream());
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   * equal to any element contained within the {@code stream} removed.
+   *
+   * @param list   the source from which the copy is made
+   * @param stream the stream containing the elements to eliminate from the copy of the list
+   * @param <T>    the type of instances contained in the list and stream
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   *     equal to any element contained within the {@code stream} removed
+   */
+  public static <T> List<T> eliminateAll(
+      List<T> list,
+      Stream<T> stream
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(stream);
+    if (!list.isEmpty()) {
+      var removalsAsSet = stream.collect(Collectors.toUnmodifiableSet());
+      if (!removalsAsSet.isEmpty()) {
+
+        return list
+            .stream()
+            .filter(t -> !removalsAsSet.contains(t))
+            .toList();
+      }
+
+      return List.copyOf(list);
+    }
+
+    return List.of();
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   * encountered instance of each element contained within the {@code lists} removed.
+   *
+   * @param list  the source from which the copy is made
+   * @param lists the lists containing the elements to remove from the copy of the list
+   * @param <T>   the type of instances contained in the list and lists
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with the first
+   *     encountered instance of each element contained within the {@code lists} removed
+   */
+  @SafeVarargs
+  public static <T> List<T> removeLists(
+      List<T> list,
+      List<T>... lists
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(lists);
+
+    return TernaryOps.get(
+        list.isEmpty(),
+        List::of,
+        () -> {
+          if (lists.length != 0) {
+            var result = new ArrayList<>(list);
+            @SuppressWarnings("ConstantValue")
+            var removals = Arrays.stream(lists)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .toList();
+            if (!removals.isEmpty()) {
+              removals.forEach(result::remove);
+            }
+
+            return result.isEmpty()
+                ? List.of()
+                : Collections.unmodifiableList(result);
+          }
+
+          return List.copyOf(list);
+        });
+  }
+
+  /**
+   * Returns an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   * equal to any element contained within the {@code lists} eliminated.
+   *
+   * @param list  the source from which the copy is made
+   * @param lists the lists containing the elements to eliminate from the copy of the list
+   * @param <T>   the type of instances contained in the list and lists
+   * @return an unmodifiable {@link List} consisting of the elements from the original {@code list} with all instances
+   *     equal to any element contained within the {@code lists} eliminated
+   */
+  @SafeVarargs
+  public static <T> List<T> eliminateLists(
+      List<T> list,
+      List<T>... lists
+  ) {
+    Objects.requireNonNull(list);
+    Objects.requireNonNull(lists);
+
+    return TernaryOps.get(
+        list.isEmpty(),
+        List::of,
+        () -> {
+          if (lists.length != 0) {
+            @SuppressWarnings("ConstantValue")
+            var removalsAsSet = Arrays.stream(lists)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toUnmodifiableSet());
+            if (!removalsAsSet.isEmpty()) {
+
+              return list
+                  .stream()
+                  .filter(t -> !removalsAsSet.contains(t))
+                  .toList();
+            }
+          }
+
+          return List.copyOf(list);
+        });
+  }
+
+  /**
    * Returns an unmodifiable {@link List} filtered of {@code null}s.
    *
    * @param collection the source of the T elements
@@ -196,8 +442,7 @@ public final class ListsOps {
   ) {
     //noinspection RedundantCast
     return stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .map(t ->
             (T) t)
         .toList();
@@ -530,8 +775,7 @@ public final class ListsOps {
   ) {
     //noinspection RedundantCast
     var mutableList = stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .map(t ->
             (T) t)
         .collect(Collectors.toList());
@@ -572,8 +816,7 @@ public final class ListsOps {
       Stream<@Nullable Optional<T>> stream
   ) {
     return stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .flatMap(Optional::stream)
         .toList();
   }
@@ -606,8 +849,7 @@ public final class ListsOps {
       Stream<@Nullable Either<L, R>> stream
   ) {
     return unzip(stream
-        .filter(t ->
-            !Objects.isNull(t))
+        .filter(Objects::nonNull)
         .map(
             either ->
                 new Tuple2<>(
@@ -686,8 +928,7 @@ public final class ListsOps {
     var listB = new ArrayList<B>();
     //noinspection ConstantValue
     stream
-        .filter(tuple2 ->
-            !Objects.isNull(tuple2))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple2 -> {
           listA.add(tuple2._1());
           listB.add(tuple2._2());
@@ -747,8 +988,7 @@ public final class ListsOps {
     var listB = new ArrayList<B>();
     //noinspection ConstantValue
     stream
-        .filter(tuple2 ->
-            !Objects.isNull(tuple2))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple2 ->
             fMapper.apply(tuple2)
                 .ifPresent(optionalOfOptionals -> {
@@ -801,8 +1041,7 @@ public final class ListsOps {
     var listC = new ArrayList<C>();
     //noinspection ConstantValue
     stream
-        .filter(tuple3 ->
-            !Objects.isNull(tuple3))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple3 -> {
           listA.add(tuple3._1());
           listB.add(tuple3._2());
@@ -868,8 +1107,7 @@ public final class ListsOps {
     var listC = new ArrayList<C>();
     //noinspection ConstantValue
     stream
-        .filter(tuple3 ->
-            !Objects.isNull(tuple3))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple3 ->
             fMapper.apply(tuple3)
                 .ifPresent(optionalOfOptionals -> {
@@ -929,8 +1167,7 @@ public final class ListsOps {
     var listD = new ArrayList<D>();
     //noinspection ConstantValue
     stream
-        .filter(tuple4 ->
-            !Objects.isNull(tuple4))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple4 -> {
           listA.add(tuple4._1());
           listB.add(tuple4._2());
@@ -1002,8 +1239,7 @@ public final class ListsOps {
     var listD = new ArrayList<D>();
     //noinspection ConstantValue
     stream
-        .filter(tuple4 ->
-            !Objects.isNull(tuple4))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple4 ->
             fMapper.apply(tuple4)
                 .ifPresent(optionalOfOptionals -> {
@@ -1071,8 +1307,7 @@ public final class ListsOps {
     var listE = new ArrayList<E>();
     //noinspection ConstantValue
     stream
-        .filter(tuple5 ->
-            !Objects.isNull(tuple5))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple5 -> {
           listA.add(tuple5._1());
           listB.add(tuple5._2());
@@ -1151,8 +1386,7 @@ public final class ListsOps {
     var listE = new ArrayList<E>();
     //noinspection ConstantValue
     stream
-        .filter(tuple5 ->
-            !Objects.isNull(tuple5))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple5 ->
             fMapper.apply(tuple5)
                 .ifPresent(optionalOfOptionals -> {
@@ -1227,8 +1461,7 @@ public final class ListsOps {
     var listF = new ArrayList<F>();
     //noinspection ConstantValue
     stream
-        .filter(tuple6 ->
-            !Objects.isNull(tuple6))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple6 -> {
           listA.add(tuple6._1());
           listB.add(tuple6._2());
@@ -1313,8 +1546,7 @@ public final class ListsOps {
     var listF = new ArrayList<F>();
     //noinspection ConstantValue
     stream
-        .filter(tuple6 ->
-            !Objects.isNull(tuple6))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple6 ->
             fMapper.apply(tuple6)
                 .ifPresent(optionalOfOptionals -> {
@@ -1396,8 +1628,7 @@ public final class ListsOps {
     var listG = new ArrayList<G>();
     //noinspection ConstantValue
     stream
-        .filter(tuple7 ->
-            !Objects.isNull(tuple7))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple7 -> {
           listA.add(tuple7._1());
           listB.add(tuple7._2());
@@ -1488,8 +1719,7 @@ public final class ListsOps {
     var listG = new ArrayList<G>();
     //noinspection ConstantValue
     stream
-        .filter(tuple7 ->
-            !Objects.isNull(tuple7))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple7 ->
             fMapper.apply(tuple7)
                 .ifPresent(optionalOfOptionals -> {
@@ -1578,8 +1808,7 @@ public final class ListsOps {
     var listH = new ArrayList<H>();
     //noinspection ConstantValue
     stream
-        .filter(tuple8 ->
-            !Objects.isNull(tuple8))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple8 -> {
           listA.add(tuple8._1());
           listB.add(tuple8._2());
@@ -1676,8 +1905,7 @@ public final class ListsOps {
     var listH = new ArrayList<H>();
     //noinspection ConstantValue
     stream
-        .filter(tuple8 ->
-            !Objects.isNull(tuple8))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple8 ->
             fMapper.apply(tuple8)
                 .ifPresent(optionalOfOptionals -> {
@@ -1773,8 +2001,7 @@ public final class ListsOps {
     var listI = new ArrayList<I>();
     //noinspection ConstantValue
     stream
-        .filter(tuple9 ->
-            !Objects.isNull(tuple9))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple9 -> {
           listA.add(tuple9._1());
           listB.add(tuple9._2());
@@ -1877,8 +2104,7 @@ public final class ListsOps {
     var listI = new ArrayList<I>();
     //noinspection ConstantValue
     stream
-        .filter(tuple9 ->
-            !Objects.isNull(tuple9))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple9 ->
             fMapper.apply(tuple9)
                 .ifPresent(optionalOfOptionals -> {
@@ -1981,8 +2207,7 @@ public final class ListsOps {
     var listJ = new ArrayList<J>();
     //noinspection ConstantValue
     stream
-        .filter(tuple10 ->
-            !Objects.isNull(tuple10))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple10 -> {
           listA.add(tuple10._1());
           listB.add(tuple10._2());
@@ -2091,8 +2316,7 @@ public final class ListsOps {
     var listJ = new ArrayList<J>();
     //noinspection ConstantValue
     stream
-        .filter(tuple10 ->
-            !Objects.isNull(tuple10))
+        .filter(Objects::nonNull)
         .forEachOrdered(tuple10 ->
             fMapper.apply(tuple10)
                 .ifPresent(optionalOfOptionals -> {
