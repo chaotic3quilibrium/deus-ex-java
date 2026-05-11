@@ -12,7 +12,7 @@ import java.util.Optional;
  * <p>
  * The default {@code new NonEmptyString(...)} constructor implements enforced validation; i.e. throws a
  * {@link ParametersValidationException} within any attempt to instantiate with a value which returns a non-empty
- * {@link Optional} from the {@link NonEmptyString#validate} method.
+ * {@link Optional} from the {@link NonEmptyString#invalidate} method.
  *
  * @param string an {@code String} with a non-empty value
  */
@@ -34,7 +34,7 @@ public record NonEmptyString(
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  public static Optional<ParametersValidationException> validate(
+  public static Optional<ParametersValidationException> invalidate(
       String string
   ) {
     if (string.isEmpty()) {
@@ -50,12 +50,12 @@ public record NonEmptyString(
   /**
    * Returns, via the error-by-value pattern, an {@link Either} where an {@link Either#right} contains the validated
    * wrapped instance, otherwise an {@link Either#left} contains the returned {@link ParametersValidationException}
-   * instance from the call to the {@link #validate(String)} method.
+   * instance from the call to the {@link #invalidate(String)} method.
    *
    * @param string an {@code String} with a non-empty value
    * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
-   *     {@link #validate(String)} method
+   *     {@link #invalidate(String)} method
    */
   public static Either<ParametersValidationException, NonEmptyString> from(
       String string
@@ -70,11 +70,11 @@ public record NonEmptyString(
    * Default constructor ensuring the preconditions are validated before wrapping the value.
    *
    * @param string an {@code String} with a non-empty value
-   * @throws ParametersValidationException when the call to the {@link #validate(String)} method returns a non-empty
+   * @throws ParametersValidationException when the call to the {@link #invalidate(String)} method returns a non-empty
    *                                       {@link Optional}.
    */
   public NonEmptyString {
-    validate(string)
+    invalidate(string)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
         });

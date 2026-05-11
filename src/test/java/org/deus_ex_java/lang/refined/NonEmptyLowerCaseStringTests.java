@@ -26,10 +26,10 @@ public class NonEmptyLowerCaseStringTests {
   }
 
   @Test
-  public void testValidate() {
-    assertTrue(NonEmptyLowerCaseString.validate("x").isEmpty());
-    assertTrue(NonEmptyLowerCaseString.validate("").isPresent());
-    assertTrue(NonEmptyLowerCaseString.validate("X").isPresent());
+  public void testInvalidate() {
+    assertTrue(NonEmptyLowerCaseString.invalidate("x").isEmpty());
+    assertTrue(NonEmptyLowerCaseString.invalidate("").isPresent());
+    assertTrue(NonEmptyLowerCaseString.invalidate("X").isPresent());
   }
 
   @Test

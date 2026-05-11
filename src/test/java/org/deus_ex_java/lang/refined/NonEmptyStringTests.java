@@ -16,9 +16,9 @@ public class NonEmptyStringTests {
   }
 
   @Test
-  public void testValidate() {
-    assertTrue(NonEmptyString.validate("x").isEmpty());
-    assertTrue(NonEmptyString.validate("").isPresent());
+  public void testInvalidate() {
+    assertTrue(NonEmptyString.invalidate("x").isEmpty());
+    assertTrue(NonEmptyString.invalidate("").isPresent());
   }
 
   @Test
