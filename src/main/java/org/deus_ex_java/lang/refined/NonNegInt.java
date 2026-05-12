@@ -46,9 +46,9 @@ public record NonNegInt(int value) implements Comparable<NonNegInt> {
   }
 
   /**
-   * Returns, via the error-by-value pattern, an {@link Either} where an {@link Either#right} contains the validated
-   * wrapped instance, otherwise an {@link Either#left} contains the returned {@link ParametersValidationException}
-   * instance from the call to the {@link #invalidate(int)} method.
+   * Returns, via the error-by-return-value pattern, an {@link Either} where an {@link Either#right} contains the
+   * validated wrapped instance, otherwise an {@link Either#left} contains the returned
+   * {@link ParametersValidationException} instance from the call to the {@link #invalidate(int)} method.
    *
    * @param value an {@code int} value greater than or equal to {@code 0}
    * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an

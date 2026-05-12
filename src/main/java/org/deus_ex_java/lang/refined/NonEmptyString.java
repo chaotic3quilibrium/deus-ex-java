@@ -48,9 +48,9 @@ public record NonEmptyString(
   }
 
   /**
-   * Returns, via the error-by-value pattern, an {@link Either} where an {@link Either#right} contains the validated
-   * wrapped instance, otherwise an {@link Either#left} contains the returned {@link ParametersValidationException}
-   * instance from the call to the {@link #invalidate(String)} method.
+   * Returns, via the error-by-return-value pattern, an {@link Either} where an {@link Either#right} contains the
+   * validated wrapped instance, otherwise an {@link Either#left} contains the returned
+   * {@link ParametersValidationException} instance from the call to the {@link #invalidate(String)} method.
    *
    * @param string an {@code String} with a non-empty value
    * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an
