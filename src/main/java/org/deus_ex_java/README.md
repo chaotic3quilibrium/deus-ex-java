@@ -92,9 +92,9 @@ High level overview:
     - immutability over mutability
     - YAGNI (You Aren't Going to Need It) over premature abstraction
 - Tactically improve Java code by preferring/biasing...
-    - `Optional<T>` over `null`
+    - `Optional<T>` over any sort of meaningful `null`
     - Referential transparency over allowing side effects (including throwing an `Exception`)
-    - Error-by-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
+    - Error-by-Return-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
     - Type inference (Ex: `var`) over explicitly specifying types
     - Instantiating only valid states over ambiguous and non-deterministic valid+invalid states
     - DRY (Don't Repeat Yourself) over copy/pasting (a.k.a. copy-pasta)
@@ -121,7 +121,7 @@ High level overview:
         - to prefer the use of a permissive perimeter where null is transformed and then eliminated from the internal
           system
     - encapsulating checked exceptions with a runtime exception
-        - biases to error-by-value (via an `Either` or `Optional`), as opposed to error-by-throw-exception
+        - biases to error-by-return-value (via an `Either` or `Optional`), as opposed to error-by-thrown-exception
         - all error functionality is assumed to be `RuntimeException`; i.e. no checked exception signatures, or must
           wrap those outside of one's control
         - use `TryCatchesOps.wrapCheckedException` to easily wrap all checked exceptions with a well-known runtime

@@ -17,15 +17,15 @@ public final class CollectionsOps {
   }
 
   /**
-   * Returns {@code true} if the {@link Collection} is identified as unmodifiable via
-   * internal class type or behavioral probing.
+   * Returns {@code true} if the {@link Collection} is identified as unmodifiable via internal class type or behavioral
+   * probing.
    * <p>
    * Behavior probing check to see if an {@link UnsupportedOperationException} is thrown when calling
    * {@link Collection#addAll} with an {@link Collections#emptyList}, false otherwise.
    *
    * @param collection instance being tested for being unmodifiable
    * @return {@code true} if the {@link Collection} throws an {@link UnsupportedOperationException} when calling
-   * {@link Collection#addAll} with an {@link Collections#emptyList}, false otherwise
+   *     {@link Collection#addAll} with an {@link Collections#emptyList}, false otherwise
    */
   public static boolean isUnmodifiable(Collection<?> collection) {
     // 1. Fast path: Check known JDK internal types (Java 17+)
@@ -45,19 +45,19 @@ public final class CollectionsOps {
   }
 
   /**
-   * Returns {@code true} if the {@link Map} is identified as unmodifiable via
-   * internal class type or behavioral probing.
+   * Returns {@code true} if the {@link Map} is identified as unmodifiable via internal class type or behavioral
+   * probing.
    * <p>
-   * Behavior probing check to see if an {@link UnsupportedOperationException} is thrown when calling
-   * {@link Map#putAll} with an {@link Collections#emptyList}, false otherwise.
+   * Behavior probing check to see if an {@link UnsupportedOperationException} is thrown when calling {@link Map#putAll}
+   * with an {@link Collections#emptyList}, false otherwise.
+   *
    * @param map instance being tested for being unmodifiable
-   * @return {@code true} if the {@link Map} is identified as unmodifiable via
-   * internal class type or behavioral probing
+   * @return {@code true} if the {@link Map} is identified as unmodifiable via internal class type or behavioral probing
    */
   public static boolean isUnmodifiable(Map<?, ?> map) {
     // 1. Fast path: Check for known JDK immutable/unmodifiable types
     var className = map.getClass().getName();
-    if (className.contains("ImmutableCollections") || className.contains("Unmodifiable")) {
+    if (className.contains("Unmodifiable") || className.contains("ImmutableCollections")) {
       return true;
     }
 
