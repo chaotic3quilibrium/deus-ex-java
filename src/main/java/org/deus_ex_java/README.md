@@ -10,32 +10,30 @@ deus-ex-java</span></a>
 # Table of Contents <!-- omit in toc -->
 
 <!-- TOC -->
-
 * [Table of Contents <!-- omit in toc -->](#table-of-contents----omit-in-toc---)
 * [Welcome](#welcome)
-    * [Installation](#installation)
-        * [Maven Coordinates:](#maven-coordinates)
-        * [QuickStart Introduction](#quickstart-introduction)
+  * [Installation](#installation)
+    * [Maven Coordinates:](#maven-coordinates)
+    * [QuickStart Introduction](#quickstart-introduction)
 * [Philosophy](#philosophy)
-    * [Why Use deus-ex-java?](#why-use-deus-ex-java)
+  * [Why Use deus-ex-java?](#why-use-deus-ex-java)
 * [Support](#support)
 * [Legal](#legal)
-    * [License](#license)
-        * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
-        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
-        * [FYI, I'd prefer to move deus-ex-java to an Apache 2.0 license](#fyi-id-prefer-to-move-deus-ex-java-to-an-apache-20-license)
+  * [License](#license)
+    * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
+    * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
+    * [FYI, I'd prefer to move deus-ex-java to an Apache 2.0 license](#fyi-id-prefer-to-move-deus-ex-java-to-an-apache-20-license)
 * [Version History](#version-history)
-    * [v1.9.0](#v190)
-    * [v1.8.0](#v180)
-    * [v1.7.0](#v170)
-    * [v1.6.0](#v160)
-    * [v1.5.0](#v150)
-    * [v1.4.0](#v140)
-    * [v1.3.0](#v130)
-    * [v1.2.0](#v120)
-    * [v1.1.0](#v110)
-    * [v1.0.0](#v100)
-
+  * [v1.9.0](#v190)
+  * [v1.8.0](#v180)
+  * [v1.7.0](#v170)
+  * [v1.6.0](#v160)
+  * [v1.5.0](#v150)
+  * [v1.4.0](#v140)
+  * [v1.3.0](#v130)
+  * [v1.2.0](#v120)
+  * [v1.1.0](#v110)
+  * [v1.0.0](#v100)
 <!-- TOC -->
 
 ---
@@ -130,19 +128,15 @@ High level overview:
         - always attempts to produce deeply immutable instances
         - preferring the use of a tuple or a builder for moving through "partial" states prior to instantiation
     - reducing the use of `null`
-        - no other meaning for
-          `null` is allowed other than a reference has not-yet-initialized; i.e. it never means "default"
+        - no other meaning for `null` is allowed other than a reference has not-yet-initialized; i.e. it never means "default"
         - `null` is filtered out (typically as a `flatMap`) everywhere it is encountered
-        -
-        `null` is considered a compile-time type hole, and is biased towards producing run-time errors, as opposed to the more desirable compile-time errors
+        - `null` is considered a compile-time type hole, and is biased towards producing run-time errors, as opposed to the more desirable compile-time errors
         - use `Optional`, `Either`, or `FunctionOps.ifThenElse*` to handle alternatives at compile time
         - to prefer the use of a permissive perimeter where null is transformed and then eliminated from the internal system
     - encapsulating checked exceptions with a runtime exception
         - biases to error-by-returned-value (via an `Either` or `Optional`), as opposed to error-by-thrown-exception
-        - all error functionality is assumed to be
-          `RuntimeException`; i.e. no checked exception signatures, or must wrap those outside of one's control
-        - use
-          `TryCatchesOps.wrapCheckedException` to easily wrap all checked exceptions with a well-known runtime exception
+        - all error functionality is assumed to be `RuntimeException`; i.e. no checked exception signatures, or must wrap those outside of one's control
+        - use `TryCatchesOps.wrapCheckedException` to easily wrap all checked exceptions with a well-known runtime exception
     - using expressions, as opposed to statements
         - encapsulates iteration statements into `Stream` patterns
         - encapsulates exception handling `try`/`catch` statements into the `TryCatchesOps.wrap*` patterns
@@ -150,9 +144,7 @@ High level overview:
         - encapsulates `if` statements into ADTs, `Optional`, `Either`, `FunctionOps.ifThenElse*`, etc.
     - offering two types of immutable "instantiation" factory methods
         - `unsafeFrom` which throws an exception if its preconditions fail
-        - `from` which returns an
-          `Either` where the right returns the successful obtaining of the value, otherwise the left contains the
-          `Exception` that would have been thrown when the precondition fails
+        - `from` which returns an `Either` where the right returns the successful obtaining of the value, otherwise the left contains the `Exception` that would have been thrown when the precondition fails
 
 ---
 
@@ -187,8 +179,7 @@ You should have received a copy of the [GNU Affero General Public License](https
 - It was chosen entirely because of Amazon's/AWS's (and many other wealthy corporations) historic abuses and exploitation of FOSS (Free Open Source Software)
 - No Worries, I'd love to work with you directly to negotiate an ad-hoc license.
 
-So, if the AGPLv3 doesn't work for you, we would LOVE to work with you to generate a *
-*custom/different/commercial/non-profit/government license** for deus-ex-java.
+So, if the AGPLv3 doesn't work for you, we would LOVE to work with you to generate a **custom/different/commercial/non-profit/government license** for deus-ex-java.
 
 Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would preferm, as I am happy to discuss this with you.
 
@@ -229,8 +220,7 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 
 - 2025.12.25
 - deprecated SetsOps.contrastSetPair, and added ADT record SetPair<T> with toMap method
-- replaced Enum*sOps.FormatBuilder's filter parameter to Predicate<*> from Function<Stream<*>,
-  Stream<*>> and added two collection/stream helpers
+- replaced Enum*sOps.FormatBuilder's filter parameter to Predicate<*> from Function<Stream<*>, Stream<*>> and added two collection/stream helpers
 
 ## v1.5.0
 
@@ -247,8 +237,7 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 
 - 2025.11.30
 - Added SetsOps x4 methods, toDistinctAndDupes() and toDistinctAndDupesOrdered()
-- Completely refactored away FatalThrowable, and replaced with ForcedFatalThrowable to ensure fatal exceptions (
-  including checked exceptions, like InterruptedException) flow by unhindered by library encapsulation and guards
+- Completely refactored away FatalThrowable, and replaced with ForcedFatalThrowable to ensure fatal exceptions (including checked exceptions, like InterruptedException) flow by unhindered by library encapsulation and guards
 - Refactored remaining try/catch statements to use TryCatchesOps to ensure correct handling using ForcedFatalThrowable
 - Tidied up Javadocs for ForcedFatalThrowable and WrappedCheckedException
 
