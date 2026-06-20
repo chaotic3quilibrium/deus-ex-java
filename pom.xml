@@ -6,7 +6,7 @@
 
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.9.0</version>
+    <version>1.10.0-SNAPSHOT</version>
     <name>deus-ex-java</name>
     <description>A Java augmentation library to ease the incremental modernization of legacy Enterprise IT systems
     </description>
@@ -30,8 +30,7 @@
         <url>https://github.com/chaotic3quilibrium/deus-ex-java</url>
     </scm>
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>

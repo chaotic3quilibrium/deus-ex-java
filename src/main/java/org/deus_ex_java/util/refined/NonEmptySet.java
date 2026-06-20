@@ -14,13 +14,14 @@ import java.util.stream.Stream;
 
 /**
  * A validation encapsulation record ensuring the wrapped {@link Set} is both non-empty and unmodifiable. This enables
- * use of both the <em>error-by-return-value</em> pattern and the <em>error-by-throw-exception</em> pattern.
+ * use of both the <em>error-by-return-value</em> pattern and the <em>error-by-thrown-exception</em> pattern.
  * <p>
  * The <em>error-by-return-value</em> pattern is implemented via the static factory methods,
  * {@link NonEmptySet#wrap(Set)}, {@link NonEmptySet#from(Collection)}, and {@link NonEmptySet#from(Stream)}.
  * <p>
  * The default {@code new NonEmptySet(...)} constructor implements the forced validation via the
- * <em>error-by-throw-exception</em> pattern; i.e. throws a {@link ParametersValidationException} within any attempt to
+ * <em>error-by-thrown-exception</em> pattern; i.e. throws a {@link ParametersValidationException} within any attempt
+ * to
  * instantiate with a {@code set} which returns a non-empty {@link Optional} from the {@link NonEmptySet#invalidate}
  * method.
  *
