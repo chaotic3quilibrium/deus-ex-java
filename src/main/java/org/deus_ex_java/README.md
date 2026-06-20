@@ -3,7 +3,7 @@ deus-ex-java</span></a>
 
 - Copyright (C) 2026 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.9.0`](#v190)
+- [`v1.10.0`](#v1100)
 
 ---
 
@@ -24,6 +24,7 @@ deus-ex-java</span></a>
     * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
     * [FYI, I'd prefer to move deus-ex-java to an Apache 2.0 license](#fyi-id-prefer-to-move-deus-ex-java-to-an-apache-20-license)
 * [Version History](#version-history)
+  * [v1.10.0](#v1100)
   * [v1.9.0](#v190)
   * [v1.8.0](#v180)
   * [v1.7.0](#v170)
@@ -189,6 +190,19 @@ Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license 
 ---
 
 # Version History
+
+## v1.10.0
+
+- 2026.06.20
+- Tweaked pom.xml to better handle Java versioning for compiler
+- Renamed to `invalidate` (from `validate`) in all the refined classes
+- Reworded to use Error-by-Returned-Value and Error-by-Thrown-Exception consistently
+- Fixed CollectionsOps.isUnmodifiable(Map<>) class name matches
+- Added @Nullable pathways in MapsOps for both Key/Value and Entry to ease use at conversion boundaries, and related validation tests
+- Updated README.md
+    - Remove the soft word-wrapping
+    - Added Mermaid Flow Chart Diagram (URL link and embedded) covering how the cascade logic for (explicitly Fatal) exceptions works
+- Tweaked licensing details and wording
 
 ## v1.9.0
 

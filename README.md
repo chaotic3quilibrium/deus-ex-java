@@ -9,23 +9,21 @@ located here:
 <a href="https://github.com/chaotic3quilibrium/deus-ex-java" target="_blank"><span style="font-family:default; font-size:2.35em; color:#5FA845">
 deus-ex-java</span></a>
 
-- Version: 1.9.0 - 2026.05.10
+- Version: 1.10.0 - 2026.06.20
 
 ---
 
 # Table of Contents <!-- omit in toc -->
 
 <!-- TOC -->
-
 * [Table of Contents <!-- omit in toc -->](#table-of-contents----omit-in-toc---)
 * [Welcome](#welcome)
-    * [Installation](#installation)
-        * [Maven Coordinates](#maven-coordinates)
+  * [Installation](#installation)
+    * [Maven Coordinates](#maven-coordinates)
 * [Support](#support)
-    * [License](#license)
-        * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
-        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
-
+  * [License](#license)
+    * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
+    * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
 <!-- TOC -->
 
 ---
@@ -45,7 +43,7 @@ legacy Enterprise IT systems via a series of continuous improvements via micro-t
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.9.0</version>
+    <version>1.10.0</version>
   </dependency>
 ```
 
