@@ -24,11 +24,11 @@ public class NonBlankStringTests {
   }
 
   @Test
-  public void testValidate() {
-    assertTrue(NonBlankString.validate("x").isEmpty());
+  public void testInvalidate() {
+    assertTrue(NonBlankString.invalidate("x").isEmpty());
     generateStrings()
         .forEach(string ->
-            assertFalse(NonBlankString.validate(string).isEmpty()));
+            assertFalse(NonBlankString.invalidate(string).isEmpty()));
   }
 
   @Test
