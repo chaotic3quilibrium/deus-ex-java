@@ -226,7 +226,7 @@ public final class MapsOps {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
    * {@link Map#entry(Object, Object)} containing the validated non-null {@code key} and {@code value}, otherwise an
    * {@link Either#left} with a {@link ParametersValidationException} is returned containing the non-empty result from
    * the {@link #invalidate(Object, Object)} method.
@@ -235,7 +235,7 @@ public final class MapsOps {
    * @param value the value with which to associate with the key
    * @param <K>   the type of the key contained in the {@code entry}
    * @param <V>   the type of the value contained in the {@code entry}
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
    *     {@link Map#entry(Object, Object)} containing the validated non-null {@code key} and {@code value}, otherwise an
    *     {@link Either#left} with a {@link ParametersValidationException} is returned containing the non-empty result
    *     from the {@link #invalidate(Object, Object)} method
@@ -252,7 +252,7 @@ public final class MapsOps {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
    * {@link Map#entry(Object, Object)} containing the validated {@code entry} with a non-null key and value, otherwise
    * an {@link Either#left} with a {@link ParametersValidationException} is returned containing the non-empty result
    * from the {@link #invalidate(Entry)} method.
@@ -260,7 +260,7 @@ public final class MapsOps {
    * @param entry the key/value pair as an {@link Entry}
    * @param <K>   the type of the key contained in the {@code entry}
    * @param <V>   the type of the value contained in the {@code entry}
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
    *     {@link Map#entry(Object, Object)} containing the validated {@code entry} with a non-null key and value,
    *     otherwise an {@link Either#left} with a {@link ParametersValidationException} is returned containing the
    *     non-empty result from the {@link #invalidate(Entry)} method

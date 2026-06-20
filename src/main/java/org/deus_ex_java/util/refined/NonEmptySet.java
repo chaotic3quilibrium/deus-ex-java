@@ -14,15 +14,14 @@ import java.util.stream.Stream;
 
 /**
  * A validation encapsulation record ensuring the wrapped {@link Set} is both non-empty and unmodifiable. This enables
- * use of both the <em>error-by-return-value</em> pattern and the <em>error-by-thrown-exception</em> pattern.
+ * use of both the <em>error-by-returned-value</em> pattern and the <em>error-by-thrown-exception</em> pattern.
  * <p>
- * The <em>error-by-return-value</em> pattern is implemented via the static factory methods,
+ * The <em>error-by-returned-value</em> pattern is implemented via the static factory methods,
  * {@link NonEmptySet#wrap(Set)}, {@link NonEmptySet#from(Collection)}, and {@link NonEmptySet#from(Stream)}.
  * <p>
  * The default {@code new NonEmptySet(...)} constructor implements the forced validation via the
  * <em>error-by-thrown-exception</em> pattern; i.e. throws a {@link ParametersValidationException} within any attempt
- * to
- * instantiate with a {@code set} which returns a non-empty {@link Optional} from the {@link NonEmptySet#invalidate}
+ * to instantiate with a {@code set} which returns a non-empty {@link Optional} from the {@link NonEmptySet#invalidate}
  * method.
  *
  * @param set a {@link Set} that is both non-empty and unmodifiable
@@ -73,13 +72,13 @@ public record NonEmptySet<T>(Set<T> set) {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
    * wrapping the uncopied and validated {@code set}, otherwise an {@link Either#left} with a
    * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Set)}
    * method.
    *
    * @param set a {@link Set} that is both non-empty and unmodifiable
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
    *     the uncopied and validated {@code set}, otherwise an {@link Either#left} with a
    *     {@link ParametersValidationException} is returned containing the non-empty result from the
    *     {@link #invalidate(Set)} method
@@ -94,13 +93,13 @@ public record NonEmptySet<T>(Set<T> set) {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
    * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Set)}
    * method.
    *
    * @param collection a source from which the elements are defensively copied
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
    *     a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    *     {@link ParametersValidationException} is returned containing the non-empty result from the
    *     {@link #invalidate(Set)} method
@@ -112,13 +111,13 @@ public record NonEmptySet<T>(Set<T> set) {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet}
    * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Set)}
    * method.
    *
    * @param stream a source from which the elements are defensively copied
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptySet} wrapping
    *     a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    *     {@link ParametersValidationException} is returned containing the non-empty result from the
    *     {@link #invalidate(Set)} method

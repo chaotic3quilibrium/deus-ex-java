@@ -1,6 +1,7 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ParametersValidationException;
+import org.deus_ex_java.util.function.VoidSupplier;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -273,9 +274,56 @@ public class MapsOpsTests {
     assertSame(entryValid, exceptionOrValidatedEntry.getRight());
   }
 
-  //TODO:
-  //  throwExceptionOrReturnCreatedEntry
-  //  throwExceptionOrReturnValidatedEntry
+  private void testThrowExceptionOrReturn_EntryHelper(
+      VoidSupplier voidSupplier,
+      String expectedParametersValidationExceptionMessage
+  ) {
+    var parametersValidationException = assertThrows(
+        ParametersValidationException.class,
+        voidSupplier::execute);
+    assertEquals(
+        expectedParametersValidationExceptionMessage,
+        parametersValidationException.getMessage());
+  }
+
+  @SuppressWarnings("DataFlowIssue")
+  @Test
+  public void testThrowExceptionOrReturnCreatedEntry() {
+    testThrowExceptionOrReturn_EntryHelper(
+        () ->
+            MapsOps.throwExceptionOrReturnCreatedEntry(null, null),
+        "MapsOps.isNonNulls failed preconditions on the key and/or value - Parameter Validation Failures: [key must not be null|value must not be null]");
+    testThrowExceptionOrReturn_EntryHelper(
+        () ->
+            MapsOps.throwExceptionOrReturnCreatedEntry(1, null),
+        "MapsOps.isNonNulls failed preconditions on the key and/or value - Parameter Validation Failures: [value must not be null]");
+    testThrowExceptionOrReturn_EntryHelper(
+        () ->
+            MapsOps.throwExceptionOrReturnCreatedEntry(null, "x"),
+        "MapsOps.isNonNulls failed preconditions on the key and/or value - Parameter Validation Failures: [key must not be null]");
+    var createdEntry = MapsOps.throwExceptionOrReturnCreatedEntry(1, "x");
+    assertEquals(Map.entry(1, "x"), createdEntry);
+  }
+
+  @SuppressWarnings("NullableProblems")
+  @Test
+  public void testThrowExceptionOrReturnValidatedEntry() {
+    testThrowExceptionOrReturn_EntryHelper(
+        () ->
+            MapsOps.throwExceptionOrReturnValidatedEntry(createEntryWithNullableKeyAndValue(null, null)),
+        "MapsOps.isNonNulls failed preconditions on the key and/or value - Parameter Validation Failures: [key must not be null|value must not be null]");
+    testThrowExceptionOrReturn_EntryHelper(
+        () ->
+            MapsOps.throwExceptionOrReturnValidatedEntry(createEntryWithNullableKeyAndValue(1, null)),
+        "MapsOps.isNonNulls failed preconditions on the key and/or value - Parameter Validation Failures: [value must not be null]");
+    testThrowExceptionOrReturn_EntryHelper(
+        () ->
+            MapsOps.throwExceptionOrReturnValidatedEntry(createEntryWithNullableKeyAndValue(null, "x")),
+        "MapsOps.isNonNulls failed preconditions on the key and/or value - Parameter Validation Failures: [key must not be null]");
+    var entryValid = Map.entry(1, "x");
+    var validatedEntry = MapsOps.throwExceptionOrReturnValidatedEntry(entryValid);
+    assertSame(entryValid, validatedEntry);
+  }
 
   @Test
   public void testNullSanitize() {
