@@ -12,7 +12,7 @@ import java.util.Optional;
  * <p>
  * The default {@code new NonNegInt(...)} constructor implements enforced validation; i.e. throws a
  * {@link ParametersValidationException} within any attempt to instantiate with a value which returns a non-empty
- * {@link Optional} from the {@link NonNegInt#validate} method.
+ * {@link Optional} from the {@link NonNegInt#invalidate} method.
  *
  * @param value an {@code int} value greater than or equal to {@code 0}
  */
@@ -32,7 +32,7 @@ public record NonNegInt(int value) implements Comparable<NonNegInt> {
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  public static Optional<ParametersValidationException> validate(
+  public static Optional<ParametersValidationException> invalidate(
       int value
   ) {
     if (value < 0) {
@@ -48,12 +48,12 @@ public record NonNegInt(int value) implements Comparable<NonNegInt> {
   /**
    * Returns, via the error-by-returned-value pattern, an {@link Either} where an {@link Either#right} contains the
    * validated wrapped instance, otherwise an {@link Either#left} contains the returned
-   * {@link ParametersValidationException} instance from the call to the {@link #validate(int)} method.
+   * {@link ParametersValidationException} instance from the call to the {@link #invalidate(int)} method.
    *
    * @param value an {@code int} value greater than or equal to {@code 0}
    * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
-   *     {@link #validate(int)} method
+   *     {@link #invalidate(int)} method
    */
   public static Either<ParametersValidationException, NonNegInt> from(
       int value
@@ -68,11 +68,11 @@ public record NonNegInt(int value) implements Comparable<NonNegInt> {
    * Default constructor ensuring the preconditions are validated before wrapping the value.
    *
    * @param value an {@code int} value greater than or equal to {@code 0}
-   * @throws ParametersValidationException when the call to the {@link #validate(int)} method returns a non-empty
+   * @throws ParametersValidationException when the call to the {@link #invalidate(int)} method returns a non-empty
    *                                       {@link Optional}.
    */
   public NonNegInt {
-    validate(value)
+    invalidate(value)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
         });

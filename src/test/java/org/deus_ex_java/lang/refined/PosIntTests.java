@@ -21,11 +21,11 @@ public class PosIntTests {
   }
 
   @Test
-  public void testValidate() {
-    assertFalse(PosInt.validate(-1).isEmpty());
-    assertFalse(PosInt.validate(0).isEmpty());
-    assertTrue(PosInt.validate(1).isEmpty());
-    assertTrue(PosInt.validate(2).isEmpty());
+  public void testInvalidate() {
+    assertFalse(PosInt.invalidate(-1).isEmpty());
+    assertFalse(PosInt.invalidate(0).isEmpty());
+    assertTrue(PosInt.invalidate(1).isEmpty());
+    assertTrue(PosInt.invalidate(2).isEmpty());
   }
 
   @Test

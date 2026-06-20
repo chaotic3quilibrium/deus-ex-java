@@ -84,8 +84,9 @@ High level overview:
     - immutability over mutability
     - YAGNI (You Aren't Going to Need It) over premature abstraction
 - Tactically improve Java code by preferring/biasing...
-    - `Optional<T>` over `null`
+    - `Optional<T>` over any sort of meaningful `null`
     - Referential transparency over allowing side effects (including throwing an `Exception`)
+    - Error-by-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
     - Type inference (Ex: `var`) over explicitly specifying types
     - Instantiating only valid states over ambiguous and non-deterministic valid+invalid states
     - DRY (Don't Repeat Yourself) over copy/pasting (a.k.a. copy-pasta)

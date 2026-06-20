@@ -12,7 +12,7 @@ import java.util.Optional;
  * <p>
  * The default {@code new PosInt(...)} constructor implements enforced validation; i.e. throws a
  * {@link ParametersValidationException} within any attempt to instantiate with a value which returns a non-empty
- * {@link Optional} from the {@link PosInt#validate} method.
+ * {@link Optional} from the {@link PosInt#invalidate} method.
  *
  * @param value an {@code int} value greater than {@code 0}
  */
@@ -32,7 +32,7 @@ public record PosInt(int value) implements Comparable<PosInt> {
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}
    */
-  public static Optional<ParametersValidationException> validate(
+  public static Optional<ParametersValidationException> invalidate(
       int value
   ) {
     if (value < 1) {
@@ -47,12 +47,12 @@ public record PosInt(int value) implements Comparable<PosInt> {
   /**
    * Returns, via the error-by-returned-value pattern, an {@link Either} where an {@link Either#right} contains the
    * validated wrapped instance, otherwise an {@link Either#left} contains the returned
-   * {@link ParametersValidationException} instance from the call to the {@link #validate(int)} method.
+   * {@link ParametersValidationException} instance from the call to the {@link #invalidate(int)} method.
    *
    * @param value an {@code int} value greater than {@code 0}
    * @return an {@link Either} where an {@link Either#right} contains the validated wrapped instance, otherwise an
    *     {@link Either#left} contains the returned {@link ParametersValidationException} instance from the call to the
-   *     {@link #validate(int)} method
+   *     {@link #invalidate(int)} method
    */
   public static Either<ParametersValidationException, PosInt> from(
       int value
@@ -67,11 +67,11 @@ public record PosInt(int value) implements Comparable<PosInt> {
    * Default constructor ensuring the preconditions are validated before wrapping the value.
    *
    * @param value an {@code int} value greater than {@code 0}
-   * @throws ParametersValidationException when the call to the {@link #validate(int)} method returns a non-empty
+   * @throws ParametersValidationException when the call to the {@link #invalidate(int)} method returns a non-empty
    *                                       {@link Optional}.
    */
   public PosInt {
-    validate(value)
+    invalidate(value)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
         });

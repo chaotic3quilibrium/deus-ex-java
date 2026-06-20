@@ -13,8 +13,8 @@ import java.util.function.Supplier;
 /**
  * A utility class focused on {@link RuntimeException}s for transforming the Java try-with-resources statement
  * {@code try(...) {}} into an expression, enabling the use of both the error-by-returned-value ({@code apply()}) and
- * error-by-exception ({@code applyUnsafe()}) while ensuring the proper {@link AutoCloseable#close()} of successfully
- * obtained resources.
+ * error-by-thrown-exception ({@code applyUnsafe()}) while ensuring the proper {@link AutoCloseable#close()} of
+ * successfully obtained resources.
  * <p>
  * In contrast with {@link UsingCheckedException}'s ensuring all checked exceptions are wrapped with a
  * {@link WrappedCheckedException}, this class ensures the non-{@link AutoCloseable#close()} pathways remain based on

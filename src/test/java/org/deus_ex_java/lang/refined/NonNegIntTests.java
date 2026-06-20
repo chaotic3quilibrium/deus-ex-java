@@ -17,10 +17,10 @@ public class NonNegIntTests {
   }
 
   @Test
-  public void testValidate() {
-    assertFalse(NonNegInt.validate(-1).isEmpty());
-    assertTrue(NonNegInt.validate(0).isEmpty());
-    assertTrue(NonNegInt.validate(1).isEmpty());
+  public void testInvalidate() {
+    assertFalse(NonNegInt.invalidate(-1).isEmpty());
+    assertTrue(NonNegInt.invalidate(0).isEmpty());
+    assertTrue(NonNegInt.invalidate(1).isEmpty());
   }
 
   @Test

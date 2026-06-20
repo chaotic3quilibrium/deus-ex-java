@@ -12,8 +12,8 @@ import org.jspecify.annotations.NullMarked;
 /**
  * A utility class focused on {@link WrappedCheckedException}s for transforming the Java try-with-resources statement
  * {@code try(...) {}} into an expression, enabling the use of both the error-by-returned-value ({@code apply()}) and
- * error-by-exception ({@code applyUnsafe()}) while ensuring the proper {@link AutoCloseable#close()} of successfully
- * obtained resources.
+ * error-by-thrown-exception ({@code applyUnsafe()}) while ensuring the proper {@link AutoCloseable#close()} of
+ * successfully obtained resources.
  * <p>
  * In contrast with {@link Using}'s ensuring all the non-{@link AutoCloseable#close()} pathways remain based on
  * {@link RuntimeException}s exceptions, this class ensures all checked exception pathways return a
