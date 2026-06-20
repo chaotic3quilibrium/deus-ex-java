@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 /**
  * A utility class focused on {@link RuntimeException}s for transforming the Java try-with-resources statement
- * {@code try(...) {}} into an expression, enabling the use of both the error-by-return-value ({@code apply()}) and
+ * {@code try(...) {}} into an expression, enabling the use of both the error-by-returned-value ({@code apply()}) and
  * error-by-thrown-exception ({@code applyUnsafe()}) while ensuring the proper {@link AutoCloseable#close()} of
  * successfully obtained resources.
  * <p>

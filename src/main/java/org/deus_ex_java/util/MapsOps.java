@@ -133,15 +133,73 @@ public final class MapsOps {
   /**
    * Returns {@code true} if both the key and the value are non-{@code null}, otherwise {@code false}.
    *
+   * @param key   the key with which to associate with the value
+   * @param value the value with which to associate with the key
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
+   * @return {@code true} if both the key and the value are non-{@code null}, otherwise {@code false}.
+   */
+  public static <K, V> boolean isNonNulls(
+      @Nullable K key,
+      @Nullable V value
+  ) {
+    return (key != null) && (value != null);
+  }
+
+  /**
+   * Returns {@code true} if both the key and the value are non-{@code null}, otherwise {@code false}.
+   *
    * @param entry the key/value pair as an {@link Entry}
-   * @param <K>   the type of the keys contained in the {@code map}
-   * @param <V>   the type of the values contained in the {@code map}
+   * @param <K>   the type of the keys contained in the {@code entry}
+   * @param <V>   the type of the values contained in the {@code entry}
    * @return {@code true} if both the key and the value are non-{@code null}, otherwise {@code false}
    */
   public static <K, V> boolean isNonNulls(
       Entry<@Nullable K, @Nullable V> entry
   ) {
-    return (entry.getKey() != null) && (entry.getValue() != null);
+    return isNonNulls(entry.getKey(), entry.getValue());
+  }
+
+  /**
+   * Returns a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
+   * the validation preconditions which failed, otherwise an {@link Optional#empty()}.
+   * <p>
+   * <u><b>Preconditions:</b></u>
+   * <ul>
+   * <li>{@code key} must not be {@code null}</li>
+   * <li>{@code value} must not be {@code null}</li>
+   * </ul>
+   * <p>
+   *
+   * @param key   the key with which to associate with the value
+   * @param value the value with which to associate with the key
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
+   * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
+   *     the validation preconditions which failed, otherwise an {@link Optional#empty()}
+   */
+  public static <K, V> Optional<ParametersValidationException> invalidate(
+      @Nullable K key,
+      @Nullable V value
+  ) {
+    if (!isNonNulls(key, value)) {
+
+      //@formatter:off
+      return Optional.of(
+          new ParametersValidationException(
+              "MapsOps.isNonNulls failed preconditions on the key and/or value",
+              (key == null) && (value == null)
+                  ? List.of(
+                      "key must not be null",
+                      "value must not be null")
+                  : List.of(
+                      key == null
+                          ? "key must not be null"
+                          : "value must not be null")));
+      //@formatter:on
+    }
+
+    return Optional.empty();
   }
 
   /**
@@ -156,29 +214,126 @@ public final class MapsOps {
    * <p>
    *
    * @param entry the key/value pair as an {@link Entry}
-   * @param <K>   the type of the keys contained in the {@code map}
-   * @param <V>   the type of the values contained in the {@code map}
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
    * @return a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    *     the validation preconditions which failed, otherwise an {@link Optional#empty()}
    */
-  public static <K, V> Optional<ParametersValidationException> validate(
+  public static <K, V> Optional<ParametersValidationException> invalidate(
       Entry<@Nullable K, @Nullable V> entry
   ) {
-    return !isNonNulls(entry)
-        //@formatter:off
-        ? Optional.of(
-            new ParametersValidationException(
-                "MapsOps.containsNulls failed preconditions on the entry",
-                (entry.getKey() == null) && (entry.getValue() == null)
-                    ? List.of(
-                        "entry.getKey() is null",
-                        "entry.getValue() is null")
-                    : List.of(
-                        entry.getKey() == null
-                              ? "entry.getKey() is null"
-                              : "entry.getValue() is null")))
-        : Optional.empty();
-        //@formatter:on
+    return invalidate(entry.getKey(), entry.getValue());
+  }
+
+  /**
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
+   * {@link Map#entry(Object, Object)} containing the validated non-null {@code key} and {@code value}, otherwise an
+   * {@link Either#left} with a {@link ParametersValidationException} is returned containing the non-empty result from
+   * the {@link #invalidate(Object, Object)} method.
+   *
+   * @param key   the key with which to associate with the value
+   * @param value the value with which to associate with the key
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
+   *     {@link Map#entry(Object, Object)} containing the validated non-null {@code key} and {@code value}, otherwise an
+   *     {@link Either#left} with a {@link ParametersValidationException} is returned containing the non-empty result
+   *     from the {@link #invalidate(Object, Object)} method
+   */
+  public static <K, V> Either<ParametersValidationException, Entry<K, V>> returnExceptionOrCreatedEntry(
+      @Nullable K key,
+      @Nullable V value
+  ) {
+    //noinspection NullableProblems
+    return invalidate(key, value)
+        .<Either<ParametersValidationException, Entry<K, V>>>map(Either::left)
+        .orElseGet(() ->
+            Either.right(Map.entry(key, value)));
+  }
+
+  /**
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
+   * {@link Map#entry(Object, Object)} containing the validated {@code entry} with a non-null key and value, otherwise
+   * an {@link Either#left} with a {@link ParametersValidationException} is returned containing the non-empty result
+   * from the {@link #invalidate(Entry)} method.
+   *
+   * @param entry the key/value pair as an {@link Entry}
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a
+   *     {@link Map#entry(Object, Object)} containing the validated {@code entry} with a non-null key and value,
+   *     otherwise an {@link Either#left} with a {@link ParametersValidationException} is returned containing the
+   *     non-empty result from the {@link #invalidate(Entry)} method
+   */
+  public static <K, V> Either<ParametersValidationException, Entry<K, V>> returnExceptionOrValidatedEntry(
+      Entry<@Nullable K, @Nullable V> entry
+  ) {
+    //noinspection NullableProblems
+    return invalidate(entry.getKey(), entry.getValue())
+        .<Either<ParametersValidationException, Entry<K, V>>>map(Either::left)
+        .orElseGet(() ->
+            Either.right(entry));
+  }
+
+  /**
+   * Returns a newly created and validated as non-null {@link Map#entry(Object, Object)} in both {@code key} and
+   * {@code value} as passing through a Jspecify's Non-null-annotated wrapper.
+   * <p>
+   * If either {@code key} or {@code value} is {@code null}, a {@link ParametersValidationException} is thrown, NOT A
+   * {@link NullPointerException}.
+   * <p>
+   * While the {@link Map#entry} method throws {@link NullPointerException} at runtime if either {@link Entry#getKey} or
+   * {@link Entry#getValue} is {@code null}, NullAway's JDK model does not mark the JDK's parameters as non-null, so it
+   * cannot flag {@code @Nullable} arguments flowing into it.
+   * <p>
+   * Since this method lives in a {@code @NullMarked} scope, it makes {@code K} and {@code V} non-null under JSpecify
+   * semantics. NullAway therefore reports a warning (or an error depending upon the configuration) when a
+   * {@code @Nullable} value is passed to either parameter, surfacing the potential NPE at compile time rather than at
+   * runtime.
+   *
+   * @param key   the key with which to associate with the value
+   * @param value the value with which to associate with the key
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
+   * @return a newly created and validated as non-null {@link Map#entry(Object, Object)} in both key and value as
+   *     passing through a Jspecify's Non-null-annotated wrapper
+   * @throws ParametersValidationException if the {@code key} or the {@code value} is null
+   */
+  public static <K, V> Entry<K, V> throwExceptionOrReturnCreatedEntry(
+      K key,
+      V value
+  ) {
+    return returnExceptionOrCreatedEntry(key, value)
+        .getRightOrThrowLeft();
+  }
+
+  /**
+   * Returns {@code entry} as validated as a non-null {@link Map#entry(Object, Object)} in both {@link Entry#getKey} and
+   * {@link Entry#getValue} as passing through a Jspecify's Non-null-annotated wrapper.
+   * <p>
+   * If either {@link Entry#getKey} or {@link Entry#getValue} is {@code null}, a {@link ParametersValidationException}
+   * is thrown, NOT A {@link NullPointerException}.
+   * <p>
+   * While {@link Map#entry} method throws {@link NullPointerException} at runtime if either {@link Entry#getKey} or
+   * {@link Entry#getValue} is {@code null}, but NullAway's JDK model does not mark its parameters as non-null, so it
+   * cannot flag {@code @Nullable} arguments flowing into it.
+   * <p>
+   * This wrapper lives in a {@code @NullMarked} scope, which makes {@code K} and {@code V} non-null under JSpecify
+   * semantics. NullAway therefore reports a warning (or an error depending upon the configuration) when a
+   * {@code @Nullable} value is passed to either parameter, surfacing the potential NPE at compile time rather than at
+   * runtime.
+   *
+   * @param entry the key/value pair as an {@link Entry}
+   * @param <K>   the type of the key contained in the {@code entry}
+   * @param <V>   the type of the value contained in the {@code entry}
+   * @return {@code entry} as the validated as a non-null {@link Map#entry(Object, Object)} in both {@code key} and *
+   *     {@code value} as passing through a Jspecify's Non-null-annotated wrapper
+   */
+  public static <K, V> Entry<K, V> throwExceptionOrReturnValidatedEntry(
+      Entry<K, V> entry
+  ) {
+    return returnExceptionOrValidatedEntry(entry)
+        .getRightOrThrowLeft();
   }
 
   /**
@@ -222,7 +377,7 @@ public final class MapsOps {
           ? Map.of()
           : Map.copyOf(map);
     }
-    validate(entry)
+    invalidate(entry)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
         });
@@ -285,7 +440,7 @@ public final class MapsOps {
 
       return Collections.unmodifiableMap(new LinkedHashMap<>(map));
     }
-    validate(entry)
+    invalidate(entry)
         .ifPresent(parametersValidationException -> {
           throw parametersValidationException;
         });
@@ -874,7 +1029,7 @@ public final class MapsOps {
     var result = map.entrySet()
         .stream()
         .peek(entry ->
-            validate(entry).ifPresent(parametersValidationException -> {
+            invalidate(entry).ifPresent(parametersValidationException -> {
               throw parametersValidationException;
             }))
         .collect(Collectors.toMap(
@@ -916,7 +1071,7 @@ public final class MapsOps {
     var result = map.entrySet()
         .stream()
         .peek(entry ->
-            validate(entry).ifPresent(parametersValidationException -> {
+            invalidate(entry).ifPresent(parametersValidationException -> {
               throw parametersValidationException;
             }))
         .collect(Collectors.toMap(

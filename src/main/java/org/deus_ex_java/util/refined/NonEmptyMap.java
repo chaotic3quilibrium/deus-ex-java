@@ -15,15 +15,14 @@ import java.util.stream.Stream;
 
 /**
  * A validation encapsulation record ensuring the wrapped {@link Map} is both non-empty and unmodifiable. This enables
- * use of both the <em>error-by-return-value</em> pattern and the <em>error-by-thrown-exception</em> pattern.
+ * use of both the <em>error-by-returned-value</em> pattern and the <em>error-by-thrown-exception</em> pattern.
  * <p>
- * The <em>error-by-return-value</em> pattern is implemented via the static factory methods,
+ * The <em>error-by-returned-value</em> pattern is implemented via the static factory methods,
  * {@link NonEmptyMap#wrap(Map)}, {@link NonEmptyMap#from(Collection)}, and {@link NonEmptyMap#from(Stream)}.
  * <p>
  * The default {@code new NonEmptyMap(...)} constructor implements the forced validation via the
  * <em>error-by-thrown-exception</em> pattern; i.e. throws a {@link ParametersValidationException} within any attempt
- * to
- * instantiate with a {@code map} which returns a non-empty {@link Optional} from the {@link NonEmptyMap#invalidate}
+ * to instantiate with a {@code map} which returns a non-empty {@link Optional} from the {@link NonEmptyMap#invalidate}
  * method.
  *
  * @param map a {@link Map} that is both non-empty and unmodifiable
@@ -74,13 +73,13 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap}
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap}
    * wrapping the uncopied and validated {@code map}, otherwise an {@link Either#left} with a
    * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Map)}
    * method.
    *
    * @param map a {@link Map} source to be wrapped that must be both non-empty and unmodifiable
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap} wrapping
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap} wrapping
    *     the uncopied and validated {@code map}, otherwise an {@link Either#left} with a
    *     {@link ParametersValidationException} is returned containing the non-empty result from the
    *     {@link #invalidate(Map)} method
@@ -95,13 +94,13 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap}
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap}
    * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Map)}
    * method.
    *
    * @param collection a source from which the entries are defensively copied
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap} wrapping
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap} wrapping
    *     a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    *     {@link ParametersValidationException} is returned containing the non-empty result from the
    *     {@link #invalidate(Map)} method
@@ -113,13 +112,13 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
   }
 
   /**
-   * Returns, via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap}
+   * Returns, via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap}
    * wrapping a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    * {@link ParametersValidationException} is returned containing the non-empty result from the {@link #invalidate(Map)}
    * method.
    *
    * @param stream a source from which the entries are defensively copied
-   * @return via the <em>error-by-return-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap} wrapping
+   * @return via the <em>error-by-returned-value</em> pattern, an {@link Either#right} with a {@link NonEmptyMap} wrapping
    *     a defensively (shallow) copied and validated source, otherwise an {@link Either#left} with a
    *     {@link ParametersValidationException} is returned containing the non-empty result from the
    *     {@link #invalidate(Map)} method
