@@ -1,9 +1,12 @@
 package org.deus_ex_java.util;
 
 import org.deus_ex_java.lang.ParametersValidationException;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -106,8 +109,17 @@ public class MapsOpsTests {
     assertEquals(populatedMap, result.get().map());
   }
 
+  @SuppressWarnings("ConstantValue")
   @Test
   public void testIsNonNulls() {
+    assertTrue(MapsOps.isNonNulls(1, "x"));
+    assertFalse(MapsOps.isNonNulls(1, null));
+    assertFalse(MapsOps.isNonNulls(null, "x"));
+    assertFalse(MapsOps.isNonNulls(null, null));
+  }
+
+  @Test
+  public void testEntryIsNonNulls() {
     assertTrue(MapsOps.isNonNulls(Map.of(1, "x").entrySet().iterator().next()));
     var map1AndNull = new HashMap<Integer, String>();
     map1AndNull.put(1, null);
@@ -115,7 +127,35 @@ public class MapsOpsTests {
   }
 
   @Test
-  public void testEntryValidate() {
+  public void testInvalidate() {
+    assertTrue(MapsOps.invalidate(1, "x").isEmpty());
+    assertEquals(
+        Optional.of(
+            new ParametersValidationException(
+                "MapsOps.isNonNulls failed preconditions on the key and/or value",
+                List.of(
+                    "key must not be null",
+                    "value must not be null"))),
+        MapsOps.invalidate(null, null));
+    assertEquals(
+        Optional.of(
+            new ParametersValidationException(
+                "MapsOps.isNonNulls failed preconditions on the key and/or value",
+                List.of(
+                    "key must not be null"))),
+        MapsOps.invalidate(null, "x"));
+    assertEquals(
+        Optional.of(
+            new ParametersValidationException(
+                "MapsOps.isNonNulls failed preconditions on the key and/or value",
+                List.of(
+                    "value must not be null"))),
+        MapsOps.invalidate(1, null));
+  }
+
+  @Test
+  public void testEntryInvalidate() {
+    assertTrue(MapsOps.invalidate(Map.entry(1, "x")).isEmpty());
     var mapEntryNullNull = new HashMap<>();
     mapEntryNullNull.put(null, null);
     var mapEntryA = mapEntryNullNull.entrySet().iterator().next();
@@ -124,11 +164,11 @@ public class MapsOpsTests {
     assertEquals(
         Optional.of(
             new ParametersValidationException(
-                "MapsOps.containsNulls failed preconditions on the entry",
+                "MapsOps.isNonNulls failed preconditions on the key and/or value",
                 List.of(
-                    "entry.getKey() is null",
-                    "entry.getValue() is null"))),
-        MapsOps.validate(mapEntryA));
+                    "key must not be null",
+                    "value must not be null"))),
+        MapsOps.invalidate(mapEntryA));
     var mapEntryNullString = new HashMap<>();
     mapEntryNullString.put(null, "x");
     var mapEntryB = mapEntryNullString.entrySet().iterator().next();
@@ -138,10 +178,10 @@ public class MapsOpsTests {
     assertEquals(
         Optional.of(
             new ParametersValidationException(
-                "MapsOps.containsNulls failed preconditions on the entry",
+                "MapsOps.isNonNulls failed preconditions on the key and/or value",
                 List.of(
-                    "entry.getKey() is null"))),
-        MapsOps.validate(mapEntryB));
+                    "key must not be null"))),
+        MapsOps.invalidate(mapEntryB));
     var mapEntryIntegerNull = new HashMap<>();
     mapEntryIntegerNull.put(1, null);
     var mapEntryC = mapEntryIntegerNull.entrySet().iterator().next();
@@ -151,18 +191,102 @@ public class MapsOpsTests {
     assertEquals(
         Optional.of(
             new ParametersValidationException(
-                "MapsOps.containsNulls failed preconditions on the entry",
+                "MapsOps.isNonNulls failed preconditions on the key and/or value",
                 List.of(
-                    "entry.getValue() is null"))),
-        MapsOps.validate(mapEntryC));
+                    "value must not be null"))),
+        MapsOps.invalidate(mapEntryC));
   }
 
   @Test
+  public void testReturnExceptionOrCreatedEntry() {
+    assertTrue(MapsOps.returnExceptionOrCreatedEntry(null, null).isLeft());
+    assertTrue(MapsOps.returnExceptionOrCreatedEntry(1, null).isLeft());
+    assertTrue(MapsOps.returnExceptionOrCreatedEntry(null, "x").isLeft());
+    var exceptionOrCreatedEntry = MapsOps.returnExceptionOrCreatedEntry(1, "x");
+    assertTrue(exceptionOrCreatedEntry.isRight());
+    assertEquals(Map.entry(1, "x"), exceptionOrCreatedEntry.getRight());
+  }
+
+  @NullMarked
+  private static <K, V> Entry<@Nullable K, @Nullable V> createEntryWithNullableKeyAndValue(
+      @Nullable K key,
+      @Nullable V value
+  ) {
+    return new Entry<@Nullable K, @Nullable V>() {
+      @Override
+      public @Nullable K getKey() {
+        return key;
+      }
+
+      @Override
+      public @Nullable V getValue() {
+        return value;
+      }
+
+      @Override
+      public @Nullable V setValue(@Nullable V value) {
+        throw new UnsupportedOperationException();
+      }
+    };
+  }
+
+  @NullMarked
+  private static <K, V> Map<@Nullable K, @Nullable V> createHashMapWithNullableKeyAndValue() {
+    return new HashMap<@Nullable K, @Nullable V>();
+  }
+
+  @NullMarked
+  private static <K, V> Map<@Nullable K, @Nullable V> addEntryWithNullableKeyAndValue(
+      Map<@Nullable K, @Nullable V> map,
+      @Nullable K key,
+      @Nullable V value
+  ) {
+    var mapNew = new HashMap<@Nullable K, @Nullable V>(map);
+    mapNew.put(key, value);
+
+    return Collections.unmodifiableMap(mapNew);
+  }
+
+  @NullMarked
+  private static <K, V> Map<@Nullable K, @Nullable V> addEntryWithNullableKeyAndValue(
+      Map<@Nullable K, @Nullable V> map,
+      Entry<@Nullable K, @Nullable V> entry
+  ) {
+    var mapNew = new HashMap<@Nullable K, @Nullable V>(map);
+    mapNew.put(entry.getKey(), entry.getValue());
+
+    return Collections.unmodifiableMap(mapNew);
+  }
+
+  @Test
+  public void testReturnExceptionOrValidatedEntry() {
+    var entryNullAndNull = createEntryWithNullableKeyAndValue(null, null);
+    assertTrue(MapsOps.returnExceptionOrValidatedEntry(entryNullAndNull).isLeft());
+    var entryOneAndNull = createEntryWithNullableKeyAndValue(1, null);
+    assertTrue(MapsOps.returnExceptionOrValidatedEntry(entryOneAndNull).isLeft());
+    var entryNullAndX = createEntryWithNullableKeyAndValue(null, "");
+    assertTrue(MapsOps.returnExceptionOrValidatedEntry(entryNullAndX).isLeft());
+
+    var entryValid = Map.entry(1, "x");
+    var exceptionOrValidatedEntry = MapsOps.returnExceptionOrValidatedEntry(entryValid);
+    assertTrue(exceptionOrValidatedEntry.isRight());
+    assertSame(entryValid, exceptionOrValidatedEntry.getRight());
+  }
+
+  //TODO:
+  //  throwExceptionOrReturnCreatedEntry
+  //  throwExceptionOrReturnValidatedEntry
+
+  @Test
   public void testNullSanitize() {
-    var mapNullAndNull = new HashMap<Integer, String>();
-    mapNullAndNull.put(1, "x");
-    mapNullAndNull.put(null, "y");
-    mapNullAndNull.put(2, null);
+    var mapNullAndNull =
+        addEntryWithNullableKeyAndValue(
+            addEntryWithNullableKeyAndValue(
+                addEntryWithNullableKeyAndValue(
+                    createHashMapWithNullableKeyAndValue(),
+                    1, "x"),
+                null, "y"),
+            2, null);
     var mapNonNull = MapsOps.nullSanitize(mapNullAndNull);
     assertEquals(Map.of(1, "x"), mapNonNull);
     assertFalse(mapNonNull.isEmpty());
@@ -470,7 +594,7 @@ public class MapsOpsTests {
     assertEquals(MapsOps.ofOrdered(2, "x2", 3, "x3", 4, "x4", 5, "x5"), mapRemoveNulls, "Encounter order should be preserved");
     assertTrue(CollectionsOps.isUnmodifiable(mapRemoveNulls));
   }
-  
+
   @Test
   public void testNullSanitizeStream() {
     var mapA = new HashMap<Integer, String>();
