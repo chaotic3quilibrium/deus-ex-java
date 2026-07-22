@@ -52,7 +52,8 @@ import static java.util.Map.entry;
  * <p>
  * Due to this functions recording restriction, it is recommended a {@link #from} method is used to generate the
  * system-wide singleton in an appropriate place. And that all other calls to obtain the instance either use the
- * provided system-wide singleton, or utilize the {@link #fromCacheOnly} method.
+ * provided system-wide singleton, or utilize the {@link #fromCacheOnly(Class)} or {@link #fromCacheOnly(Class, Class)}
+ * method.
  *
  * @param <E>  the type of the {@link Enum} values being enhanced
  * @param <ID> type of each {@link Enum} value's associated {@code ID}
@@ -92,16 +93,16 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * Returns an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
    * {@code classE}, otherwise {@link Optional#empty}.
    *
-   * @param classE the {@link Class} of the specific enum that has already being augmented
+   * @param classE the {@link Class} of the specific {@link Enum} that has already being augmented
    * @param <E>    the type of the {@link Enum} values being enhanced
    * @param <ID>   type of each {@link Enum} value's associated {@code ID}
    * @return an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
    *     {@code classE}, otherwise {@link Optional#empty}
    */
+  @SuppressWarnings("unchecked")
   public static <E extends Enum<E>, ID> Optional<EnumAndIdsOps<E, ID>> fromCacheOnly(
       Class<E> classE
   ) {
-    //noinspection unchecked
     return TryCatchesOps.wrap(
             () ->
                 ENUM_AND_IDS_OPS_CLASS_VALUE_CACHE.get(classE),
@@ -109,6 +110,32 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         .map(enumAndIdsOps ->
             (EnumAndIdsOps<E, ID>) enumAndIdsOps)
         .toOptional();
+  }
+
+  /**
+   * Returns an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
+   * {@code classE} and {@code classId}, otherwise {@link Optional#empty}.
+   * <p>
+   * This method is distinct from the {@link #fromCacheOnly(Class)} method in that it verifies the found enum has
+   * exactly the same {@link Class}
+   *
+   * @param classE  the {@link Class} of the specific {@link Enum} that has already being augmented
+   * @param classId the {@link Class} of the specific {@link ID} that has already being augmented
+   * @param <E>     the type of the {@link Enum} values being enhanced
+   * @param <ID>    type of each {@link Enum} value's associated {@code ID}
+   * @return an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
+   *     {@code classE} and {@code classId}, otherwise {@link Optional#empty}
+   */
+  @SuppressWarnings("unchecked")
+  public static <E extends Enum<E>, ID> Optional<EnumAndIdsOps<E, ID>> fromCacheOnly(
+      Class<E> classE,
+      Class<ID> classId
+  ) {
+    return fromCacheOnly(classE)
+        .filter(enumAndIdsOps ->
+            enumAndIdsOps.getClassId().equals(classId))
+        .map(enumAndIdsOpsCaptures ->
+            ((EnumAndIdsOps<E, ID>) enumAndIdsOpsCaptures));
   }
 
   /**
@@ -790,28 +817,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   public Entry<E, ID> valueOfOrDefaultToFirst(
       String nameOrIdOrAltToString
   ) {
-    return valueOf(
-        nameOrIdOrAltToString,
-        this.orderedMapIdByEnumValue.entrySet().iterator().next());
-  }
-
-  /**
-   * Returns an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   * {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}.
-   *
-   * @param nameOrIdOrAltToString the case-insensitive term with which the search is performed
-   * @param orElseDefault         the entry to provide if the search returns nothing
-   * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}
-   * @deprecated use the {@link Optional#orElse(Object)} method upon the result of the {@link #valueOf(String)} method
-   */
-  @Deprecated
-  public Entry<E, ID> valueOf(
-      String nameOrIdOrAltToString,
-      Entry<E, ID> orElseDefault
-  ) {
     return valueOf(nameOrIdOrAltToString)
-        .orElse(orElseDefault);
+        .orElseGet(() ->
+            this.orderedMapIdByEnumValue.entrySet().iterator().next());
   }
 
   /**

@@ -38,6 +38,9 @@ public class EnumAndIdsOpsTests {
   @Test
   public void testOrdinal() {
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Integer.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Number.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, String.class).isEmpty());
     var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdA.class);
     assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
     var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdA.class);
@@ -46,6 +49,9 @@ public class EnumAndIdsOpsTests {
     var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
     assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwixoo);
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class).isPresent());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Integer.class).isPresent());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Number.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, String.class).isEmpty());
     assertEquals("SGREEN(0), SYELLOW(1), SRED(2)", tlwixoo.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdA.SGREEN), tlwixoo.get(0));
     assertEquals(Optional.of(entry(TrafficLightWithIdA.SGREEN, 0)), tlwixoo.valueOf("0"));
@@ -136,14 +142,14 @@ public class EnumAndIdsOpsTests {
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdC.class).isPresent());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdC.SGREEN), tlwix.get(1));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("1"));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("sgreen"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SGREEN.asEntry()), tlwix.valueOf("1"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SGREEN.asEntry()), tlwix.valueOf("sgreen"));
     assertEquals(Optional.of(TrafficLightWithIdC.SYELLOW), tlwix.get(2));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SYELLOW, 2)), tlwix.valueOf("2"));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SYELLOW, 2)), tlwix.valueOf("sYeLlOw"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SYELLOW.asEntry()), tlwix.valueOf("2"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SYELLOW.asEntry()), tlwix.valueOf("sYeLlOw"));
     assertEquals(Optional.of(TrafficLightWithIdC.SRED), tlwix.get(5));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SRED, 5)), tlwix.valueOf("5"));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SRED, 5)), tlwix.valueOf("SREd"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SRED.asEntry()), tlwix.valueOf("5"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SRED.asEntry()), tlwix.valueOf("SREd"));
   }
 
   private enum TrafficLightWithIdD implements EquivalentInt {
@@ -213,7 +219,6 @@ public class EnumAndIdsOpsTests {
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testTrafficLightWithIdX4() {
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdE.class).isEmpty());
@@ -295,12 +300,6 @@ public class EnumAndIdsOpsTests {
     assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOfOrDefaultToFirst("2a"));
     assertEquals(entry(TrafficLightWithIdE.SRED, 5), tlwix.valueOfOrDefaultToFirst("5"));
     assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOfOrDefaultToFirst("5a"));
-    assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOf("1", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("1a", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2a", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SRED, 5), tlwix.valueOf("5", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("5a", entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOf("1").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("1a").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
