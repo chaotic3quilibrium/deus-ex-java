@@ -4,6 +4,7 @@ import org.deus_ex_java.lang.ParametersValidationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -64,5 +65,18 @@ public class NonEmptyListTests {
     var errorOrValue = NonEmptyList.from(Stream.of(1));
     assertTrue(errorOrValue.isRight());
     assertEquals(List.of(1), errorOrValue.getRight().list());
+  }
+
+  @Test
+  public void testReferenceLeakIsolation() {
+    var mutableList = new ArrayList<>(List.of(1, 2, 3));
+    var unmodifiableView = Collections.unmodifiableList(mutableList);
+    var nonEmptyList = new NonEmptyList<>(unmodifiableView);
+
+    mutableList.clear();
+
+    assertEquals(3, nonEmptyList.list().size());
+    assertEquals(List.of(1, 2, 3), nonEmptyList.list());
+    assertFalse(nonEmptyList.list().isEmpty());
   }
 }

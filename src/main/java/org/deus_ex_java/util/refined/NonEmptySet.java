@@ -139,5 +139,6 @@ public record NonEmptySet<T>(Set<T> set) {
     invalidate(set).ifPresent(parametersValidationException -> {
       throw parametersValidationException;
     });
+    set = Set.copyOf(set);
   }
 }

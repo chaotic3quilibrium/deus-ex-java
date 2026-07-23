@@ -3,6 +3,7 @@ package org.deus_ex_java.util.refined;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -64,5 +65,18 @@ public class NonEmptyMapTests {
     var errorOrValue = NonEmptyMap.from(Stream.of(entry(1, "x")));
     assertTrue(errorOrValue.isRight());
     assertEquals(Map.of(1, "x"), errorOrValue.getRight().map());
+  }
+
+  @Test
+  public void testReferenceLeakIsolation() {
+    var mutableMap = new HashMap<>(Map.of(1, "x", 2, "y", 3, "z"));
+    var unmodifiableView = Collections.unmodifiableMap(mutableMap);
+    var nonEmptyMap = new NonEmptyMap<>(unmodifiableView);
+
+    mutableMap.clear();
+
+    assertEquals(3, nonEmptyMap.map().size());
+    assertEquals(Map.of(1, "x", 2, "y", 3, "z"), nonEmptyMap.map());
+    assertFalse(nonEmptyMap.map().isEmpty());
   }
 }

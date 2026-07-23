@@ -3,6 +3,7 @@ package org.deus_ex_java.util.refined;
 import org.deus_ex_java.lang.ParametersValidationException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -63,5 +64,18 @@ public class NonEmptySetTests {
     var errorOrValue = NonEmptySet.from(Stream.of(1));
     assertTrue(errorOrValue.isRight());
     assertEquals(Set.of(1), errorOrValue.getRight().set());
+  }
+
+  @Test
+  public void testReferenceLeakIsolation() {
+    var mutableSet = new HashSet<>(Set.of(1, 2, 3));
+    var unmodifiableView = Collections.unmodifiableSet(mutableSet);
+    var nonEmptySet = new NonEmptySet<>(unmodifiableView);
+
+    mutableSet.clear();
+
+    assertEquals(3, nonEmptySet.set().size());
+    assertEquals(Set.of(1, 2, 3), nonEmptySet.set());
+    assertFalse(nonEmptySet.set().isEmpty());
   }
 }
