@@ -87,4 +87,15 @@ public final class WrappedCheckedException extends RuntimeException {
         enableSuppression,
         writableStackTrace);
   }
+
+  /**
+   * Evaluates whether the specified throwable is non-fatal, returning it if non-fatal,
+   * or throwing it immediately (even if checked) if it is a fatal throwable.
+   *
+   * @param throwable throwable instance to evaluate
+   * @return the passed {@code throwable} if non-fatal
+   */
+  public static Throwable requireNonFatal(Throwable throwable) {
+    return ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
+  }
 }

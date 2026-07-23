@@ -1,6 +1,5 @@
 package org.deus_ex_java.util;
 
-import org.deus_ex_java.lang.ForcedFatalThrowable;
 import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.function.SupplierCheckedException;
 import org.deus_ex_java.util.function.VoidSupplier;
@@ -75,7 +74,7 @@ public final class TryCatchesOps {
       return Optional.empty();
     } catch (Throwable throwable) {
       //noinspection ThrowableNotThrown
-      ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
+      WrappedCheckedException.requireNonFatal(throwable);
       if (Arrays.stream(throwableClasses)
           .anyMatch(throwableClass ->
               throwableClass.isInstance(throwable))
@@ -206,7 +205,7 @@ public final class TryCatchesOps {
       return Either.right(supplier.get());
     } catch (Throwable throwable) {
       //noinspection ThrowableNotThrown
-      ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
+      WrappedCheckedException.requireNonFatal(throwable);
       if (Arrays.stream(throwableClasses)
           .anyMatch(throwableClass ->
               throwableClass.isInstance(throwable))
@@ -329,7 +328,7 @@ public final class TryCatchesOps {
       Class<? extends T>... throwableClasses
   ) {
     //noinspection ThrowableNotThrown
-    ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(throwable);
+    WrappedCheckedException.requireNonFatal(throwable);
     if (Arrays.stream(throwableClasses)
         .anyMatch(throwableClass ->
             throwableClass.isInstance(throwable))

@@ -61,4 +61,53 @@ public class ForcedFatalThrowableTests {
         () ->
             ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(linkageError));
   }
+
+  @Test
+  public void testCyclicExceptionHandling() {
+    RuntimeException e1 = new RuntimeException("e1");
+    RuntimeException e2 = new RuntimeException("e2");
+    e1.initCause(e2);
+    e2.initCause(e1);
+
+    // Non-fatal cyclic chain should return false without StackOverflowError
+    assertFalse(ForcedFatalThrowable.isFatalThrowable(e1));
+
+    // Cyclic chain containing InterruptedException as a cause
+    RuntimeException e3 = new RuntimeException("e3");
+    InterruptedException ie = new InterruptedException("cyclic interrupted");
+    e3.initCause(ie);
+    ie.initCause(e3);
+
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(e3));
+  }
+
+  @Test
+  public void testThreadInterruptFlagPreservation() {
+    // Clear initial interrupted status
+    Thread.interrupted();
+
+    InterruptedException testInterrupt = new InterruptedException("test interrupt flag");
+    assertThrows(
+        InterruptedException.class,
+        () -> ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(testInterrupt));
+
+    // Verify interrupt flag on current thread was set
+    assertTrue(Thread.currentThread().isInterrupted(), "Thread interrupt flag should be set when re-throwing InterruptedException");
+
+    // Clean up interrupted status
+    Thread.interrupted();
+  }
+
+  @Test
+  public void testSneakyThrowsUnwrappedPropagation() {
+    InterruptedException checkedInterrupted = new InterruptedException("sneaky throws test");
+
+    Throwable thrown = assertThrows(
+        Throwable.class,
+        () -> ForcedFatalThrowable.requireNonFatalThrowableOrElseThrowFatalThrowable(checkedInterrupted));
+
+    // Verify raw exception was propagated directly without wrapping in RuntimeException or WrappedCheckedException
+    assertSame(checkedInterrupted, thrown, "Sneaky throws must propagate exact instance without wrapping");
+    assertEquals(InterruptedException.class, thrown.getClass());
+  }
 }
