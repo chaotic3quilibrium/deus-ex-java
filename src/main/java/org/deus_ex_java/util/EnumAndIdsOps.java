@@ -850,6 +850,53 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   /**
+   * Represents the immutable configuration state for formatting an {@link EnumAndIdsOps} collection.
+   *
+   * @param filter       a {@link Predicate} used to filter enum and ID entries
+   * @param sortStrategy a {@link Comparator} used to sort filtered enum and ID entries
+   * @param reformat     a {@link Function} used to transform an enum and ID entry into a String representation
+   * @param separator    a {@link String} delimiter used when joining formatted representations
+   * @param <E>          the type of the {@link Enum}
+   * @param <ID>         the type of the associated ID
+   */
+  public record FormatConfig<E extends Enum<E>, ID>(
+      Predicate<Entry<E, ID>> filter,
+      Comparator<Entry<E, ID>> sortStrategy,
+      Function<Entry<E, ID>, String> reformat,
+      String separator
+  ) {
+    public FormatConfig {
+      Objects.requireNonNull(filter, "filter must not be null");
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      Objects.requireNonNull(separator, "separator must not be null");
+    }
+
+    public FormatConfig<E, ID> withFilter(Predicate<Entry<E, ID>> filter) {
+      Objects.requireNonNull(filter, "filter must not be null");
+      return new FormatConfig<>(filter, this.sortStrategy, this.reformat, this.separator);
+    }
+
+    public FormatConfig<E, ID> withSortStrategy(Comparator<Entry<E, ID>> sortStrategy) {
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      return new FormatConfig<>(this.filter, sortStrategy, this.reformat, this.separator);
+    }
+
+    public FormatConfig<E, ID> withReformat(Function<Entry<E, ID>, String> reformat) {
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      return new FormatConfig<>(this.filter, this.sortStrategy, reformat, this.separator);
+    }
+
+    public FormatConfig<E, ID> withSeparator(String separator) {
+      Objects.requireNonNull(separator, "separator must not be null");
+      if (this.separator.equals(separator)) {
+        return this;
+      }
+      return new FormatConfig<>(this.filter, this.sortStrategy, this.reformat, separator);
+    }
+  }
+
+  /**
    * Defines a format builder to assist with String encodings of this collection.
    *
    * @param <E>  the type of the {@link Enum} values being enhanced
@@ -859,10 +906,15 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     public static final String DEFAULT_SEPARATOR = EnumsOps.FormatBuilder.DEFAULT_SEPARATOR;
 
     private final EnumAndIdsOps<E, ID> enumAndIdsOps;
-    private final Predicate<Entry<E, ID>> filter;
-    private final Comparator<Entry<E, ID>> sortStrategy;
-    private final Function<Entry<E, ID>, String> reformat;
-    private final String separator;
+    private final FormatConfig<E, ID> config;
+
+    private FormatBuilder(
+        EnumAndIdsOps<E, ID> enumAndIdsOps,
+        FormatConfig<E, ID> config
+    ) {
+      this.enumAndIdsOps = Objects.requireNonNull(enumAndIdsOps, "enumAndIdsOps must not be null");
+      this.config = Objects.requireNonNull(config, "config must not be null");
+    }
 
     private FormatBuilder(
         EnumAndIdsOps<E, ID> enumAndIdsOps,
@@ -871,11 +923,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         Function<Entry<E, ID>, String> reformat,
         String separator
     ) {
-      this.enumAndIdsOps = enumAndIdsOps;
-      this.filter = filter;
-      this.sortStrategy = sortStrategy;
-      this.reformat = reformat;
-      this.separator = separator;
+      this(enumAndIdsOps, new FormatConfig<>(filter, sortStrategy, reformat, separator));
     }
 
     /**
@@ -938,6 +986,15 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     }
 
     /**
+     * Returns the {@link FormatConfig} containing the immutable formatting configuration.
+     *
+     * @return the {@link FormatConfig} containing the immutable formatting configuration
+     */
+    public FormatConfig<E, ID> getConfig() {
+      return this.config;
+    }
+
+    /**
      * Returns the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      * include/exclude {@link EnumAndIdsOps} entries.
      * <p>
@@ -948,7 +1005,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     include/exclude {@link EnumAndIdsOps} entries
      */
     public Predicate<Entry<E, ID>> getFilter() {
-      return this.filter;
+      return this.config.filter();
     }
 
     /**
@@ -960,12 +1017,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     to include/exclude {@link EnumAndIdsOps} entries
      */
     public FormatBuilder<E, ID> setFilter(Predicate<Entry<E, ID>> filter) {
-      return new FormatBuilder<>(
-          this.enumAndIdsOps,
-          filter,
-          this.sortStrategy,
-          this.reformat,
-          this.separator);
+      Objects.requireNonNull(filter, "filter must not be null");
+      return new FormatBuilder<>(this.enumAndIdsOps, this.config.withFilter(filter));
     }
 
     /**
@@ -980,6 +1033,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     within a source
      */
     public FormatBuilder<E, ID> setFilter(Collection<Entry<E, ID>> collection) {
+      Objects.requireNonNull(collection, "collection must not be null");
       return setFilter(collection.stream());
     }
 
@@ -995,6 +1049,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     within a source
      */
     public FormatBuilder<E, ID> setFilter(Stream<Entry<E, ID>> stream) {
+      Objects.requireNonNull(stream, "stream must not be null");
       var defensiveCopy = stream.collect(Collectors.toUnmodifiableSet());
 
       return setFilter(defensiveCopy::contains);
@@ -1011,7 +1066,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     reorder the filtered {@link EnumAndIdsOps} entries
      */
     public Comparator<Entry<E, ID>> getSortStrategy() {
-      return this.sortStrategy;
+      return this.config.sortStrategy();
     }
 
     /**
@@ -1023,12 +1078,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     defines how to reorder the filtered {@link EnumAndIdsOps} entries
      */
     public FormatBuilder<E, ID> setSortStrategy(Comparator<Entry<E, ID>> sortStrategy) {
-      return new FormatBuilder<>(
-          this.enumAndIdsOps,
-          this.filter,
-          sortStrategy,
-          this.reformat,
-          this.separator);
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      return new FormatBuilder<>(this.enumAndIdsOps, this.config.withSortStrategy(sortStrategy));
     }
 
     /**
@@ -1042,7 +1093,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     each {@link EnumAndIdsOps} entry
      */
     public Function<Entry<E, ID>, String> getReformat() {
-      return this.reformat;
+      return this.config.reformat();
     }
 
     /**
@@ -1054,12 +1105,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     to display each {@link EnumAndIdsOps} entry
      */
     public FormatBuilder<E, ID> setReformat(Function<Entry<E, ID>, String> reformat) {
-      return new FormatBuilder<>(
-          this.enumAndIdsOps,
-          this.filter,
-          this.sortStrategy,
-          reformat,
-          this.separator);
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      return new FormatBuilder<>(this.enumAndIdsOps, this.config.withReformat(reformat));
     }
 
     /**
@@ -1073,29 +1120,26 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     display the filtered and reordered {@link EnumAndIdsOps} entries
      */
     public String getSeparator() {
-      return this.separator;
+      return this.config.separator();
     }
 
     /**
      * Returns a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
      * separate and display the filtered and reordered {@link EnumAndIdsOps} entries.
      *
-     * @param separator a {@link Function} that defines how to separate and display the filtered and reordered
+     * @param separator a {@link String} that defines how to separate and display the filtered and reordered
      *                  {@link EnumAndIdsOps} entries
      * @return a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
      *     separate and display the filtered and reordered {@link EnumAndIdsOps} entries
      */
     public FormatBuilder<E, ID> setSeparator(String separator) {
-      if (!this.separator.equals(separator)) {
-        return new FormatBuilder<>(
-            this.enumAndIdsOps,
-            this.filter,
-            this.sortStrategy,
-            this.reformat,
-            separator);
+      Objects.requireNonNull(separator, "separator must not be null");
+      var newConfig = this.config.withSeparator(separator);
+      if (newConfig == this.config) {
+        return this;
       }
 
-      return this;
+      return new FormatBuilder<>(this.enumAndIdsOps, newConfig);
     }
 
     /**
@@ -1141,3 +1185,4 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     }
   }
 }
+
