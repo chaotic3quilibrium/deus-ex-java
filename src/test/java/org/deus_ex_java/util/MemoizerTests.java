@@ -6,6 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -95,6 +100,135 @@ public class MemoizerTests {
     assertFalse(isExceptionDetected[0]); //ensure the exception was successfully caught and suppressed
     assertNull(memoizer.get()); //ensure null is consistently being returned
     assertEquals(1, counter[0]); //ensure we are not re-executing the executeExactlyOnce lambda
+  }
+
+  @Test
+  public void testConcurrentGetExecutesComputeOnce() throws InterruptedException {
+    var computeCount = new AtomicInteger(0);
+    Memoizer<String, String> memoizer = Memoizer.from(key -> {
+      computeCount.incrementAndGet();
+      try {
+        Thread.sleep(20);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+      return "computed-" + key;
+    });
+
+    int threadCount = 50;
+    var latch = new CountDownLatch(1);
+    var startLatch = new CountDownLatch(threadCount);
+    var results = new ConcurrentLinkedQueue<String>();
+
+    List<Thread> threads = IntStream.range(0, threadCount)
+        .mapToObj(i -> new Thread(() -> {
+          startLatch.countDown();
+          try {
+            latch.await();
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+          results.add(memoizer.get("testKey"));
+        }))
+        .toList();
+
+    threads.forEach(Thread::start);
+    startLatch.await();
+    latch.countDown();
+
+    for (Thread t : threads) {
+      t.join();
+    }
+
+    assertEquals(50, results.size());
+    results.forEach(val -> assertEquals("computed-testKey", val));
+    assertEquals(1, computeCount.get(), "Compute function must be called exactly once for the same key");
+  }
+
+  @Test
+  public void testConcurrentKeySetSnapshotIsolation() throws InterruptedException {
+    for (InsertionOrder order : List.of(InsertionOrder.NONE, InsertionOrder.RETAIN)) {
+      Memoizer<Integer, Integer> memoizer = Memoizer.from(k -> k * 10, MethodOverride.ALLOWED, order);
+      var running = new AtomicBoolean(true);
+      var exceptions = new ConcurrentLinkedQueue<Throwable>();
+
+      Thread writer = new Thread(() -> {
+        for (int i = 0; i < 500 && running.get(); i++) {
+          memoizer.get(i);
+        }
+      });
+
+      Thread reader = new Thread(() -> {
+        while (running.get()) {
+          try {
+            Set<Integer> snapshot = memoizer.keySet();
+            for (Integer k : snapshot) {
+              assertNotNull(k);
+            }
+          } catch (Throwable t) {
+            exceptions.add(t);
+          }
+        }
+      });
+
+      reader.start();
+      writer.start();
+      writer.join();
+      running.set(false);
+      reader.join();
+
+      assertTrue(exceptions.isEmpty(), "Concurrent keySet iteration must not throw CME or errors for order " + order);
+      assertThrows(UnsupportedOperationException.class, () -> memoizer.keySet().add(9999));
+    }
+  }
+
+  @Test
+  public void testLazyInstantiationPreservesInterruptStatus() throws InterruptedException {
+    var isInterruptedInWorker = new AtomicBoolean(false);
+    var exceptionThrown = new AtomicReference<Throwable>();
+
+    var lazySupplier = Memoizer.lazyInstantiation(() -> {
+      try {
+        Thread.sleep(5000);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+      return "should not reach";
+    });
+
+    Thread worker = new Thread(() -> {
+      try {
+        lazySupplier.get();
+      } catch (Throwable t) {
+        exceptionThrown.set(t);
+        isInterruptedInWorker.set(Thread.currentThread().isInterrupted());
+      }
+    });
+
+    worker.start();
+    Thread.sleep(100);
+    worker.interrupt();
+    worker.join(2000);
+
+    assertNotNull(exceptionThrown.get(), "InterruptedException must be thrown");
+    assertTrue(exceptionThrown.get() instanceof InterruptedException ||
+               (exceptionThrown.get().getCause() instanceof InterruptedException),
+               "Exception should be or contain InterruptedException");
+    assertTrue(isInterruptedInWorker.get(), "Thread interrupt status must be preserved");
+  }
+
+  @Test
+  public void testLazyInstantiationNonFatalExceptionShortCircuit() {
+    var count = new AtomicInteger(0);
+    var lazySupplier = Memoizer.lazyInstantiation(() -> {
+      count.incrementAndGet();
+      throw new IllegalArgumentException("Non-fatal calculation error");
+    });
+
+    assertNull(lazySupplier.get(), "Non-fatal exception should short-circuit to null");
+    assertEquals(1, count.get());
+    assertNull(lazySupplier.get(), "Subsequent calls should return cached null without re-executing");
+    assertEquals(1, count.get());
   }
 
   private void testFactoriesExhaustiveHelper(
@@ -236,3 +370,4 @@ public class MemoizerTests {
                                 insertionOrder))));
   }
 }
+

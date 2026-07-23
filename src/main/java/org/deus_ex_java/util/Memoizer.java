@@ -1,10 +1,12 @@
 package org.deus_ex_java.util;
 
+import org.deus_ex_java.lang.WrappedCheckedException;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -34,17 +36,18 @@ import java.util.function.Supplier;
  * @param <K> type of the input value (the key) permanently associated with the computed, and subsequently cached,
  *            value
  * @param <V> type of the cached computed value
- **/
+ * **/
 @NullMarked
 public final class Memoizer<K, V> {
 
   /**
-   * Creates a lazy {@link Supplier<T>} that delays the creating of an instance of {@code t} until the first time it is
+   * Creates a lazy {@link Supplier<T>} that delays the creation of an instance of {@code t} until the first time it is
    * requested. Upon request, the generated instance of {@code t} is, in a thread-safe way, cached and returned. And
    * then for all future requests, the cached value of {@code t} is returned, as opposed to recomputing it.<p> -<p>
-   * <b>CAUTION:</b> If {@link Supplier#get()} throws an {@link Exception}, the exception is
+   * <b>CAUTION:</b> If {@link Supplier#get()} throws a non-fatal {@link Exception}, the exception is
    * captured, suppressed, and the returned instance of {@link Supplier<T>} is defined to short-circuit by having
-   * {@link Supplier#get()} hardcoded to return <code>null</code>.
+   * {@link Supplier#get()} hardcoded to return <code>null</code>. Fatal exceptions (e.g. {@link InterruptedException})
+   * are propagated immediately while preserving thread interrupt flags.
    *
    * @param executeExactlyOnceSupplierT The {@link Supplier#get()} used to create the {@code t} instance exactly once
    * @param <T>                         type of computed function's resulting value instance of {@code t}
@@ -57,23 +60,30 @@ public final class Memoizer<K, V> {
     Objects.requireNonNull(executeExactlyOnceSupplierT);
 
     return new Supplier<>() {
-      private boolean isInitialized;
-      private Supplier<@Nullable T> supplierT = this::executeExactlyOnce;
+      private final Object lock = new Object();
+      private volatile boolean initialized;
+      private volatile Supplier<@Nullable T> supplierT = this::executeExactlyOnce;
 
-      private synchronized @Nullable T executeExactlyOnce() {
-        if (!isInitialized) {
-          try {
-            T t = executeExactlyOnceSupplierT.get();
-            supplierT = () -> t;
-          } catch (Exception exception) {
-            supplierT = () -> null;
+      private @Nullable T executeExactlyOnce() {
+        if (!initialized) {
+          synchronized (lock) {
+            if (!initialized) {
+              try {
+                T t = executeExactlyOnceSupplierT.get();
+                supplierT = () -> t;
+              } catch (Throwable throwable) {
+                WrappedCheckedException.requireNonFatal(throwable);
+                supplierT = () -> null;
+              }
+              initialized = true;
+            }
           }
-          isInitialized = true;
         }
 
         return supplierT.get();
       }
 
+      @Override
       public @Nullable T get() {
         return supplierT.get();
       }
@@ -90,7 +100,7 @@ public final class Memoizer<K, V> {
     ALLOWED
   }
 
-  private static final Object vByKWriteLock = new Object();
+  private final Object instanceLock = new Object();
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private final Optional<Entry<Function<K, V>, MethodOverride>> optionalDefaultDeriveVFromKAndMethodOverride;
@@ -203,7 +213,7 @@ public final class Memoizer<K, V> {
     this.insertionOrder = insertionOrder;
     this.vByK = insertionOrder == Memoizer.InsertionOrder.RETAIN
         ? new LinkedHashMap<>()
-        : new HashMap<>();
+        : new ConcurrentHashMap<>();
   }
 
   /**
@@ -237,37 +247,50 @@ public final class Memoizer<K, V> {
       K k,
       Optional<Function<K, V>> optionalOverrideDeriveVFromK
   ) {
-    var result = this.vByK.get(Objects.requireNonNull(k, "k must not be null"));
-    if (result == null) {
+    Objects.requireNonNull(k, "k must not be null");
+
+    if (this.insertionOrder == Memoizer.InsertionOrder.RETAIN) {
+      synchronized (this.instanceLock) {
+        var existing = this.vByK.get(k);
+        if (existing != null) {
+          return existing;
+        }
+        var lambda = optionalOverrideDeriveVFromK
+            .or(() -> this.optionalDefaultDeriveVFromKAndMethodOverride.map(
+                Entry::getKey))
+            .orElseThrow(() -> new IllegalArgumentException(
+                "when calling the get() method without providing an overrideDeriveVFromK function, defaultDeriveVFromK must be provided in the from() factory method"));
+        var v = Objects.requireNonNull(lambda.apply(k),
+            "v returned from the %sDeriveVFromK function, provided by the %s, must not be null".formatted(
+                optionalOverrideDeriveVFromK.isEmpty()
+                    ? "default"
+                    : "override",
+                optionalOverrideDeriveVFromK.isEmpty()
+                    ? "from() factory method"
+                    : "get() method"));
+        this.vByK.put(k, v);
+        return v;
+      }
+    } else {
+      var existing = this.vByK.get(k);
+      if (existing != null) {
+        return existing;
+      }
       var lambda = optionalOverrideDeriveVFromK
           .or(() -> this.optionalDefaultDeriveVFromKAndMethodOverride.map(
               Entry::getKey))
           .orElseThrow(() -> new IllegalArgumentException(
               "when calling the get() method without providing an overrideDeriveVFromK function, defaultDeriveVFromK must be provided in the from() factory method"));
-      var v = Objects.requireNonNull(lambda.apply(k),
+
+      return this.vByK.computeIfAbsent(k, key -> Objects.requireNonNull(lambda.apply(key),
           "v returned from the %sDeriveVFromK function, provided by the %s, must not be null".formatted(
               optionalOverrideDeriveVFromK.isEmpty()
                   ? "default"
                   : "override",
               optionalOverrideDeriveVFromK.isEmpty()
                   ? "from() factory method"
-                  : "get() method"));
-      result = this.vByK.get(k);
-      if (result == null) {
-        synchronized (vByKWriteLock) {
-          result = this.vByK.get(k);
-          if (result == null) {
-            V oldV = this.vByK.put(k, v);
-            result = v;
-            if (oldV != null) {
-              System.out.println("Memoizer.get() internal - SHOULD NEVER GET HERE");
-            }
-          }
-        }
-      }
+                  : "get() method")));
     }
-
-    return result;
   }
 
   /**
@@ -317,10 +340,13 @@ public final class Memoizer<K, V> {
    * Provides a {@link Set<K>} of keys currently managed, and is in temporal (insertion) order when
    * {@link #getInsertionOrder()} returns {@link Memoizer.InsertionOrder#RETAIN}.
    *
-   * @return a {@link Set<K>} of keys currently managed, and is in temporal (insertion) order when
+   * @return an unmodifiable snapshot {@link Set<K>} of keys currently managed, and is in temporal (insertion) order when
    *     {@link #getInsertionOrder()} returns {@link Memoizer.InsertionOrder#RETAIN}
    */
   public Set<K> keySet() {
-    return Collections.unmodifiableSet(this.vByK.keySet());
+    synchronized (this.instanceLock) {
+      return Collections.unmodifiableSet(new LinkedHashSet<>(this.vByK.keySet()));
+    }
   }
 }
+
