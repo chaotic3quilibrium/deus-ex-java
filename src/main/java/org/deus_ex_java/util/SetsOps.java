@@ -868,35 +868,24 @@ public final class SetsOps {
    *
    * @param <T> the type of instances contained in the sets
    */
-  public static final class SetPair<T> {
-    private final boolean isEqual;
-    private final Set<T> union;
-    private final Set<T> left;
-    private final Set<T> right;
-    private final Set<T> intersection;
-    private final Set<T> leftDifference;
-    private final Set<T> rightDifference;
-    private final Set<T> difference;
-
-    // Private constructor absolutely prevents illegal states from being instantiated
-    private SetPair(
-        boolean isEqual,
-        Set<T> union,
-        Set<T> left,
-        Set<T> right,
-        Set<T> intersection,
-        Set<T> leftDifference,
-        Set<T> rightDifference,
-        Set<T> difference
-    ) {
-      this.isEqual = isEqual;
-      this.union = union;
-      this.left = left;
-      this.right = right;
-      this.intersection = intersection;
-      this.leftDifference = leftDifference;
-      this.rightDifference = rightDifference;
-      this.difference = difference;
+  public static record SetPair<T>(
+      boolean isEqual,
+      Set<T> union,
+      Set<T> left,
+      Set<T> right,
+      Set<T> intersection,
+      Set<T> leftDifference,
+      Set<T> rightDifference,
+      Set<T> difference
+  ) {
+    public SetPair {
+      union = Set.copyOf(union);
+      left = Set.copyOf(left);
+      right = Set.copyOf(right);
+      intersection = Set.copyOf(intersection);
+      leftDifference = Set.copyOf(leftDifference);
+      rightDifference = Set.copyOf(rightDifference);
+      difference = Set.copyOf(difference);
     }
 
     /**
@@ -1011,66 +1000,6 @@ public final class SetsOps {
           SetPairViewKey.LEFT_DIFFERENCE, leftDifference,
           SetPairViewKey.RIGHT_DIFFERENCE, rightDifference,
           SetPairViewKey.DIFFERENCE, difference);
-    }
-
-    public boolean isEqual() {
-      return isEqual;
-    }
-
-    public Set<T> union() {
-      return union;
-    }
-
-    public Set<T> left() {
-      return left;
-    }
-
-    public Set<T> right() {
-      return right;
-    }
-
-    public Set<T> intersection() {
-      return intersection;
-    }
-
-    public Set<T> leftDifference() {
-      return leftDifference;
-    }
-
-    public Set<T> rightDifference() {
-      return rightDifference;
-    }
-
-    public Set<T> difference() {
-      return difference;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-      return ((this == object) ||
-          ((object instanceof SetPair<?> that) &&
-              left.equals(that.left) &&
-              right.equals(that.right)));
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(
-          left,
-          right);
-    }
-
-    @Override
-    public String toString() {
-      return "SetPair[" +
-          "isEqual=" + isEqual + ", " +
-          "union=" + union + ", " +
-          "left=" + left + ", " +
-          "right=" + right + ", " +
-          "intersection=" + intersection + ", " +
-          "leftDifference=" + leftDifference + ", " +
-          "rightDifference=" + rightDifference + ", " +
-          "difference=" + difference + ']';
     }
   }
 

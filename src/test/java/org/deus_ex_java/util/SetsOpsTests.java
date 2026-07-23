@@ -702,6 +702,64 @@ public class SetsOpsTests {
   }
 
   @Test
+  public void testSetPairImmutability() {
+    var setPair = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    var componentSets = List.of(
+        setPair.union(),
+        setPair.left(),
+        setPair.right(),
+        setPair.intersection(),
+        setPair.leftDifference(),
+        setPair.rightDifference(),
+        setPair.difference());
+    for (var set : componentSets) {
+      assertThrows(UnsupportedOperationException.class, () -> set.add(99));
+      assertThrows(UnsupportedOperationException.class, () -> set.remove(1));
+      assertThrows(UnsupportedOperationException.class, set::clear);
+    }
+  }
+
+  @Test
+  public void testSetPairRecordPatternMatching() {
+    Object obj = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    if (obj instanceof SetPair<?> pair) {
+      assertFalse(pair.isEqual());
+      assertEquals(Set.of(1, 2, 3), pair.union());
+      assertEquals(Set.of(1, 2), pair.left());
+      assertEquals(Set.of(2, 3), pair.right());
+      assertEquals(Set.of(2), pair.intersection());
+      assertEquals(Set.of(1), pair.leftDifference());
+      assertEquals(Set.of(3), pair.rightDifference());
+      assertEquals(Set.of(1, 3), pair.difference());
+    } else {
+      fail("Pattern matching failed to match SetPair record instance");
+    }
+  }
+
+  @Test
+  public void testSetPairRecordEqualsAndHashCode() {
+    var pair1 = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    var pair2 = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    var pair3 = SetPair.from(Set.of(1, 2), Set.of(3, 4));
+
+    assertEquals(pair1, pair2);
+    assertEquals(pair1.hashCode(), pair2.hashCode());
+    assertNotEquals(pair1, pair3);
+    assertNotEquals(pair1, null);
+    assertNotEquals(pair1, "not a set pair");
+
+    var map1 = pair1.toMap();
+    assertEquals(7, map1.size());
+    assertEquals(Set.of(1, 2, 3), map1.get(SetPairViewKey.UNION));
+    assertEquals(Set.of(1, 2), map1.get(SetPairViewKey.LEFT));
+    assertEquals(Set.of(2, 3), map1.get(SetPairViewKey.RIGHT));
+    assertEquals(Set.of(2), map1.get(SetPairViewKey.INTERSECTION));
+    assertEquals(Set.of(1), map1.get(SetPairViewKey.LEFT_DIFFERENCE));
+    assertEquals(Set.of(3), map1.get(SetPairViewKey.RIGHT_DIFFERENCE));
+    assertEquals(Set.of(1, 3), map1.get(SetPairViewKey.DIFFERENCE));
+  }
+
+  @Test
   public void testOfOrdered() {
     var set = SetsOps.ofOrdered();
     assertNotNull(set);
