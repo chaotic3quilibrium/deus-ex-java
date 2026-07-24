@@ -1260,5 +1260,33 @@ public class ListsOpsTests {
     var result = ListsOps.unzip(tuple2sStreamWithNulls);
     assertEquals(List.of("a", "b"), result._1());
     assertEquals(List.of(1, 2), result._2());
+    assertTrue(CollectionsOps.isUnmodifiable(result._1()));
+    assertTrue(CollectionsOps.isUnmodifiable(result._2()));
+  }
+
+  @Test
+  public void testModernizedPipelinesImmutabilityAndEdgeCases() {
+    // appendItem
+    var listAppended = ListsOps.appendItem(List.of("x", "y"), "z");
+    assertEquals(List.of("x", "y", "z"), listAppended);
+    assertTrue(CollectionsOps.isUnmodifiable(listAppended));
+    assertThrows(UnsupportedOperationException.class, () -> listAppended.add("fail"));
+
+    // removeItem first match
+    var listRemoved = ListsOps.removeItem(List.of("a", "b", "a", "c"), "a");
+    assertEquals(List.of("b", "a", "c"), listRemoved);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoved));
+
+    // removeAll frequency count
+    var initialList = List.of(1, 2, 2, 3, 2, 4);
+    var resultRemoveAll = ListsOps.removeAll(initialList, Stream.of(2, 2));
+    assertEquals(List.of(1, 3, 2, 4), resultRemoveAll);
+    assertTrue(CollectionsOps.isUnmodifiable(resultRemoveAll));
+
+    // reverse
+    var reversedList = ListsOps.reverse(Stream.of("first", "second", "third"));
+    assertEquals(List.of("third", "second", "first"), reversedList);
+    assertTrue(CollectionsOps.isUnmodifiable(reversedList));
+    assertThrows(UnsupportedOperationException.class, () -> reversedList.remove(0));
   }
 }
