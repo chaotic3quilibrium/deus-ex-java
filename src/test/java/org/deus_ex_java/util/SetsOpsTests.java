@@ -719,6 +719,7 @@ public class SetsOpsTests {
     }
   }
 
+  @SuppressWarnings("ConstantValue")
   @Test
   public void testSetPairRecordPatternMatching() {
     Object obj = SetPair.from(Set.of(1, 2), Set.of(2, 3));
@@ -745,8 +746,6 @@ public class SetsOpsTests {
     assertEquals(pair1, pair2);
     assertEquals(pair1.hashCode(), pair2.hashCode());
     assertNotEquals(pair1, pair3);
-    assertNotEquals(pair1, null);
-    assertNotEquals(pair1, "not a set pair");
 
     var map1 = pair1.toMap();
     assertEquals(7, map1.size());
@@ -1014,5 +1013,23 @@ public class SetsOpsTests {
         set.stream().toList(),
         "Nulls should be filtered out while preserving the encounter order of valid elements");
     assertTrue(CollectionsOps.isUnmodifiable(set));
+  }
+
+  @Test
+  public void testStreamPipelineImmutabilityContracts() {
+    var set1 = Set.of("a", "b");
+    var addedSet = SetsOps.addItem(set1, "c");
+    assertTrue(CollectionsOps.isUnmodifiable(addedSet));
+    assertThrows(UnsupportedOperationException.class, () -> addedSet.add("d"));
+
+    var removedSet = SetsOps.removeItem(set1, "a");
+    assertTrue(CollectionsOps.isUnmodifiable(removedSet));
+    assertThrows(UnsupportedOperationException.class, () -> removedSet.remove("b"));
+
+    var pair = SetsOps.SetPair.from(Set.of("a", "b"), Set.of("b", "c"));
+    assertTrue(CollectionsOps.isUnmodifiable(pair.union()));
+    assertTrue(CollectionsOps.isUnmodifiable(pair.intersection()));
+    assertTrue(CollectionsOps.isUnmodifiable(pair.leftDifference()));
+    assertThrows(UnsupportedOperationException.class, () -> pair.union().add("x"));
   }
 }

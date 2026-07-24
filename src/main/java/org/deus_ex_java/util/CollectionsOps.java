@@ -3,6 +3,7 @@ package org.deus_ex_java.util;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,8 +19,8 @@ public final class CollectionsOps {
   /**
    * Returns {@code true} if the specified {@link Collection} is identified as unmodifiable or immutable.
    * <p>
-   * This method uses safe, non-mutating type inspection to verify unmodifiability without triggering
-   * side-effects or {@link java.util.ConcurrentModificationException} on live collections.
+   * This method uses safe, non-mutating type inspection to verify unmodifiability without triggering side effects or
+   * {@link java.util.ConcurrentModificationException} on live collections.
    * <p>
    * <b>Nullness Contract:</b> Under {@link NullMarked}, the {@code collection} argument is strictly non-null.
    * Passing {@code null} represents an illegal caller state in Value-Oriented Programming (VOP).
@@ -34,8 +35,8 @@ public final class CollectionsOps {
   /**
    * Returns {@code true} if the specified {@link Map} is identified as unmodifiable or immutable.
    * <p>
-   * This method uses safe, non-mutating type inspection to verify unmodifiability without triggering
-   * side-effects or {@link java.util.ConcurrentModificationException} on live maps.
+   * This method uses safe, non-mutating type inspection to verify unmodifiability without triggering side effects or
+   * {@link java.util.ConcurrentModificationException} on live maps.
    * <p>
    * <b>Nullness Contract:</b> Under {@link NullMarked}, the {@code map} argument is strictly non-null.
    * Passing {@code null} represents an illegal caller state in Value-Oriented Programming (VOP).
@@ -47,13 +48,17 @@ public final class CollectionsOps {
     return isUnmodifiableType(map.getClass());
   }
 
+  private static final List<String> UNMODIFIABLE_CLASS_PREFIXES = List.of(
+      "java.util.ImmutableCollections$",
+      "java.util.Collections$Unmodifiable",
+      "java.util.Collections$Empty",
+      "java.util.Collections$Singleton"
+  );
+
   private static boolean isUnmodifiableType(Class<?> clazz) {
     var className = clazz.getName();
 
-    return className.startsWith("java.util.ImmutableCollections$")
-        || className.startsWith("java.util.Collections$Unmodifiable")
-        || className.startsWith("java.util.Collections$Empty")
-        || className.startsWith("java.util.Collections$Singleton")
+    return UNMODIFIABLE_CLASS_PREFIXES.stream().anyMatch(className::startsWith)
         || className.contains("Unmodifiable")
         || className.contains("Immutable");
   }

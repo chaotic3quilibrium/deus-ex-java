@@ -495,20 +495,16 @@ public final class MapsOps {
     if (maps.length == 0) {
       return Map.of();
     }
-    var result = Arrays.stream(maps)
+    return Arrays.stream(maps)
         .filter(Objects::nonNull)
         .flatMap(map ->
             map.entrySet().stream())
         .filter(MapsOps::isNonNulls)
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getKey,
             Entry::getValue,
             (vOld, vNew) ->
                 vNew)); //last-wins: later maps overwrite earlier maps
-
-    return result.isEmpty()
-        ? Map.of()
-        : Collections.unmodifiableMap(result);
   }
 
   /**
@@ -575,11 +571,13 @@ public final class MapsOps {
 
       return Map.copyOf(map);
     }
-    var result = new HashMap<>(map);
-    result.remove(key);
-
-    return Collections.unmodifiableMap(result);
-
+    return map.entrySet()
+        .stream()
+        .filter(entry ->
+            !Objects.equals(entry.getKey(), key))
+        .collect(Collectors.toUnmodifiableMap(
+            Entry::getKey,
+            Entry::getValue));
   }
 
   /**
@@ -652,6 +650,35 @@ public final class MapsOps {
         collection.stream());
   }
 
+  private static <K, V> Map<K, V> helperRemove(
+      Map<K, V> map,
+      Map<K, V> mapEmpty,
+      Function<Map<K, V>, Map<K, V>> fMapConstructor,
+      Set<K> removalsAsSet
+  ) {
+    if (removalsAsSet.isEmpty()) {
+      var copy = fMapConstructor.apply(map);
+      return copy instanceof LinkedHashMap
+          ? Collections.unmodifiableMap(copy)
+          : Map.copyOf(map);
+    }
+    var filteredStream = map.entrySet().stream()
+        .filter(entry -> !removalsAsSet.contains(entry.getKey()));
+
+    if (mapEmpty == UNMODIFIABLE_LINKED_HASH_MAP_EMPTY) {
+      var result = filteredStream.collect(Collectors.toMap(
+          Entry::getKey,
+          Entry::getValue,
+          (v1, v2) -> v1,
+          LinkedHashMap::new));
+      return result.isEmpty()
+          ? mapEmpty
+          : Collections.unmodifiableMap(result);
+    }
+
+    return filteredStream.collect(Collectors.toUnmodifiableMap(Entry::getKey, Entry::getValue));
+  }
+
   private static <K, V> Map<K, V> helperRemoveAllStream(
       Map<K, V> map,
       Stream<K> stream,
@@ -666,12 +693,8 @@ public final class MapsOps {
     }
     var removalsAsSet = stream
         .collect(Collectors.toUnmodifiableSet());
-    var result = fMapConstructor.apply(map);
-    if (!removalsAsSet.isEmpty()) {
-      removalsAsSet.forEach(result::remove);
-    }
 
-    return Collections.unmodifiableMap(result);
+    return helperRemove(map, mapEmpty, fMapConstructor, removalsAsSet);
   }
 
   /**
@@ -719,6 +742,7 @@ public final class MapsOps {
         LinkedHashMap::new);
   }
 
+  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   private static <K, V> Map<K, V> helperRemoveMaps(
       Map<K, V> map,
@@ -729,30 +753,18 @@ public final class MapsOps {
     Objects.requireNonNull(map);
     Objects.requireNonNull(keySets);
 
-    return TernaryOps.get(
-        map.isEmpty(),
-        () ->
-            mapEmpty,
-        () -> {
-          var result = fMapConstructor.apply(map);
-          if (keySets.length != 0) {
-            @SuppressWarnings("ConstantValue")
-            var removalsAsSet = Arrays.stream(keySets)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableSet());
-            if (!removalsAsSet.isEmpty()) {
-              removalsAsSet.forEach(result::remove);
-            }
+    if (map.isEmpty()) {
+      return mapEmpty;
+    }
+    var removalsAsSet = keySets.length == 0
+        ? Set.<K>of()
+        : Arrays.stream(keySets)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableSet());
 
-            return result.isEmpty()
-                ? mapEmpty
-                : Collections.unmodifiableMap(result);
-          }
-
-          return Collections.unmodifiableMap(result);
-        });
+    return helperRemove(map, mapEmpty, fMapConstructor, removalsAsSet);
   }
 
   /**
@@ -883,22 +895,18 @@ public final class MapsOps {
   ) {
     Objects.requireNonNull(ts);
     Objects.requireNonNull(fTtoOptionalEntry);
-    var map = ts
+    return ts
         .filter(Objects::nonNull)
         .flatMap(t ->
             fTtoOptionalEntry
                 .apply(t)
                 .filter(MapsOps::isNonNulls)
                 .stream())
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getKey,
             Entry::getValue,
             (vOld, vNew) ->
                 vOld));
-
-    return !map.isEmpty()
-        ? Collections.unmodifiableMap(map)
-        : Map.of();
   }
 
   /**
@@ -1026,19 +1034,17 @@ public final class MapsOps {
 
       return Map.of();
     }
-    var result = map.entrySet()
+    return map.entrySet()
         .stream()
         .peek(entry ->
             invalidate(entry).ifPresent(parametersValidationException -> {
               throw parametersValidationException;
             }))
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getValue,
             Entry::getKey,
             (kOld, kNew) ->
                 kOld)); //first-wins collision resolution
-
-    return Collections.unmodifiableMap(result);
   }
 
   /**
