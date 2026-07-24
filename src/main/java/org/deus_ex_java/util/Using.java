@@ -7,6 +7,11 @@ import org.deus_ex_java.util.tuple.Tuple4;
 import org.deus_ex_java.util.tuple.Tuple5;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.IdentityHashMap;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -26,6 +31,38 @@ public final class Using {
 
   private Using() {
     throw new UnsupportedOperationException("suppressing class instantiation");
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T extends Throwable> void sneakyThrow(Throwable throwable) throws T {
+    if (hasInterruptedException(throwable)) {
+      Thread.currentThread().interrupt();
+    }
+    throw (T) throwable;
+  }
+
+  private static boolean hasInterruptedException(Throwable throwable) {
+    if (throwable == null) {
+      return false;
+    }
+    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    Deque<Throwable> stack = new ArrayDeque<>();
+    stack.push(throwable);
+    while (!stack.isEmpty()) {
+      Throwable current = stack.pop();
+      if (current != null && visited.add(current)) {
+        if (current instanceof InterruptedException) {
+          return true;
+        }
+        if (current.getCause() != null) {
+          stack.push(current.getCause());
+        }
+        for (Throwable suppressed : current.getSuppressed()) {
+          stack.push(suppressed);
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -55,15 +92,22 @@ public final class Using {
     ) {
 
       return Either.right(fAToT.apply(a));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -130,15 +174,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBToT.apply(new Tuple2<>(a, b)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -213,15 +264,22 @@ public final class Using {
     ) {
 
       return Either.right(fTuple2ToT.apply(new Tuple2<>(a, b)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -299,15 +357,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBAndCToT.apply(new Tuple3<>(a, b, c)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -393,15 +458,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBAndCToT.apply(new Tuple3<>(a, b, c)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -432,7 +504,7 @@ public final class Using {
       A extends AutoCloseable,
       B extends AutoCloseable,
       C extends AutoCloseable,
-      T> Either<RuntimeException, T> applyNestedUnsafe(
+      T> T applyNestedUnsafe(
       Supplier<A> fSupplierA,
       Function<A, B> fAToB,
       Function<Tuple2<A, B>, C> fAndBToC,
@@ -442,7 +514,8 @@ public final class Using {
         fSupplierA,
         fAToB,
         fAndBToC,
-        fAAndBAndCToT);
+        fAAndBAndCToT)
+        .getRightOrThrowLeft();
   }
 
   /**
@@ -489,15 +562,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBAndCAndDToT.apply(new Tuple4<>(a, b, c, d)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -595,15 +675,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBAndCAndDToT.apply(new Tuple4<>(a, b, c, d)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -639,7 +726,7 @@ public final class Using {
       B extends AutoCloseable,
       C extends AutoCloseable,
       D extends AutoCloseable,
-      T> Either<RuntimeException, T> applyNestedUnsafe(
+      T> T applyNestedUnsafe(
       Supplier<A> fSupplierA,
       Function<A, B> fAToB,
       Function<Tuple2<A, B>, C> fAndBToC,
@@ -651,7 +738,8 @@ public final class Using {
         fAToB,
         fAndBToC,
         fAndBAndCToD,
-        fAAndBAndCAndDToT);
+        fAAndBAndCAndDToT)
+        .getRightOrThrowLeft();
   }
 
   /**
@@ -703,15 +791,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBAndCAndDAndEToT.apply(new Tuple5<>(a, b, c, d, e)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 
@@ -820,15 +915,22 @@ public final class Using {
     ) {
 
       return Either.right(fAAndBAndCAndDAndEToT.apply(new Tuple5<>(a, b, c, d, e)));
-    } catch (WrappedCheckedException wrappedCheckedException) {
-      return Either.left(
-          wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
-              ? runtimeException
-              : wrappedCheckedException);
-    } catch (RuntimeException runtimeException) {
-      return Either.left(runtimeException);
-    } catch (Exception exception) {
-      return Either.left(new WrappedCheckedException(exception));
+    } catch (Throwable throwable) {
+      if (WrappedCheckedException.isFatal(throwable)) {
+        sneakyThrow(throwable);
+      }
+      if (throwable instanceof WrappedCheckedException wrappedCheckedException) {
+        return Either.left(
+            wrappedCheckedException.getCause() instanceof RuntimeException runtimeException
+                ? runtimeException
+                : wrappedCheckedException);
+      } else if (throwable instanceof RuntimeException runtimeException) {
+        return Either.left(runtimeException);
+      } else if (throwable instanceof Exception exception) {
+        return Either.left(new WrappedCheckedException(exception));
+      } else {
+        return Either.left(new WrappedCheckedException(throwable));
+      }
     }
   }
 

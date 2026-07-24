@@ -7,7 +7,9 @@ import org.deus_ex_java.util.function.FunctionsOps;
 import org.deus_ex_java.util.function.FunctionsPrimitivesOps;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Set;
 
@@ -61,12 +63,21 @@ final class ForcedFatalThrowable {
       Throwable throwable
   ) {
     Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
-    Throwable current = throwable;
-    while (current != null && visited.add(current)) {
-      if (WrappedCheckedException.isFatalType(current.getClass())) {
-        return true;
+    Deque<Throwable> stack = new ArrayDeque<>();
+    stack.push(throwable);
+    while (!stack.isEmpty()) {
+      Throwable current = stack.pop();
+      if (current != null && visited.add(current)) {
+        if (WrappedCheckedException.isFatalType(current.getClass())) {
+          return true;
+        }
+        if (current.getCause() != null) {
+          stack.push(current.getCause());
+        }
+        for (Throwable suppressed : current.getSuppressed()) {
+          stack.push(suppressed);
+        }
       }
-      current = current.getCause();
     }
 
     return false;
@@ -91,21 +102,30 @@ final class ForcedFatalThrowable {
   }
 
   /**
-   * Iteratively inspects the exception cause chain to determine if an {@link InterruptedException} is present. Uses
-   * reference-equality set tracking via {@link IdentityHashMap} to prevent {@link StackOverflowError} on cyclic
-   * exception chains.
+   * Iteratively inspects the exception cause chain and suppressed exceptions to determine if an {@link InterruptedException}
+   * is present. Uses reference-equality set tracking via {@link IdentityHashMap} to prevent {@link StackOverflowError}
+   * on cyclic exception chains.
    *
    * @param throwable root throwable to inspect
-   * @return {@code true} if an {@link InterruptedException} is found within the cause chain; {@code false} otherwise
+   * @return {@code true} if an {@link InterruptedException} is found within the cause or suppressed chains; {@code false} otherwise
    */
   private static boolean hasInterruptedException(Throwable throwable) {
     Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
-    Throwable current = throwable;
-    while (current != null && visited.add(current)) {
-      if (current instanceof InterruptedException) {
-        return true;
+    Deque<Throwable> stack = new ArrayDeque<>();
+    stack.push(throwable);
+    while (!stack.isEmpty()) {
+      Throwable current = stack.pop();
+      if (current != null && visited.add(current)) {
+        if (current instanceof InterruptedException) {
+          return true;
+        }
+        if (current.getCause() != null) {
+          stack.push(current.getCause());
+        }
+        for (Throwable suppressed : current.getSuppressed()) {
+          stack.push(suppressed);
+        }
       }
-      current = current.getCause();
     }
 
     return false;
