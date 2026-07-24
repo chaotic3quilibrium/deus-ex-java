@@ -7,13 +7,14 @@ import org.deus_ex_java.util.function.VoidSupplierCheckedException;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
  * Utility class providing static methods to reify try/catch <em>statements</em> into expressions.
  * <p>
- * <b><u>WARNING:</b></u>
+ * <b><u>WARNING:</u></b>
  * <p>
  * Given the legacy of Java's checked exception system, it is imperative that <b><em>fatal</em></b> exceptions (defined
  * in {@link WrappedCheckedException#isFatal(Throwable) WrappedCheckedException.isFatal(...)}) avoid being caught and
@@ -35,6 +36,29 @@ public final class TryCatchesOps {
     }
 
     throw new WrappedCheckedException(throwable);
+  }
+
+  @SafeVarargs
+  private static <T extends Throwable> T resolveCatchThrowableWrappedCheckedException(
+      Throwable throwable,
+      Class<? extends T>... throwableClasses
+  ) {
+    //noinspection ThrowableNotThrown
+    WrappedCheckedException.requireNonFatal(throwable);
+    if (Arrays.stream(throwableClasses)
+        .anyMatch(throwableClass ->
+            throwableClass.isInstance(throwable))
+    ) {
+
+      //noinspection unchecked
+      return (T) throwable;
+    }
+
+    throwRuntimeExceptionOrWrappedCheckedException(throwable);
+
+    //this is never reached because the prior method call always throws a RuntimeException
+    //noinspection DataFlowIssue
+    return null;
   }
 
   /**
@@ -67,27 +91,15 @@ public final class TryCatchesOps {
       VoidSupplier voidSupplier,
       Class<? extends T>... throwableClasses
   ) {
+    Objects.requireNonNull(voidSupplier, "voidSupplier cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     try {
       voidSupplier.execute();
 
       return Optional.empty();
     } catch (Throwable throwable) {
-      //noinspection ThrowableNotThrown
-      WrappedCheckedException.requireNonFatal(throwable);
-      if (Arrays.stream(throwableClasses)
-          .anyMatch(throwableClass ->
-              throwableClass.isInstance(throwable))
-      ) {
 
-        //noinspection unchecked
-        return Optional.of((T) throwable);
-      }
-
-      throwRuntimeExceptionOrWrappedCheckedException(throwable);
-
-      //this is never reached because the prior method call always throws a RuntimeException
-      //noinspection DataFlowIssue,OptionalAssignedToNull
-      return null;
+      return Optional.of(resolveCatchThrowableWrappedCheckedException(throwable, throwableClasses));
     }
   }
 
@@ -113,6 +125,8 @@ public final class TryCatchesOps {
       VoidSupplier voidSupplier,
       Class<? extends T>... throwableClasses
   ) {
+    Objects.requireNonNull(voidSupplier, "voidSupplier cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     wrap(voidSupplier, throwableClasses)
         .ifPresent(TryCatchesOps::throwRuntimeExceptionOrWrappedCheckedException);
   }
@@ -138,6 +152,7 @@ public final class TryCatchesOps {
   public static Optional<RuntimeException> wrap(
       VoidSupplier voidSupplier
   ) {
+    Objects.requireNonNull(voidSupplier, "voidSupplier cannot be null");
     return wrap(voidSupplier, RuntimeException.class);
   }
 
@@ -154,6 +169,7 @@ public final class TryCatchesOps {
   public static void wrapOrThrow(
       VoidSupplier voidSupplier
   ) {
+    Objects.requireNonNull(voidSupplier, "voidSupplier cannot be null");
     wrap(voidSupplier)
         .ifPresent(runtimeException -> {
 
@@ -195,26 +211,14 @@ public final class TryCatchesOps {
       Supplier<R> supplier,
       Class<? extends L>... throwableClasses
   ) {
+    Objects.requireNonNull(supplier, "supplier cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     try {
 
       return Either.right(supplier.get());
     } catch (Throwable throwable) {
-      //noinspection ThrowableNotThrown
-      WrappedCheckedException.requireNonFatal(throwable);
-      if (Arrays.stream(throwableClasses)
-          .anyMatch(throwableClass ->
-              throwableClass.isInstance(throwable))
-      ) {
 
-        //noinspection unchecked
-        return Either.left((L) throwable);
-      }
-
-      throwRuntimeExceptionOrWrappedCheckedException(throwable);
-
-      //this is never reached because the prior method call always throws a RuntimeException
-      //noinspection DataFlowIssue
-      return null;
+      return Either.left(resolveCatchThrowableWrappedCheckedException(throwable, throwableClasses));
     }
   }
 
@@ -248,6 +252,8 @@ public final class TryCatchesOps {
       Supplier<R> supplier,
       Class<? extends L>... throwableClasses
   ) {
+    Objects.requireNonNull(supplier, "supplier cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     var either = wrap(supplier, throwableClasses);
     if (either.isLeft()) {
       var throwable = either.getLeft();
@@ -282,6 +288,7 @@ public final class TryCatchesOps {
   public static <R> Either<RuntimeException, R> wrap(
       Supplier<R> supplier
   ) {
+    Objects.requireNonNull(supplier, "supplier cannot be null");
     return wrap(supplier, RuntimeException.class);
   }
 
@@ -306,6 +313,7 @@ public final class TryCatchesOps {
   public static <R> R wrapOrThrow(
       Supplier<R> supplier
   ) {
+    Objects.requireNonNull(supplier, "supplier cannot be null");
     var either = wrap(supplier);
     if (either.isLeft()) {
 
@@ -314,29 +322,6 @@ public final class TryCatchesOps {
     }
 
     return either.getRight();
-  }
-
-  @SafeVarargs
-  private static <T extends Throwable> T resolveCatchThrowableWrappedCheckedException(
-      Throwable throwable,
-      Class<? extends T>... throwableClasses
-  ) {
-    //noinspection ThrowableNotThrown
-    WrappedCheckedException.requireNonFatal(throwable);
-    if (Arrays.stream(throwableClasses)
-        .anyMatch(throwableClass ->
-            throwableClass.isInstance(throwable))
-    ) {
-
-      //noinspection unchecked
-      return (T) throwable;
-    }
-
-    throwRuntimeExceptionOrWrappedCheckedException(throwable);
-
-    //this is never reached because the prior method call always throws a RuntimeException
-    //noinspection DataFlowIssue
-    return null;
   }
 
   /**
@@ -374,6 +359,8 @@ public final class TryCatchesOps {
       VoidSupplierCheckedException voidSupplierCheckedException,
       Class<? extends T>... throwableClasses
   ) {
+    Objects.requireNonNull(voidSupplierCheckedException, "voidSupplierCheckedException cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     try {
       voidSupplierCheckedException.execute();
 
@@ -408,6 +395,8 @@ public final class TryCatchesOps {
       VoidSupplierCheckedException voidSupplierCheckedException,
       Class<? extends T>... throwableClasses
   ) {
+    Objects.requireNonNull(voidSupplierCheckedException, "voidSupplierCheckedException cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     wrapCheckedException(voidSupplierCheckedException, throwableClasses)
         .ifPresent(TryCatchesOps::throwRuntimeExceptionOrWrappedCheckedException);
   }
@@ -434,6 +423,7 @@ public final class TryCatchesOps {
   public static Optional<RuntimeException> wrapCheckedException(
       VoidSupplierCheckedException voidSupplierCheckedException
   ) {
+    Objects.requireNonNull(voidSupplierCheckedException, "voidSupplierCheckedException cannot be null");
     return wrapCheckedException(voidSupplierCheckedException, RuntimeException.class);
   }
 
@@ -451,6 +441,7 @@ public final class TryCatchesOps {
   public static void wrapCheckedExceptionOrThrow(
       VoidSupplierCheckedException voidSupplierCheckedException
   ) {
+    Objects.requireNonNull(voidSupplierCheckedException, "voidSupplierCheckedException cannot be null");
     wrapCheckedException(voidSupplierCheckedException)
         .ifPresent(runtimeException -> {
 
@@ -495,6 +486,8 @@ public final class TryCatchesOps {
       SupplierCheckedException<R> supplierCheckedException,
       Class<? extends L>... throwableClasses
   ) {
+    Objects.requireNonNull(supplierCheckedException, "supplierCheckedException cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     try {
 
       return Either.right(supplierCheckedException.get());
@@ -540,6 +533,8 @@ public final class TryCatchesOps {
       SupplierCheckedException<R> supplierCheckedException,
       Class<? extends L>... throwableClasses
   ) {
+    Objects.requireNonNull(supplierCheckedException, "supplierCheckedException cannot be null");
+    Objects.requireNonNull(throwableClasses, "throwableClasses cannot be null");
     var either = wrapCheckedException(supplierCheckedException, throwableClasses);
     if (either.isLeft()) {
       var throwable = either.getLeft();
@@ -576,6 +571,7 @@ public final class TryCatchesOps {
   public static <R> Either<RuntimeException, R> wrapCheckedException(
       SupplierCheckedException<R> supplierCheckedException
   ) {
+    Objects.requireNonNull(supplierCheckedException, "supplierCheckedException cannot be null");
     return wrapCheckedException(supplierCheckedException, RuntimeException.class);
   }
 
@@ -602,6 +598,7 @@ public final class TryCatchesOps {
   public static <R> R wrapCheckedExceptionOrThrow(
       SupplierCheckedException<R> supplierCheckedException
   ) {
+    Objects.requireNonNull(supplierCheckedException, "supplierCheckedException cannot be null");
     var either = wrapCheckedException(supplierCheckedException);
     if (either.isLeft()) {
 

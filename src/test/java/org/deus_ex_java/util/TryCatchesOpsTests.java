@@ -825,4 +825,108 @@ public class TryCatchesOpsTests {
     assertEquals(IOException.class, wrappedCheckedExceptionNotFoundInListWrapOrThrow.getCause().getClass());
     assertEquals("optional sneaky wrapOrThrow checked exception", wrappedCheckedExceptionNotFoundInListWrapOrThrow.getCause().getMessage());
   }
+
+  @Test
+  public void testFatalThrowablesPropagation() {
+    // 1. InterruptedException across all 4 supplier categories
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrap(() -> {
+      throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapOrThrow(() -> {
+      throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrap(() -> {
+      throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
+      return 1;
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapOrThrow(() -> {
+      throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
+      return 1;
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapCheckedException(() -> {
+      throw new InterruptedException("fatal interrupt");
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
+      throw new InterruptedException("fatal interrupt");
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapCheckedException(() -> {
+      if (true) throw new InterruptedException("fatal interrupt");
+      return 1;
+    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
+      if (true) throw new InterruptedException("fatal interrupt");
+      return 1;
+    }));
+
+    // 2. OutOfMemoryError (VirtualMachineError)
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrap(() -> {
+      throw new OutOfMemoryError("fatal oom");
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrapOrThrow(() -> {
+      throw new OutOfMemoryError("fatal oom");
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrap(() -> {
+      if (true) throw new OutOfMemoryError("fatal oom");
+      return 1;
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrapOrThrow(() -> {
+      if (true) throw new OutOfMemoryError("fatal oom");
+      return 1;
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrapCheckedException(() -> {
+      throw new OutOfMemoryError("fatal oom");
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
+      throw new OutOfMemoryError("fatal oom");
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrapCheckedException(() -> {
+      if (true) throw new OutOfMemoryError("fatal oom");
+      return 1;
+    }));
+    assertThrows(OutOfMemoryError.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
+      if (true) throw new OutOfMemoryError("fatal oom");
+      return 1;
+    }));
+
+    // 3. ControlBreakThrowable
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrap(() -> {
+      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
+    }));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapOrThrow(() -> {
+      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
+    }));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapCheckedException((org.deus_ex_java.util.function.VoidSupplierCheckedException) () -> {
+      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
+    }));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow((org.deus_ex_java.util.function.VoidSupplierCheckedException) () -> {
+      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
+    }));
+
+    // 4. LinkageError
+    assertThrows(LinkageError.class, () -> TryCatchesOps.wrap(() -> {
+      throw new LinkageError("fatal linkage");
+    }));
+
+    // 5. ThreadDeath
+    @SuppressWarnings("deprecation")
+    var threadDeath = new ThreadDeath();
+    assertThrows(ThreadDeath.class, () -> TryCatchesOps.wrap(() -> {
+      throw threadDeath;
+    }));
+  }
+
+  @Test
+  public void testNullParameterValidation() {
+    //noinspection DataFlowIssue
+    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap((org.deus_ex_java.util.function.VoidSupplier) null));
+    //noinspection DataFlowIssue
+    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap(() -> {}, (Class<? extends Throwable>[]) null));
+    //noinspection DataFlowIssue
+    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap((java.util.function.Supplier<Object>) null));
+    //noinspection DataFlowIssue
+    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrapCheckedException((org.deus_ex_java.util.function.VoidSupplierCheckedException) null));
+    //noinspection DataFlowIssue
+    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrapCheckedException((org.deus_ex_java.util.function.SupplierCheckedException<Object>) null));
+  }
 }
+
