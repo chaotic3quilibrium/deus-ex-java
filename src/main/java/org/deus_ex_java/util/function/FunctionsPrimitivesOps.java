@@ -4,6 +4,8 @@ import org.deus_ex_java.lang.WrappedCheckedException;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.Objects;
+
 import java.util.function.*;
 import java.util.stream.Stream;
 
@@ -38,6 +40,7 @@ public final class FunctionsPrimitivesOps {
   public static BooleanSupplier wrapCheckedException(
       BooleanSupplierCheckedException booleanSupplierCheckedException
   ) {
+    Objects.requireNonNull(booleanSupplierCheckedException, "booleanSupplierCheckedException cannot be null");
     return wrapCheckedException(booleanSupplierCheckedException, WrappedCheckedException::new);
   }
 
@@ -60,8 +63,10 @@ public final class FunctionsPrimitivesOps {
       BooleanSupplierCheckedException booleanSupplierCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(booleanSupplierCheckedException, "booleanSupplierCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return () ->
-        TryCatchesOps.wrapCheckedException(booleanSupplierCheckedException::getAsBoolean)
+        TryCatchesOps.wrapCheckedException(booleanSupplierCheckedException::getAsBoolean, Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -81,6 +86,7 @@ public final class FunctionsPrimitivesOps {
   public static DoubleBinaryOperator wrapCheckedException(
       DoubleBinaryOperatorCheckedException doubleBinaryOperatorCheckedException
   ) {
+    Objects.requireNonNull(doubleBinaryOperatorCheckedException, "doubleBinaryOperatorCheckedException cannot be null");
     return wrapCheckedException(doubleBinaryOperatorCheckedException, WrappedCheckedException::new);
   }
 
@@ -103,10 +109,13 @@ public final class FunctionsPrimitivesOps {
       DoubleBinaryOperatorCheckedException doubleBinaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleBinaryOperatorCheckedException, "doubleBinaryOperatorCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (left, right) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    doubleBinaryOperatorCheckedException.applyAsDouble(left, right))
+                    doubleBinaryOperatorCheckedException.applyAsDouble(left, right),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -126,6 +135,7 @@ public final class FunctionsPrimitivesOps {
   public static DoubleConsumer wrapCheckedException(
       DoubleConsumerCheckedException doubleConsumerCheckedException
   ) {
+    Objects.requireNonNull(doubleConsumerCheckedException, "doubleConsumerCheckedException cannot be null");
     return wrapCheckedException(doubleConsumerCheckedException, WrappedCheckedException::new);
   }
 
@@ -148,6 +158,8 @@ public final class FunctionsPrimitivesOps {
       DoubleConsumerCheckedException doubleConsumerCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleConsumerCheckedException, "doubleConsumerCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -175,6 +187,7 @@ public final class FunctionsPrimitivesOps {
   public static <R> DoubleFunction<R> wrapCheckedException(
       DoubleFunctionCheckedException<R> doubleFunctionCheckedException
   ) {
+    Objects.requireNonNull(doubleFunctionCheckedException, "doubleFunctionCheckedException cannot be null");
     return wrapCheckedException(doubleFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -198,10 +211,13 @@ public final class FunctionsPrimitivesOps {
       DoubleFunctionCheckedException<R> doubleFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleFunctionCheckedException, "doubleFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    doubleFunctionCheckedException.apply(t))
+                    doubleFunctionCheckedException.apply(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -221,6 +237,7 @@ public final class FunctionsPrimitivesOps {
   public static DoublePredicate wrapCheckedException(
       DoublePredicateCheckedException doublePredicateCheckedException
   ) {
+    Objects.requireNonNull(doublePredicateCheckedException, "doublePredicateCheckedException cannot be null");
     return wrapCheckedException(doublePredicateCheckedException, WrappedCheckedException::new);
   }
 
@@ -243,10 +260,13 @@ public final class FunctionsPrimitivesOps {
       DoublePredicateCheckedException doublePredicateCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doublePredicateCheckedException, "doublePredicateCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    doublePredicateCheckedException.test(t))
+                    doublePredicateCheckedException.test(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -266,6 +286,7 @@ public final class FunctionsPrimitivesOps {
   public static DoubleSupplier wrapCheckedException(
       DoubleSupplierCheckedException doubleSupplierCheckedException
   ) {
+    Objects.requireNonNull(doubleSupplierCheckedException, "doubleSupplierCheckedException cannot be null");
     return wrapCheckedException(doubleSupplierCheckedException, WrappedCheckedException::new);
   }
 
@@ -288,8 +309,10 @@ public final class FunctionsPrimitivesOps {
       DoubleSupplierCheckedException doubleSupplierCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleSupplierCheckedException, "doubleSupplierCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return () ->
-        TryCatchesOps.wrapCheckedException(doubleSupplierCheckedException::getAsDouble)
+        TryCatchesOps.wrapCheckedException(doubleSupplierCheckedException::getAsDouble, Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -309,6 +332,7 @@ public final class FunctionsPrimitivesOps {
   public static DoubleToIntFunction wrapCheckedException(
       DoubleToIntFunctionCheckedException doubleToIntFunctionCheckedException
   ) {
+    Objects.requireNonNull(doubleToIntFunctionCheckedException, "doubleToIntFunctionCheckedException cannot be null");
     return wrapCheckedException(doubleToIntFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -331,10 +355,13 @@ public final class FunctionsPrimitivesOps {
       DoubleToIntFunctionCheckedException doubleToIntFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleToIntFunctionCheckedException, "doubleToIntFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    doubleToIntFunctionCheckedException.applyAsInt(t))
+                    doubleToIntFunctionCheckedException.applyAsInt(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -354,6 +381,7 @@ public final class FunctionsPrimitivesOps {
   public static DoubleToLongFunction wrapCheckedException(
       DoubleToLongFunctionCheckedException doubleToLongFunctionCheckedException
   ) {
+    Objects.requireNonNull(doubleToLongFunctionCheckedException, "doubleToLongFunctionCheckedException cannot be null");
     return wrapCheckedException(doubleToLongFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -376,10 +404,13 @@ public final class FunctionsPrimitivesOps {
       DoubleToLongFunctionCheckedException doubleToLongFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleToLongFunctionCheckedException, "doubleToLongFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    doubleToLongFunctionCheckedException.applyAsLong(t))
+                    doubleToLongFunctionCheckedException.applyAsLong(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -399,6 +430,7 @@ public final class FunctionsPrimitivesOps {
   public static DoubleUnaryOperator wrapCheckedException(
       DoubleUnaryOperatorCheckedException doubleUnaryOperatorCheckedException
   ) {
+    Objects.requireNonNull(doubleUnaryOperatorCheckedException, "doubleUnaryOperatorCheckedException cannot be null");
     return wrapCheckedException(doubleUnaryOperatorCheckedException, WrappedCheckedException::new);
   }
 
@@ -421,10 +453,13 @@ public final class FunctionsPrimitivesOps {
       DoubleUnaryOperatorCheckedException doubleUnaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(doubleUnaryOperatorCheckedException, "doubleUnaryOperatorCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    doubleUnaryOperatorCheckedException.applyAsDouble(t))
+                    doubleUnaryOperatorCheckedException.applyAsDouble(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -444,6 +479,7 @@ public final class FunctionsPrimitivesOps {
   public static IntBinaryOperator wrapCheckedException(
       IntBinaryOperatorCheckedException intBinaryOperatorCheckedException
   ) {
+    Objects.requireNonNull(intBinaryOperatorCheckedException, "intBinaryOperatorCheckedException cannot be null");
     return wrapCheckedException(intBinaryOperatorCheckedException, WrappedCheckedException::new);
   }
 
@@ -466,10 +502,13 @@ public final class FunctionsPrimitivesOps {
       IntBinaryOperatorCheckedException intBinaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intBinaryOperatorCheckedException, "intBinaryOperatorCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (left, right) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    intBinaryOperatorCheckedException.applyAsInt(left, right))
+                    intBinaryOperatorCheckedException.applyAsInt(left, right),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -489,6 +528,7 @@ public final class FunctionsPrimitivesOps {
   public static IntConsumer wrapCheckedException(
       IntConsumerCheckedException intConsumerCheckedException
   ) {
+    Objects.requireNonNull(intConsumerCheckedException, "intConsumerCheckedException cannot be null");
     return wrapCheckedException(intConsumerCheckedException, WrappedCheckedException::new);
   }
 
@@ -511,6 +551,8 @@ public final class FunctionsPrimitivesOps {
       IntConsumerCheckedException intConsumerCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intConsumerCheckedException, "intConsumerCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -538,6 +580,7 @@ public final class FunctionsPrimitivesOps {
   public static <R> IntFunction<R> wrapCheckedException(
       IntFunctionCheckedException<R> intFunctionCheckedException
   ) {
+    Objects.requireNonNull(intFunctionCheckedException, "intFunctionCheckedException cannot be null");
     return wrapCheckedException(intFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -561,10 +604,13 @@ public final class FunctionsPrimitivesOps {
       IntFunctionCheckedException<R> intFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intFunctionCheckedException, "intFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    intFunctionCheckedException.apply(t))
+                    intFunctionCheckedException.apply(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -584,6 +630,7 @@ public final class FunctionsPrimitivesOps {
   public static IntPredicate wrapCheckedException(
       IntPredicateCheckedException intPredicateCheckedException
   ) {
+    Objects.requireNonNull(intPredicateCheckedException, "intPredicateCheckedException cannot be null");
     return wrapCheckedException(intPredicateCheckedException, WrappedCheckedException::new);
   }
 
@@ -606,10 +653,13 @@ public final class FunctionsPrimitivesOps {
       IntPredicateCheckedException intPredicateCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intPredicateCheckedException, "intPredicateCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    intPredicateCheckedException.test(t))
+                    intPredicateCheckedException.test(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -629,6 +679,7 @@ public final class FunctionsPrimitivesOps {
   public static IntSupplier wrapCheckedException(
       IntSupplierCheckedException intSupplierCheckedException
   ) {
+    Objects.requireNonNull(intSupplierCheckedException, "intSupplierCheckedException cannot be null");
     return wrapCheckedException(intSupplierCheckedException, WrappedCheckedException::new);
   }
 
@@ -651,8 +702,10 @@ public final class FunctionsPrimitivesOps {
       IntSupplierCheckedException intSupplierCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intSupplierCheckedException, "intSupplierCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return () ->
-        TryCatchesOps.wrapCheckedException(intSupplierCheckedException::getAsInt)
+        TryCatchesOps.wrapCheckedException(intSupplierCheckedException::getAsInt, Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -672,6 +725,7 @@ public final class FunctionsPrimitivesOps {
   public static IntToDoubleFunction wrapCheckedException(
       IntToDoubleFunctionCheckedException intToDoubleFunctionCheckedException
   ) {
+    Objects.requireNonNull(intToDoubleFunctionCheckedException, "intToDoubleFunctionCheckedException cannot be null");
     return wrapCheckedException(intToDoubleFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -694,10 +748,13 @@ public final class FunctionsPrimitivesOps {
       IntToDoubleFunctionCheckedException intToDoubleFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intToDoubleFunctionCheckedException, "intToDoubleFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    intToDoubleFunctionCheckedException.applyAsDouble(t))
+                    intToDoubleFunctionCheckedException.applyAsDouble(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -717,6 +774,7 @@ public final class FunctionsPrimitivesOps {
   public static IntToLongFunction wrapCheckedException(
       IntToLongFunctionCheckedException intToLongFunctionCheckedException
   ) {
+    Objects.requireNonNull(intToLongFunctionCheckedException, "intToLongFunctionCheckedException cannot be null");
     return wrapCheckedException(intToLongFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -739,10 +797,13 @@ public final class FunctionsPrimitivesOps {
       IntToLongFunctionCheckedException intToLongFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intToLongFunctionCheckedException, "intToLongFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    intToLongFunctionCheckedException.applyAsLong(t))
+                    intToLongFunctionCheckedException.applyAsLong(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -762,6 +823,7 @@ public final class FunctionsPrimitivesOps {
   public static IntUnaryOperator wrapCheckedException(
       IntUnaryOperatorCheckedException intUnaryOperatorCheckedException
   ) {
+    Objects.requireNonNull(intUnaryOperatorCheckedException, "intUnaryOperatorCheckedException cannot be null");
     return wrapCheckedException(intUnaryOperatorCheckedException, WrappedCheckedException::new);
   }
 
@@ -784,10 +846,13 @@ public final class FunctionsPrimitivesOps {
       IntUnaryOperatorCheckedException intUnaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(intUnaryOperatorCheckedException, "intUnaryOperatorCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    intUnaryOperatorCheckedException.applyAsInt(t))
+                    intUnaryOperatorCheckedException.applyAsInt(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -807,6 +872,7 @@ public final class FunctionsPrimitivesOps {
   public static LongBinaryOperator wrapCheckedException(
       LongBinaryOperatorCheckedException longBinaryOperatorCheckedException
   ) {
+    Objects.requireNonNull(longBinaryOperatorCheckedException, "longBinaryOperatorCheckedException cannot be null");
     return wrapCheckedException(longBinaryOperatorCheckedException, WrappedCheckedException::new);
   }
 
@@ -829,10 +895,13 @@ public final class FunctionsPrimitivesOps {
       LongBinaryOperatorCheckedException longBinaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longBinaryOperatorCheckedException, "longBinaryOperatorCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (left, right) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    longBinaryOperatorCheckedException.applyAsLong(left, right))
+                    longBinaryOperatorCheckedException.applyAsLong(left, right),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -852,6 +921,7 @@ public final class FunctionsPrimitivesOps {
   public static LongConsumer wrapCheckedException(
       LongConsumerCheckedException longConsumerCheckedException
   ) {
+    Objects.requireNonNull(longConsumerCheckedException, "longConsumerCheckedException cannot be null");
     return wrapCheckedException(longConsumerCheckedException, WrappedCheckedException::new);
   }
 
@@ -874,6 +944,8 @@ public final class FunctionsPrimitivesOps {
       LongConsumerCheckedException longConsumerCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longConsumerCheckedException, "longConsumerCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -901,6 +973,7 @@ public final class FunctionsPrimitivesOps {
   public static <R> LongFunction<R> wrapCheckedException(
       LongFunctionCheckedException<R> longFunctionCheckedException
   ) {
+    Objects.requireNonNull(longFunctionCheckedException, "longFunctionCheckedException cannot be null");
     return wrapCheckedException(longFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -924,10 +997,13 @@ public final class FunctionsPrimitivesOps {
       LongFunctionCheckedException<R> longFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longFunctionCheckedException, "longFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    longFunctionCheckedException.apply(t))
+                    longFunctionCheckedException.apply(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -947,6 +1023,7 @@ public final class FunctionsPrimitivesOps {
   public static LongPredicate wrapCheckedException(
       LongPredicateCheckedException longPredicateCheckedException
   ) {
+    Objects.requireNonNull(longPredicateCheckedException, "longPredicateCheckedException cannot be null");
     return wrapCheckedException(longPredicateCheckedException, WrappedCheckedException::new);
   }
 
@@ -969,10 +1046,13 @@ public final class FunctionsPrimitivesOps {
       LongPredicateCheckedException longPredicateCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longPredicateCheckedException, "longPredicateCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    longPredicateCheckedException.test(t))
+                    longPredicateCheckedException.test(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -992,6 +1072,7 @@ public final class FunctionsPrimitivesOps {
   public static LongSupplier wrapCheckedException(
       LongSupplierCheckedException longSupplierCheckedException
   ) {
+    Objects.requireNonNull(longSupplierCheckedException, "longSupplierCheckedException cannot be null");
     return wrapCheckedException(longSupplierCheckedException, WrappedCheckedException::new);
   }
 
@@ -1014,8 +1095,10 @@ public final class FunctionsPrimitivesOps {
       LongSupplierCheckedException longSupplierCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longSupplierCheckedException, "longSupplierCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return () ->
-        TryCatchesOps.wrapCheckedException(longSupplierCheckedException::getAsLong)
+        TryCatchesOps.wrapCheckedException(longSupplierCheckedException::getAsLong, Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1035,6 +1118,7 @@ public final class FunctionsPrimitivesOps {
   public static LongToDoubleFunction wrapCheckedException(
       LongToDoubleFunctionCheckedException longToDoubleFunctionCheckedException
   ) {
+    Objects.requireNonNull(longToDoubleFunctionCheckedException, "longToDoubleFunctionCheckedException cannot be null");
     return wrapCheckedException(longToDoubleFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -1057,10 +1141,13 @@ public final class FunctionsPrimitivesOps {
       LongToDoubleFunctionCheckedException longToDoubleFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longToDoubleFunctionCheckedException, "longToDoubleFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    longToDoubleFunctionCheckedException.applyAsDouble(t))
+                    longToDoubleFunctionCheckedException.applyAsDouble(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1080,6 +1167,7 @@ public final class FunctionsPrimitivesOps {
   public static LongToIntFunction wrapCheckedException(
       LongToIntFunctionCheckedException longToIntFunctionCheckedException
   ) {
+    Objects.requireNonNull(longToIntFunctionCheckedException, "longToIntFunctionCheckedException cannot be null");
     return wrapCheckedException(longToIntFunctionCheckedException, WrappedCheckedException::new);
   }
 
@@ -1102,10 +1190,13 @@ public final class FunctionsPrimitivesOps {
       LongToIntFunctionCheckedException longToIntFunctionCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longToIntFunctionCheckedException, "longToIntFunctionCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    longToIntFunctionCheckedException.applyAsInt(t))
+                    longToIntFunctionCheckedException.applyAsInt(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1125,6 +1216,7 @@ public final class FunctionsPrimitivesOps {
   public static LongUnaryOperator wrapCheckedException(
       LongUnaryOperatorCheckedException longUnaryOperatorCheckedException
   ) {
+    Objects.requireNonNull(longUnaryOperatorCheckedException, "longUnaryOperatorCheckedException cannot be null");
     return wrapCheckedException(longUnaryOperatorCheckedException, WrappedCheckedException::new);
   }
 
@@ -1147,10 +1239,13 @@ public final class FunctionsPrimitivesOps {
       LongUnaryOperatorCheckedException longUnaryOperatorCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(longUnaryOperatorCheckedException, "longUnaryOperatorCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    longUnaryOperatorCheckedException.applyAsLong(t))
+                    longUnaryOperatorCheckedException.applyAsLong(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1171,6 +1266,7 @@ public final class FunctionsPrimitivesOps {
   public static <T> ObjDoubleConsumer<T> wrapCheckedException(
       ObjDoubleConsumerCheckedException<T> objDoubleConsumerCheckedExceptionT
   ) {
+    Objects.requireNonNull(objDoubleConsumerCheckedExceptionT, "objDoubleConsumerCheckedExceptionT cannot be null");
     return wrapCheckedException(objDoubleConsumerCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1194,6 +1290,8 @@ public final class FunctionsPrimitivesOps {
       ObjDoubleConsumerCheckedException<T> objDoubleConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(objDoubleConsumerCheckedExceptionT, "objDoubleConsumerCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -1221,6 +1319,7 @@ public final class FunctionsPrimitivesOps {
   public static <T> ObjIntConsumer<T> wrapCheckedException(
       ObjIntConsumerCheckedException<T> objIntConsumerCheckedExceptionT
   ) {
+    Objects.requireNonNull(objIntConsumerCheckedExceptionT, "objIntConsumerCheckedExceptionT cannot be null");
     return wrapCheckedException(objIntConsumerCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1244,6 +1343,8 @@ public final class FunctionsPrimitivesOps {
       ObjIntConsumerCheckedException<T> objIntConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(objIntConsumerCheckedExceptionT, "objIntConsumerCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -1271,6 +1372,7 @@ public final class FunctionsPrimitivesOps {
   public static <T> ObjLongConsumer<T> wrapCheckedException(
       ObjLongConsumerCheckedException<T> objLongConsumerCheckedExceptionT
   ) {
+    Objects.requireNonNull(objLongConsumerCheckedExceptionT, "objLongConsumerCheckedExceptionT cannot be null");
     return wrapCheckedException(objLongConsumerCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1294,6 +1396,8 @@ public final class FunctionsPrimitivesOps {
       ObjLongConsumerCheckedException<T> objLongConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(objLongConsumerCheckedExceptionT, "objLongConsumerCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -1322,6 +1426,7 @@ public final class FunctionsPrimitivesOps {
   public static <T, U> ToDoubleBiFunction<T, U> wrapCheckedException(
       ToDoubleBiFunctionCheckedException<T, U> toDoubleBiFunctionCheckedExceptionTAndU
   ) {
+    Objects.requireNonNull(toDoubleBiFunctionCheckedExceptionTAndU, "toDoubleBiFunctionCheckedExceptionTAndU cannot be null");
     return wrapCheckedException(toDoubleBiFunctionCheckedExceptionTAndU, WrappedCheckedException::new);
   }
 
@@ -1346,10 +1451,13 @@ public final class FunctionsPrimitivesOps {
       ToDoubleBiFunctionCheckedException<T, U> toDoubleBiFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(toDoubleBiFunctionCheckedExceptionTAndU, "toDoubleBiFunctionCheckedExceptionTAndU cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    toDoubleBiFunctionCheckedExceptionTAndU.applyAsDouble(t, u))
+                    toDoubleBiFunctionCheckedExceptionTAndU.applyAsDouble(t, u),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1371,6 +1479,7 @@ public final class FunctionsPrimitivesOps {
   public static <T, U> ToIntBiFunction<T, U> wrapCheckedException(
       ToIntBiFunctionCheckedException<T, U> toIntBiFunctionCheckedExceptionTAndU
   ) {
+    Objects.requireNonNull(toIntBiFunctionCheckedExceptionTAndU, "toIntBiFunctionCheckedExceptionTAndU cannot be null");
     return wrapCheckedException(toIntBiFunctionCheckedExceptionTAndU, WrappedCheckedException::new);
   }
 
@@ -1395,10 +1504,13 @@ public final class FunctionsPrimitivesOps {
       ToIntBiFunctionCheckedException<T, U> toIntBiFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(toIntBiFunctionCheckedExceptionTAndU, "toIntBiFunctionCheckedExceptionTAndU cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    toIntBiFunctionCheckedExceptionTAndU.applyAsInt(t, u))
+                    toIntBiFunctionCheckedExceptionTAndU.applyAsInt(t, u),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1420,6 +1532,7 @@ public final class FunctionsPrimitivesOps {
   public static <T, U> ToLongBiFunction<T, U> wrapCheckedException(
       ToLongBiFunctionCheckedException<T, U> toLongBiFunctionCheckedExceptionTAndU
   ) {
+    Objects.requireNonNull(toLongBiFunctionCheckedExceptionTAndU, "toLongBiFunctionCheckedExceptionTAndU cannot be null");
     return wrapCheckedException(toLongBiFunctionCheckedExceptionTAndU, WrappedCheckedException::new);
   }
 
@@ -1444,10 +1557,13 @@ public final class FunctionsPrimitivesOps {
       ToLongBiFunctionCheckedException<T, U> toLongBiFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(toLongBiFunctionCheckedExceptionTAndU, "toLongBiFunctionCheckedExceptionTAndU cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    toLongBiFunctionCheckedExceptionTAndU.applyAsLong(t, u))
+                    toLongBiFunctionCheckedExceptionTAndU.applyAsLong(t, u),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1468,6 +1584,7 @@ public final class FunctionsPrimitivesOps {
   public static <T> ToDoubleFunction<T> wrapCheckedException(
       ToDoubleFunctionCheckedException<T> toDoubleFunctionCheckedExceptionT
   ) {
+    Objects.requireNonNull(toDoubleFunctionCheckedExceptionT, "toDoubleFunctionCheckedExceptionT cannot be null");
     return wrapCheckedException(toDoubleFunctionCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1491,10 +1608,13 @@ public final class FunctionsPrimitivesOps {
       ToDoubleFunctionCheckedException<T> toDoubleFunctionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(toDoubleFunctionCheckedExceptionT, "toDoubleFunctionCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    toDoubleFunctionCheckedExceptionT.applyAsDouble(t))
+                    toDoubleFunctionCheckedExceptionT.applyAsDouble(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1515,6 +1635,7 @@ public final class FunctionsPrimitivesOps {
   public static <T> ToIntFunction<T> wrapCheckedException(
       ToIntFunctionCheckedException<T> toIntFunctionCheckedExceptionT
   ) {
+    Objects.requireNonNull(toIntFunctionCheckedExceptionT, "toIntFunctionCheckedExceptionT cannot be null");
     return wrapCheckedException(toIntFunctionCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1538,10 +1659,13 @@ public final class FunctionsPrimitivesOps {
       ToIntFunctionCheckedException<T> toIntFunctionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(toIntFunctionCheckedExceptionT, "toIntFunctionCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    toIntFunctionCheckedExceptionT.applyAsInt(t))
+                    toIntFunctionCheckedExceptionT.applyAsInt(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1562,6 +1686,7 @@ public final class FunctionsPrimitivesOps {
   public static <T> ToLongFunction<T> wrapCheckedException(
       ToLongFunctionCheckedException<T> toLongFunctionCheckedExceptionT
   ) {
+    Objects.requireNonNull(toLongFunctionCheckedExceptionT, "toLongFunctionCheckedExceptionT cannot be null");
     return wrapCheckedException(toLongFunctionCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1585,10 +1710,13 @@ public final class FunctionsPrimitivesOps {
       ToLongFunctionCheckedException<T> toLongFunctionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(toLongFunctionCheckedExceptionT, "toLongFunctionCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    toLongFunctionCheckedExceptionT.applyAsLong(t))
+                    toLongFunctionCheckedExceptionT.applyAsLong(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }

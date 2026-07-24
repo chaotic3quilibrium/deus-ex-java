@@ -3,7 +3,9 @@ package org.deus_ex_java.util;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.ToIntFunction;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -32,18 +34,9 @@ public final class ArraysOps {
       return ArraysOps.EMPTY_INT_ARRAY;
     }
 
-    int[] bitsIndices = new int[32];
-    int size = 0;
-    while (bits != 0) {
-      int c = bits & -bits;
-      int index = Integer.numberOfTrailingZeros(c);
-      bitsIndices[size++] = index;
-      bits = bits ^ c;
-    }
-    var result = new int[size];
-    System.arraycopy(bitsIndices, 0, result, 0, size);
-
-    return result;
+    return IntStream.range(0, Integer.SIZE)
+        .filter(i -> (bits & (1 << i)) != 0)
+        .toArray();
   }
 
   /**
@@ -55,6 +48,7 @@ public final class ArraysOps {
   public static int[] toDistinctSortedArrayInt(
       Collection<Integer> collection
   ) {
+    Objects.requireNonNull(collection, "collection cannot be null");
     return toDistinctSortedArrayInt(collection.stream());
   }
 
@@ -67,6 +61,7 @@ public final class ArraysOps {
   public static int[] toDistinctSortedArrayInt(
       Stream<Integer> stream
   ) {
+    Objects.requireNonNull(stream, "stream cannot be null");
     return toDistinctSortedArrayInt(stream, Integer::intValue);
   }
 
@@ -83,6 +78,8 @@ public final class ArraysOps {
       Collection<T> collection,
       ToIntFunction<T> fTToId
   ) {
+    Objects.requireNonNull(collection, "collection cannot be null");
+    Objects.requireNonNull(fTToId, "fTToId cannot be null");
     return toDistinctSortedArrayInt(collection.stream(), fTToId);
   }
 
@@ -100,6 +97,8 @@ public final class ArraysOps {
       Stream<T> stream,
       ToIntFunction<T> fTToId
   ) {
+    Objects.requireNonNull(stream, "stream cannot be null");
+    Objects.requireNonNull(fTToId, "fTToId cannot be null");
     return stream
         .mapToInt(fTToId)
         .distinct()
