@@ -85,7 +85,7 @@ public final class EnumsOps<E extends Enum<E>> {
     var nameLowerCaseAndEnumValueCollisions =
         nameLowerCaseAndEnumValues
             .stream()
-            .collect(Collectors.groupingBy(Map.Entry::getKey))
+            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.toUnmodifiableList()))
             .values()
             .stream()
             .filter(es ->
@@ -117,7 +117,7 @@ public final class EnumsOps<E extends Enum<E>> {
     this.enumsSet = Collections.unmodifiableSet(EnumSet.allOf(this.classE));
     this.enumValueByNameLowerCase = nameLowerCaseAndEnumValues
         .stream()
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**
@@ -166,10 +166,12 @@ public final class EnumsOps<E extends Enum<E>> {
    *     is the {@link Enum#name()}, and the enum constant itself is the value
    */
   public Map<String, E> toOrderedMapByName() {
-    return MapsOps.toMapOrdered(
-        stream(),
-        (e) ->
-            Optional.of(entry(e.name(), e)));
+    return Collections.unmodifiableMap(
+        stream().collect(Collectors.toMap(
+            Enum::name,
+            Function.identity(),
+            (vOld, vNew) -> vOld,
+            LinkedHashMap::new)));
   }
 
   /**
@@ -570,7 +572,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     and then String joined
      */
     public String join() {
-      return String.join(this.getSeparator(), toList());
+      return toStrings().collect(Collectors.joining(this.getSeparator()));
     }
   }
 }

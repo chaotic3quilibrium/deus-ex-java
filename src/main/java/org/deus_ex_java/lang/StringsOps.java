@@ -6,6 +6,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Utility class providing static methods to create {@link String} instances.
@@ -59,23 +60,10 @@ public final class StringsOps {
       //empty string is always found by convention at index 0
       return 0;
 
-    //stop advancing right when there isn't enough room left for 'subString'
-    for (var i = 0; i <= source.length() - subStringLength; i++) {
-      //language independent match
-      if (source.regionMatches(
-          true,
-          i,
-          subString,
-          0,
-          subStringLength))
-
-        //return the current index 'i' immediately
-        return i;
-//      }
-    }
-
-    //no match found is by convention at index -1
-    return -1;
+    return IntStream.rangeClosed(0, source.length() - subStringLength)
+        .filter(i -> source.regionMatches(true, i, subString, 0, subStringLength))
+        .findFirst()
+        .orElse(-1);
   }
 
   /**
@@ -103,22 +91,10 @@ public final class StringsOps {
       //empty string is always found by convention at index source.length()
       return source.length();
 
-    //stop advancing left when there isn't enough room left for 'subString'
-    for (var i = source.length() - subStringLength; i >= 0; i--) {
-      //language independent match
-      if (source.regionMatches(
-          true,
-          i,
-          subString,
-          0,
-          subStringLength))
-
-        //return the current index 'i' immediately
-        return i;
-    }
-
-    //no match found is by convention at index -1
-    return -1;
+    return IntStream.iterate(source.length() - subStringLength, i -> i >= 0, i -> i - 1)
+        .filter(i -> source.regionMatches(true, i, subString, 0, subStringLength))
+        .findFirst()
+        .orElse(-1);
   }
 
   /**
@@ -158,10 +134,11 @@ public final class StringsOps {
       @Nullable String stringA,
       @Nullable String stringB
   ) {
-    var isStringANull = Objects.isNull(stringA);
+    if (stringA == null || stringB == null) {
+      return Objects.equals(stringA, stringB);
+    }
 
-    return (isStringANull == Objects.isNull(stringB)) &&
-        (isStringANull || equalsIgnoreCase(stringA, stringB));
+    return equalsIgnoreCase(stringA, stringB);
   }
 
 }

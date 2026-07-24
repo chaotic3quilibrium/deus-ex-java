@@ -1,14 +1,13 @@
 package org.deus_ex_java.lang;
 
-import org.deus_ex_java.util.ArraysOps;
 import org.deus_ex_java.util.Either;
 import org.deus_ex_java.util.SetsOps;
 import org.deus_ex_java.util.TryCatchesOps;
 import org.jspecify.annotations.NullMarked;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * Utility class providing static methods to create and work with {@link Integer} instances.
@@ -31,7 +30,10 @@ public final class IntegersOps {
       return Set.of();
     }
 
-    return SetsOps.toSetOrdered(Arrays.stream(ArraysOps.findSetBitIndices(bits)).boxed());
+    return SetsOps.toSetOrdered(
+        IntStream.range(0, Integer.SIZE)
+            .filter(i -> (bits & (1 << i)) != 0)
+            .boxed());
   }
 
   /**

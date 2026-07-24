@@ -629,12 +629,12 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                 .toList())
         .orElse(List.of());
     var keyStringAndEnumValueAndCollisionSources =
-        Stream.of(
+        Stream.concat(
                 nameStringAndEnumValueAndCollisionSources.stream(),
-                idStringAndEnumValueAndCollisionSources.stream(),
-                alternateStringAndEnumValueAndCollisionSources.stream())
-            .flatMap(Function.identity())
-            .collect(Collectors.groupingBy(Entry::getKey))
+                Stream.concat(
+                    idStringAndEnumValueAndCollisionSources.stream(),
+                    alternateStringAndEnumValueAndCollisionSources.stream()))
+            .collect(Collectors.groupingBy(Entry::getKey, Collectors.toUnmodifiableList()))
             .values()
             .stream()
             .filter(eAsStrings ->
@@ -688,16 +688,16 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     this.classId = classId;
     this.orderedMapIdByEnumValue = orderedMapIdByEnumValue;
     this.orderedMapEnumValueById = MapsOps.swapOrdered(orderedMapIdByEnumValue);
-    this.enumValueByNameOrIdOrAlternatesLowerCase = Stream.of(
+    this.enumValueByNameOrIdOrAlternatesLowerCase = Stream.concat(
             nameStringAndEnumValueAndCollisionSources.stream(),
-            idStringAndEnumValueAndCollisionSources.stream(),
-            alternateStringAndEnumValueAndCollisionSources.stream())
-        .flatMap(Function.identity())
+            Stream.concat(
+                idStringAndEnumValueAndCollisionSources.stream(),
+                alternateStringAndEnumValueAndCollisionSources.stream()))
         .map(keyLowerCaseAndEnumValueAndCollisionSource ->
             entry(
                 keyLowerCaseAndEnumValueAndCollisionSource.getKey(),
                 keyLowerCaseAndEnumValueAndCollisionSource.getValue().getKey()))
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getKey,
             Entry::getValue,
             (stringAndEnumOld, stringAndEnumNew) ->
@@ -1181,7 +1181,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     and transformed, and then {@link String#join(CharSequence, Iterable)}ed
      */
     public String join() {
-      return String.join(this.getSeparator(), toList());
+      return toStrings().collect(Collectors.joining(this.getSeparator()));
     }
   }
 }
