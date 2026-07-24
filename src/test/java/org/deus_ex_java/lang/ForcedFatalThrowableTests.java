@@ -29,6 +29,15 @@ public class ForcedFatalThrowableTests {
     assertTrue(ForcedFatalThrowable.isFatalThrowable(threadDeath));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(interruptedException));
     assertTrue(ForcedFatalThrowable.isFatalThrowable(linkageError));
+
+    // Subclasses of fatal throwable types
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(new OutOfMemoryError()));
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(new StackOverflowError()));
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(new NoClassDefFoundError()));
+
+    // Cause chain wrapped fatal throwables
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(new RuntimeException("wrapped", new OutOfMemoryError())));
+    assertTrue(ForcedFatalThrowable.isFatalThrowable(new RuntimeException("wrapped", new LinkageError())));
   }
 
   @Test
