@@ -20,6 +20,9 @@ deus-ex-java</span></a>
 * [Welcome](#welcome)
   * [Installation](#installation)
     * [Maven Coordinates](#maven-coordinates)
+* [Building & Publishing](#building--publishing)
+  * [Everyday development](#everyday-development)
+  * [Publishing a release to Maven Central](#publishing-a-release-to-maven-central)
 * [Support](#support)
   * [License](#license)
     * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
@@ -46,6 +49,61 @@ legacy Enterprise IT systems via a series of continuous improvements via micro-t
     <version>1.10.0</version>
   </dependency>
 ```
+
+# Building & Publishing
+
+deus-ex-java is a JPMS module targeting Java 17. The Maven tooling itself runs on the
+latest LTS JDK (Java 25), while compilation and tests are executed on a real Java 17 JDK
+via the `maven-toolchains-plugin` (see `docs/toolchain-and-maven-setup.md`).
+
+## Everyday development
+
+```sh
+mvn clean verify     # compile + run all tests (also what IntelliJ "Rebuild Project" runs)
+mvn clean install    # + install to the local ~/.m2 repository
+mvn test -Dtest=EnumAndIdsOpsTests#testTrafficLightWithIdX2   # run a single test/method
+```
+
+These builds need no signing keys or publishing credentials.
+
+### Running tests in IntelliJ
+
+Because this is a JPMS module with white-box tests, IntelliJ's native JUnit runner needs
+the module read/open edges to JUnit that it does not add itself. Add these once to the
+JUnit run-configuration template (**Run → Edit Configurations… → Edit configuration
+templates… → JUnit → VM options**) and every gutter/editor test run works:
+
+```
+--add-modules org.junit.jupiter.api,org.junit.jupiter.params
+--add-reads org.deus.ex.java=org.junit.jupiter.api
+--add-reads org.deus.ex.java=org.junit.jupiter.params
+--add-opens org.deus.ex.java/org.deus_ex_java.lang=org.junit.platform.commons
+--add-opens org.deus.ex.java/org.deus_ex_java.lang.refined=org.junit.platform.commons
+--add-opens org.deus.ex.java/org.deus_ex_java.util=org.junit.platform.commons
+--add-opens org.deus.ex.java/org.deus_ex_java.util.function=org.junit.platform.commons
+--add-opens org.deus.ex.java/org.deus_ex_java.util.refined=org.junit.platform.commons
+--add-opens org.deus.ex.java/org.deus_ex_java.util.stream=org.junit.platform.commons
+--add-opens org.deus.ex.java/org.deus_ex_java.util.tuple=org.junit.platform.commons
+```
+
+These are per-machine (stored in `.idea/workspace.xml`); re-paste them on a fresh checkout,
+and add an `--add-opens` line for any new test package. As a committable fallback, Maven
+runs tests without any of this — e.g. `mvn test -Dtest=EnumAndIdsOpsTests` — and shared
+`.run/` configurations are provided.
+
+## Publishing a release to Maven Central
+
+Publishing-only plugins (GPG signing, source/javadoc jars, and the central publisher) live
+in a `release` profile, so the `-Prelease` flag is **required** — a plain `mvn deploy` will
+not sign or publish:
+
+```sh
+mvn clean deploy -Prelease
+```
+
+This additionally requires the `gpg` binary with a configured signing key and Maven Central
+credentials (server id `central`) in `~/.m2/settings.xml`. See
+`docs/release-profile-and-publishing.md` for details.
 
 # Support
 

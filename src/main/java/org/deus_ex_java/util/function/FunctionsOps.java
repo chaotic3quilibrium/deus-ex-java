@@ -5,6 +5,8 @@ import org.deus_ex_java.util.TryCatchesOps;
 import org.deus_ex_java.util.tuple.Tuple2;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.Objects;
+
 import java.util.concurrent.Callable;
 import java.util.function.*;
 import java.util.stream.Stream;
@@ -50,6 +52,7 @@ public final class FunctionsOps {
       int nTimes,
       VoidSupplierCheckedException justDoItWithNoInputParametersAndThenIgnoreTheResult
   ) {
+    Objects.requireNonNull(justDoItWithNoInputParametersAndThenIgnoreTheResult, "justDoItWithNoInputParametersAndThenIgnoreTheResult cannot be null");
     Stream
         .generate(() -> true)
         .limit(nTimes)
@@ -67,6 +70,7 @@ public final class FunctionsOps {
   public static Runnable to(
       VoidSupplier voidSupplier
   ) {
+    Objects.requireNonNull(voidSupplier, "voidSupplier cannot be null");
     return voidSupplier::execute;
   }
 
@@ -82,6 +86,7 @@ public final class FunctionsOps {
   public static <R> Callable<R> to(
       SupplierCheckedException<? extends R> supplierCheckedException
   ) {
+    Objects.requireNonNull(supplierCheckedException, "supplierCheckedException cannot be null");
     return supplierCheckedException::get;
   }
 
@@ -98,6 +103,7 @@ public final class FunctionsOps {
   public static <A, B, R> BiFunction<A, B, R> to(
       Function2<? super A, ? super B, ? extends R> function2
   ) {
+    Objects.requireNonNull(function2, "function2 cannot be null");
     return function2::apply;
   }
 
@@ -116,6 +122,7 @@ public final class FunctionsOps {
   public static <A, B, R, EX extends Exception> BiFunctionChecked<A, B, R, EX> to(
       Function2Checked<? super A, ? super B, ? extends R, ? extends EX> function2Checked
   ) {
+    Objects.requireNonNull(function2Checked, "function2Checked cannot be null");
     return function2Checked::apply;
   }
 
@@ -133,6 +140,7 @@ public final class FunctionsOps {
   public static <A, B, R> BiFunctionCheckedException<A, B, R> to(
       Function2CheckedException<? super A, ? super B, ? extends R> function2CheckedException
   ) {
+    Objects.requireNonNull(function2CheckedException, "function2CheckedException cannot be null");
     return function2CheckedException::apply;
   }
 
@@ -155,6 +163,9 @@ public final class FunctionsOps {
       Supplier<R> fThen,
       Supplier<R> fElse
   ) {
+    Objects.requireNonNull(fIf, "fIf cannot be null");
+    Objects.requireNonNull(fThen, "fThen cannot be null");
+    Objects.requireNonNull(fElse, "fElse cannot be null");
     return () -> {
       var isThen = fIf.getAsBoolean();
 
@@ -185,6 +196,9 @@ public final class FunctionsOps {
       SupplierCheckedException<R> fceThen,
       SupplierCheckedException<R> fceElse
   ) {
+    Objects.requireNonNull(fceIf, "fceIf cannot be null");
+    Objects.requireNonNull(fceThen, "fceThen cannot be null");
+    Objects.requireNonNull(fceElse, "fceElse cannot be null");
     return () -> {
       var isThen = fceIf.getAsBoolean();
 
@@ -213,6 +227,7 @@ public final class FunctionsOps {
   public static <T, U> BiConsumer<T, U> wrapCheckedException(
       BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT
   ) {
+    Objects.requireNonNull(biConsumerCheckedExceptionT, "biConsumerCheckedExceptionT cannot be null");
     return wrapCheckedException(biConsumerCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -237,6 +252,8 @@ public final class FunctionsOps {
       BiConsumerCheckedException<T, U> biConsumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(biConsumerCheckedExceptionT, "biConsumerCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -266,6 +283,7 @@ public final class FunctionsOps {
   public static <T, U, R> BiFunction<T, U, R> wrapCheckedException(
       BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU
   ) {
+    Objects.requireNonNull(biFunctionCheckedExceptionTAndU, "biFunctionCheckedExceptionTAndU cannot be null");
     return wrapCheckedException(biFunctionCheckedExceptionTAndU, WrappedCheckedException::new);
   }
 
@@ -291,10 +309,13 @@ public final class FunctionsOps {
       BiFunctionCheckedException<T, U, R> biFunctionCheckedExceptionTAndU,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(biFunctionCheckedExceptionTAndU, "biFunctionCheckedExceptionTAndU cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    biFunctionCheckedExceptionTAndU.apply(t, u))
+                    biFunctionCheckedExceptionTAndU.apply(t, u),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -316,6 +337,7 @@ public final class FunctionsOps {
   public static <T> BinaryOperator<T> wrapCheckedException(
       BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT
   ) {
+    Objects.requireNonNull(binaryOperatorCheckedExceptionT, "binaryOperatorCheckedExceptionT cannot be null");
     return wrapCheckedException(binaryOperatorCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -340,10 +362,13 @@ public final class FunctionsOps {
       BinaryOperatorCheckedException<T> binaryOperatorCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(binaryOperatorCheckedExceptionT, "binaryOperatorCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t1, t2) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    binaryOperatorCheckedExceptionT.apply(t1, t2))
+                    binaryOperatorCheckedExceptionT.apply(t1, t2),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -365,6 +390,7 @@ public final class FunctionsOps {
   public static <T, U> BiPredicate<T, U> wrapCheckedException(
       BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT
   ) {
+    Objects.requireNonNull(biPredicateCheckedExceptionT, "biPredicateCheckedExceptionT cannot be null");
     return wrapCheckedException(biPredicateCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -389,10 +415,13 @@ public final class FunctionsOps {
       BiPredicateCheckedException<T, U> biPredicateCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(biPredicateCheckedExceptionT, "biPredicateCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t, u) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    biPredicateCheckedExceptionT.test(t, u))
+                    biPredicateCheckedExceptionT.test(t, u),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -413,6 +442,7 @@ public final class FunctionsOps {
   public static <T> Consumer<T> wrapCheckedException(
       ConsumerCheckedException<T> consumerCheckedExceptionT
   ) {
+    Objects.requireNonNull(consumerCheckedExceptionT, "consumerCheckedExceptionT cannot be null");
     return wrapCheckedException(consumerCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -436,6 +466,8 @@ public final class FunctionsOps {
       ConsumerCheckedException<T> consumerCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(consumerCheckedExceptionT, "consumerCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
@@ -464,6 +496,7 @@ public final class FunctionsOps {
   public static <T, R> Function<T, R> wrapCheckedException(
       FunctionCheckedException<T, R> functionCheckedExceptionT
   ) {
+    Objects.requireNonNull(functionCheckedExceptionT, "functionCheckedExceptionT cannot be null");
     return wrapCheckedException(functionCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -488,10 +521,13 @@ public final class FunctionsOps {
       FunctionCheckedException<T, R> functionCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(functionCheckedExceptionT, "functionCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    functionCheckedExceptionT.apply(t))
+                    functionCheckedExceptionT.apply(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -515,6 +551,7 @@ public final class FunctionsOps {
   public static <A, B, R> Function2<A, B, R> wrapCheckedException(
       Function2CheckedException<A, B, R> function2CheckedException
   ) {
+    Objects.requireNonNull(function2CheckedException, "function2CheckedException cannot be null");
     return wrapCheckedException(function2CheckedException, WrappedCheckedException::new);
   }
 
@@ -540,10 +577,13 @@ public final class FunctionsOps {
       Function2CheckedException<A, B, R> function2CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function2CheckedException, "function2CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function2CheckedException.apply(a, b))
+                    function2CheckedException.apply(a, b),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -567,6 +607,7 @@ public final class FunctionsOps {
   public static <A, B, C, R> Function3<A, B, C, R> wrapCheckedException(
       Function3CheckedException<A, B, C, R> function3CheckedException
   ) {
+    Objects.requireNonNull(function3CheckedException, "function3CheckedException cannot be null");
     return wrapCheckedException(function3CheckedException, WrappedCheckedException::new);
   }
 
@@ -593,10 +634,13 @@ public final class FunctionsOps {
       Function3CheckedException<A, B, C, R> function3CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function3CheckedException, "function3CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function3CheckedException.apply(a, b, c))
+                    function3CheckedException.apply(a, b, c),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -621,6 +665,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, R> Function4<A, B, C, D, R> wrapCheckedException(
       Function4CheckedException<A, B, C, D, R> function4CheckedException
   ) {
+    Objects.requireNonNull(function4CheckedException, "function4CheckedException cannot be null");
     return wrapCheckedException(function4CheckedException, WrappedCheckedException::new);
   }
 
@@ -648,10 +693,13 @@ public final class FunctionsOps {
       Function4CheckedException<A, B, C, D, R> function4CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function4CheckedException, "function4CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function4CheckedException.apply(a, b, c, d))
+                    function4CheckedException.apply(a, b, c, d),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -677,6 +725,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, E, R> Function5<A, B, C, D, E, R> wrapCheckedException(
       Function5CheckedException<A, B, C, D, E, R> function5CheckedException
   ) {
+    Objects.requireNonNull(function5CheckedException, "function5CheckedException cannot be null");
     return wrapCheckedException(function5CheckedException, WrappedCheckedException::new);
   }
 
@@ -705,10 +754,13 @@ public final class FunctionsOps {
       Function5CheckedException<A, B, C, D, E, R> function5CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function5CheckedException, "function5CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d, e) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function5CheckedException.apply(a, b, c, d, e))
+                    function5CheckedException.apply(a, b, c, d, e),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -735,6 +787,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, E, F, R> Function6<A, B, C, D, E, F, R> wrapCheckedException(
       Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException
   ) {
+    Objects.requireNonNull(function6CheckedException, "function6CheckedException cannot be null");
     return wrapCheckedException(function6CheckedException, WrappedCheckedException::new);
   }
 
@@ -764,10 +817,13 @@ public final class FunctionsOps {
       Function6CheckedException<A, B, C, D, E, F, R> function6CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function6CheckedException, "function6CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d, e, f) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function6CheckedException.apply(a, b, c, d, e, f))
+                    function6CheckedException.apply(a, b, c, d, e, f),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -795,6 +851,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, E, F, G, R> Function7<A, B, C, D, E, F, G, R> wrapCheckedException(
       Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException
   ) {
+    Objects.requireNonNull(function7CheckedException, "function7CheckedException cannot be null");
     return wrapCheckedException(function7CheckedException, WrappedCheckedException::new);
   }
 
@@ -825,10 +882,13 @@ public final class FunctionsOps {
       Function7CheckedException<A, B, C, D, E, F, G, R> function7CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function7CheckedException, "function7CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d, e, f, g) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function7CheckedException.apply(a, b, c, d, e, f, g))
+                    function7CheckedException.apply(a, b, c, d, e, f, g),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -857,6 +917,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, E, F, G, H, R> Function8<A, B, C, D, E, F, G, H, R> wrapCheckedException(
       Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException
   ) {
+    Objects.requireNonNull(function8CheckedException, "function8CheckedException cannot be null");
     return wrapCheckedException(function8CheckedException, WrappedCheckedException::new);
   }
 
@@ -888,10 +949,13 @@ public final class FunctionsOps {
       Function8CheckedException<A, B, C, D, E, F, G, H, R> function8CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function8CheckedException, "function8CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d, e, f, g, h) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function8CheckedException.apply(a, b, c, d, e, f, g, h))
+                    function8CheckedException.apply(a, b, c, d, e, f, g, h),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -921,6 +985,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, E, F, G, H, I, R> Function9<A, B, C, D, E, F, G, H, I, R> wrapCheckedException(
       Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException
   ) {
+    Objects.requireNonNull(function9CheckedException, "function9CheckedException cannot be null");
     return wrapCheckedException(function9CheckedException, WrappedCheckedException::new);
   }
 
@@ -953,10 +1018,13 @@ public final class FunctionsOps {
       Function9CheckedException<A, B, C, D, E, F, G, H, I, R> function9CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function9CheckedException, "function9CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d, e, f, g, h, i) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function9CheckedException.apply(a, b, c, d, e, f, g, h, i))
+                    function9CheckedException.apply(a, b, c, d, e, f, g, h, i),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -987,6 +1055,7 @@ public final class FunctionsOps {
   public static <A, B, C, D, E, F, G, H, I, J, R> Function10<A, B, C, D, E, F, G, H, I, J, R> wrapCheckedException(
       Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException
   ) {
+    Objects.requireNonNull(function10CheckedException, "function10CheckedException cannot be null");
     return wrapCheckedException(function10CheckedException, WrappedCheckedException::new);
   }
 
@@ -1020,10 +1089,13 @@ public final class FunctionsOps {
       Function10CheckedException<A, B, C, D, E, F, G, H, I, J, R> function10CheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(function10CheckedException, "function10CheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (a, b, c, d, e, f, g, h, i, j) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    function10CheckedException.apply(a, b, c, d, e, f, g, h, i, j))
+                    function10CheckedException.apply(a, b, c, d, e, f, g, h, i, j),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1044,6 +1116,7 @@ public final class FunctionsOps {
   public static <T> Predicate<T> wrapCheckedException(
       PredicateCheckedException<T> predicateCheckedExceptionT
   ) {
+    Objects.requireNonNull(predicateCheckedExceptionT, "predicateCheckedExceptionT cannot be null");
     return wrapCheckedException(predicateCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1067,10 +1140,13 @@ public final class FunctionsOps {
       PredicateCheckedException<T> predicateCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(predicateCheckedExceptionT, "predicateCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    predicateCheckedExceptionT.test(t))
+                    predicateCheckedExceptionT.test(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1091,6 +1167,7 @@ public final class FunctionsOps {
   public static <T> Supplier<T> wrapCheckedException(
       SupplierCheckedException<T> supplierCheckedExceptionT
   ) {
+    Objects.requireNonNull(supplierCheckedExceptionT, "supplierCheckedExceptionT cannot be null");
     return wrapCheckedException(supplierCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1114,8 +1191,10 @@ public final class FunctionsOps {
       SupplierCheckedException<T> supplierCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(supplierCheckedExceptionT, "supplierCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return () ->
-        TryCatchesOps.wrapCheckedException(supplierCheckedExceptionT)
+        TryCatchesOps.wrapCheckedException(supplierCheckedExceptionT, Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1136,6 +1215,7 @@ public final class FunctionsOps {
   public static <T> UnaryOperator<T> wrapCheckedException(
       UnaryOperatorCheckedException<T> unaryCheckedExceptionT
   ) {
+    Objects.requireNonNull(unaryCheckedExceptionT, "unaryCheckedExceptionT cannot be null");
     return wrapCheckedException(unaryCheckedExceptionT, WrappedCheckedException::new);
   }
 
@@ -1159,10 +1239,13 @@ public final class FunctionsOps {
       UnaryOperatorCheckedException<T> unaryCheckedExceptionT,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(unaryCheckedExceptionT, "unaryCheckedExceptionT cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return (t) ->
         TryCatchesOps.wrapCheckedException(
                 () ->
-                    unaryCheckedExceptionT.apply(t))
+                    unaryCheckedExceptionT.apply(t),
+                Exception.class)
             .mapLeft(fRuntimeExceptionWrapper)
             .getRightOrThrowLeft();
   }
@@ -1182,6 +1265,7 @@ public final class FunctionsOps {
   public static VoidSupplier wrapCheckedException(
       VoidSupplierCheckedException voidSupplierCheckedException
   ) {
+    Objects.requireNonNull(voidSupplierCheckedException, "voidSupplierCheckedException cannot be null");
     return wrapCheckedException(voidSupplierCheckedException, WrappedCheckedException::new);
   }
 
@@ -1204,6 +1288,8 @@ public final class FunctionsOps {
       VoidSupplierCheckedException voidSupplierCheckedException,
       Function<Exception, EX> fRuntimeExceptionWrapper
   ) {
+    Objects.requireNonNull(voidSupplierCheckedException, "voidSupplierCheckedException cannot be null");
+    Objects.requireNonNull(fRuntimeExceptionWrapper, "fRuntimeExceptionWrapper cannot be null");
     return () ->
         TryCatchesOps.wrapCheckedException(
                 voidSupplierCheckedException,

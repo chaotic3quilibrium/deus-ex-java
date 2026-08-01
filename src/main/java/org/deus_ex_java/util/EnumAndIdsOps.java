@@ -52,11 +52,13 @@ import static java.util.Map.entry;
  * <p>
  * Due to this functions recording restriction, it is recommended a {@link #from} method is used to generate the
  * system-wide singleton in an appropriate place. And that all other calls to obtain the instance either use the
- * provided system-wide singleton, or utilize the {@link #fromCacheOnly} method.
+ * provided system-wide singleton, or utilize the {@link #fromCacheOnly(Class)} or {@link #fromCacheOnly(Class, Class)}
+ * method.
  *
  * @param <E>  the type of the {@link Enum} values being enhanced
  * @param <ID> type of each {@link Enum} value's associated {@code ID}
  */
+@SuppressWarnings({"rawtypes", "unchecked", "OptionalUsedAsFieldOrParameterType"})
 @NullMarked
 public final class EnumAndIdsOps<E extends Enum<E>, ID> {
 
@@ -81,7 +83,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
               new IllegalStateException("EXTENDED_CONTEXT_BY_CLASS_E did not contain key [%s]".formatted(
                   classE.getName())));
 
-      //noinspection rawtypes,unchecked
       return new EnumAndIdsOps(
           classE,
           extendedContext);
@@ -92,7 +93,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * Returns an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
    * {@code classE}, otherwise {@link Optional#empty}.
    *
-   * @param classE the {@link Class} of the specific enum that has already being augmented
+   * @param classE the {@link Class} of the specific {@link Enum} that has already being augmented
    * @param <E>    the type of the {@link Enum} values being enhanced
    * @param <ID>   type of each {@link Enum} value's associated {@code ID}
    * @return an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
@@ -101,7 +102,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   public static <E extends Enum<E>, ID> Optional<EnumAndIdsOps<E, ID>> fromCacheOnly(
       Class<E> classE
   ) {
-    //noinspection unchecked
     return TryCatchesOps.wrap(
             () ->
                 ENUM_AND_IDS_OPS_CLASS_VALUE_CACHE.get(classE),
@@ -109,6 +109,31 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         .map(enumAndIdsOps ->
             (EnumAndIdsOps<E, ID>) enumAndIdsOps)
         .toOptional();
+  }
+
+  /**
+   * Returns an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
+   * {@code classE} and {@code classId}, otherwise {@link Optional#empty}.
+   * <p>
+   * This method is distinct from the {@link #fromCacheOnly(Class)} method in that it verifies the found enum has
+   * exactly the same {@link Class}
+   *
+   * @param classE  the {@link Class} of the specific {@link Enum} that has already being augmented
+   * @param classId the {@link Class} of the specific {@link ID} that has already being augmented
+   * @param <E>     the type of the {@link Enum} values being enhanced
+   * @param <ID>    type of each {@link Enum} value's associated {@code ID}
+   * @return an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
+   *     {@code classE} and {@code classId}, otherwise {@link Optional#empty}
+   */
+  public static <E extends Enum<E>, ID> Optional<EnumAndIdsOps<E, ID>> fromCacheOnly(
+      Class<E> classE,
+      Class<ID> classId
+  ) {
+    return fromCacheOnly(classE)
+        .filter(enumAndIdsOps ->
+            enumAndIdsOps.getClassId().equals(classId))
+        .map(enumAndIdsOpsCaptures ->
+            ((EnumAndIdsOps<E, ID>) enumAndIdsOpsCaptures));
   }
 
   /**
@@ -514,7 +539,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         Optional.of(fEAndIdToNonEmptyLowerCaseStrings));
   }
 
-  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private static <E extends Enum<E>, ID> EnumAndIdsOpsAndIsCaching<E, ID> fromHelperAndIsCaching(
       Class<E> classE,
       Function<E, ID> fEToId,
@@ -532,7 +556,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                 optionalFEAndIdToNonEmptyLowerCaseStrings));
       }
 
-      //noinspection unchecked
       return new EnumAndIdsOpsAndIsCaching<>(
           (EnumAndIdsOps<E, ID>) ENUM_AND_IDS_OPS_CLASS_VALUE_CACHE.get(classE),
           isCaching);
@@ -584,7 +607,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         .stream()
         .map(enumValueAndId ->
             entry(
-                fEAndIdToNonEmptyLowerCaseString.apply(enumValueAndId).string(),
+                fEAndIdToNonEmptyLowerCaseString.apply(enumValueAndId).value(),
                 entry(enumValueAndId.getKey(), CollisionSource.ID_VALUE)))
         .toList();
     var alternateStringAndEnumValueAndCollisionSources = optionalFEAndIdToNonEmptyLowerCaseStrings
@@ -597,17 +620,17 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                         .stream()
                         .map(nonEmptyLowerCaseString ->
                             entry(
-                                nonEmptyLowerCaseString.string(),
+                                nonEmptyLowerCaseString.value(),
                                 entry(enumValueAndId.getKey(), CollisionSource.ALTERNATE_STRING_VALUE))))
                 .toList())
         .orElse(List.of());
     var keyStringAndEnumValueAndCollisionSources =
-        Stream.of(
+        Stream.concat(
                 nameStringAndEnumValueAndCollisionSources.stream(),
-                idStringAndEnumValueAndCollisionSources.stream(),
-                alternateStringAndEnumValueAndCollisionSources.stream())
-            .flatMap(Function.identity())
-            .collect(Collectors.groupingBy(Entry::getKey))
+                Stream.concat(
+                    idStringAndEnumValueAndCollisionSources.stream(),
+                    alternateStringAndEnumValueAndCollisionSources.stream()))
+            .collect(Collectors.groupingBy(Entry::getKey, Collectors.toUnmodifiableList()))
             .values()
             .stream()
             .filter(eAsStrings ->
@@ -651,7 +674,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                       .toList())));
     }
     var classWildcard = orderedMapIdByEnumValue.values().iterator().next().getClass();
-    //noinspection unchecked
     var classId = ClassesOps.narrow(() ->
             (Class<ID>) classWildcard)
         .orElseThrow(() ->
@@ -661,16 +683,16 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     this.classId = classId;
     this.orderedMapIdByEnumValue = orderedMapIdByEnumValue;
     this.orderedMapEnumValueById = MapsOps.swapOrdered(orderedMapIdByEnumValue);
-    this.enumValueByNameOrIdOrAlternatesLowerCase = Stream.of(
+    this.enumValueByNameOrIdOrAlternatesLowerCase = Stream.concat(
             nameStringAndEnumValueAndCollisionSources.stream(),
-            idStringAndEnumValueAndCollisionSources.stream(),
-            alternateStringAndEnumValueAndCollisionSources.stream())
-        .flatMap(Function.identity())
+            Stream.concat(
+                idStringAndEnumValueAndCollisionSources.stream(),
+                alternateStringAndEnumValueAndCollisionSources.stream()))
         .map(keyLowerCaseAndEnumValueAndCollisionSource ->
             entry(
                 keyLowerCaseAndEnumValueAndCollisionSource.getKey(),
                 keyLowerCaseAndEnumValueAndCollisionSource.getValue().getKey()))
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getKey,
             Entry::getValue,
             (stringAndEnumOld, stringAndEnumNew) ->
@@ -790,28 +812,9 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   public Entry<E, ID> valueOfOrDefaultToFirst(
       String nameOrIdOrAltToString
   ) {
-    return valueOf(
-        nameOrIdOrAltToString,
-        this.orderedMapIdByEnumValue.entrySet().iterator().next());
-  }
-
-  /**
-   * Returns an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   * {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}.
-   *
-   * @param nameOrIdOrAltToString the case-insensitive term with which the search is performed
-   * @param orElseDefault         the entry to provide if the search returns nothing
-   * @return an {@link Optional} containing a {@link Entry} which contains the {@link Enum}'s value and its associated
-   *     {@code ID} when the lower case of {@code nameOrIdOrAltToString} is found, otherwise {@code orElseDefault}
-   * @deprecated use the {@link Optional#orElse(Object)} method upon the result of the {@link #valueOf(String)} method
-   */
-  @Deprecated
-  public Entry<E, ID> valueOf(
-      String nameOrIdOrAltToString,
-      Entry<E, ID> orElseDefault
-  ) {
     return valueOf(nameOrIdOrAltToString)
-        .orElse(orElseDefault);
+        .orElseGet(() ->
+            this.orderedMapIdByEnumValue.entrySet().iterator().next());
   }
 
   /**
@@ -842,6 +845,53 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
   }
 
   /**
+   * Represents the immutable configuration state for formatting an {@link EnumAndIdsOps} collection.
+   *
+   * @param filter       a {@link Predicate} used to filter enum and ID entries
+   * @param sortStrategy a {@link Comparator} used to sort filtered enum and ID entries
+   * @param reformat     a {@link Function} used to transform an enum and ID entry into a String representation
+   * @param separator    a {@link String} delimiter used when joining formatted representations
+   * @param <E>          the type of the {@link Enum}
+   * @param <ID>         the type of the associated ID
+   */
+  public record FormatConfig<E extends Enum<E>, ID>(
+      Predicate<Entry<E, ID>> filter,
+      Comparator<Entry<E, ID>> sortStrategy,
+      Function<Entry<E, ID>, String> reformat,
+      String separator
+  ) {
+    public FormatConfig {
+      Objects.requireNonNull(filter, "filter must not be null");
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      Objects.requireNonNull(separator, "separator must not be null");
+    }
+
+    public FormatConfig<E, ID> withFilter(Predicate<Entry<E, ID>> filter) {
+      Objects.requireNonNull(filter, "filter must not be null");
+      return new FormatConfig<>(filter, this.sortStrategy, this.reformat, this.separator);
+    }
+
+    public FormatConfig<E, ID> withSortStrategy(Comparator<Entry<E, ID>> sortStrategy) {
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      return new FormatConfig<>(this.filter, sortStrategy, this.reformat, this.separator);
+    }
+
+    public FormatConfig<E, ID> withReformat(Function<Entry<E, ID>, String> reformat) {
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      return new FormatConfig<>(this.filter, this.sortStrategy, reformat, this.separator);
+    }
+
+    public FormatConfig<E, ID> withSeparator(String separator) {
+      Objects.requireNonNull(separator, "separator must not be null");
+      if (this.separator.equals(separator)) {
+        return this;
+      }
+      return new FormatConfig<>(this.filter, this.sortStrategy, this.reformat, separator);
+    }
+  }
+
+  /**
    * Defines a format builder to assist with String encodings of this collection.
    *
    * @param <E>  the type of the {@link Enum} values being enhanced
@@ -851,10 +901,15 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     public static final String DEFAULT_SEPARATOR = EnumsOps.FormatBuilder.DEFAULT_SEPARATOR;
 
     private final EnumAndIdsOps<E, ID> enumAndIdsOps;
-    private final Predicate<Entry<E, ID>> filter;
-    private final Comparator<Entry<E, ID>> sortStrategy;
-    private final Function<Entry<E, ID>, String> reformat;
-    private final String separator;
+    private final FormatConfig<E, ID> config;
+
+    private FormatBuilder(
+        EnumAndIdsOps<E, ID> enumAndIdsOps,
+        FormatConfig<E, ID> config
+    ) {
+      this.enumAndIdsOps = Objects.requireNonNull(enumAndIdsOps, "enumAndIdsOps must not be null");
+      this.config = Objects.requireNonNull(config, "config must not be null");
+    }
 
     private FormatBuilder(
         EnumAndIdsOps<E, ID> enumAndIdsOps,
@@ -863,17 +918,13 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         Function<Entry<E, ID>, String> reformat,
         String separator
     ) {
-      this.enumAndIdsOps = enumAndIdsOps;
-      this.filter = filter;
-      this.sortStrategy = sortStrategy;
-      this.reformat = reformat;
-      this.separator = separator;
+      this(enumAndIdsOps, new FormatConfig<>(filter, sortStrategy, reformat, separator));
     }
 
     /**
      * Returns a {@link String} formatted as {@code ENUM_VALUE(ID)} for an {@code enumValueAndId} entry.
      * <p>
-     * This method is used as the default for {@link FormatBuilder#reformat FormatBuilder.getReformat()} property.
+     * This method is used as the default for {@link FormatBuilder#getReformat FormatBuilder.getReformat()} property.
      *
      * @param enumValueAndId the entry from which to produce a formatted String
      * @param <E>            the type of the {@link Enum} values being enhanced
@@ -930,6 +981,15 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     }
 
     /**
+     * Returns the {@link FormatConfig} containing the immutable formatting configuration.
+     *
+     * @return the {@link FormatConfig} containing the immutable formatting configuration
+     */
+    public FormatConfig<E, ID> getConfig() {
+      return this.config;
+    }
+
+    /**
      * Returns the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      * include/exclude {@link EnumAndIdsOps} entries.
      * <p>
@@ -940,7 +1000,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     include/exclude {@link EnumAndIdsOps} entries
      */
     public Predicate<Entry<E, ID>> getFilter() {
-      return this.filter;
+      return this.config.filter();
     }
 
     /**
@@ -952,12 +1012,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     to include/exclude {@link EnumAndIdsOps} entries
      */
     public FormatBuilder<E, ID> setFilter(Predicate<Entry<E, ID>> filter) {
-      return new FormatBuilder<>(
-          this.enumAndIdsOps,
-          filter,
-          this.sortStrategy,
-          this.reformat,
-          this.separator);
+      Objects.requireNonNull(filter, "filter must not be null");
+      return new FormatBuilder<>(this.enumAndIdsOps, this.config.withFilter(filter));
     }
 
     /**
@@ -972,6 +1028,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     within a source
      */
     public FormatBuilder<E, ID> setFilter(Collection<Entry<E, ID>> collection) {
+      Objects.requireNonNull(collection, "collection must not be null");
       return setFilter(collection.stream());
     }
 
@@ -987,6 +1044,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     within a source
      */
     public FormatBuilder<E, ID> setFilter(Stream<Entry<E, ID>> stream) {
+      Objects.requireNonNull(stream, "stream must not be null");
       var defensiveCopy = stream.collect(Collectors.toUnmodifiableSet());
 
       return setFilter(defensiveCopy::contains);
@@ -1003,7 +1061,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     reorder the filtered {@link EnumAndIdsOps} entries
      */
     public Comparator<Entry<E, ID>> getSortStrategy() {
-      return this.sortStrategy;
+      return this.config.sortStrategy();
     }
 
     /**
@@ -1015,12 +1073,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     defines how to reorder the filtered {@link EnumAndIdsOps} entries
      */
     public FormatBuilder<E, ID> setSortStrategy(Comparator<Entry<E, ID>> sortStrategy) {
-      return new FormatBuilder<>(
-          this.enumAndIdsOps,
-          this.filter,
-          sortStrategy,
-          this.reformat,
-          this.separator);
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      return new FormatBuilder<>(this.enumAndIdsOps, this.config.withSortStrategy(sortStrategy));
     }
 
     /**
@@ -1034,7 +1088,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     each {@link EnumAndIdsOps} entry
      */
     public Function<Entry<E, ID>, String> getReformat() {
-      return this.reformat;
+      return this.config.reformat();
     }
 
     /**
@@ -1046,12 +1100,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     to display each {@link EnumAndIdsOps} entry
      */
     public FormatBuilder<E, ID> setReformat(Function<Entry<E, ID>, String> reformat) {
-      return new FormatBuilder<>(
-          this.enumAndIdsOps,
-          this.filter,
-          this.sortStrategy,
-          reformat,
-          this.separator);
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      return new FormatBuilder<>(this.enumAndIdsOps, this.config.withReformat(reformat));
     }
 
     /**
@@ -1065,29 +1115,26 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     display the filtered and reordered {@link EnumAndIdsOps} entries
      */
     public String getSeparator() {
-      return this.separator;
+      return this.config.separator();
     }
 
     /**
      * Returns a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
      * separate and display the filtered and reordered {@link EnumAndIdsOps} entries.
      *
-     * @param separator a {@link Function} that defines how to separate and display the filtered and reordered
+     * @param separator a {@link String} that defines how to separate and display the filtered and reordered
      *                  {@link EnumAndIdsOps} entries
      * @return a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
      *     separate and display the filtered and reordered {@link EnumAndIdsOps} entries
      */
     public FormatBuilder<E, ID> setSeparator(String separator) {
-      if (!this.separator.equals(separator)) {
-        return new FormatBuilder<>(
-            this.enumAndIdsOps,
-            this.filter,
-            this.sortStrategy,
-            this.reformat,
-            separator);
+      Objects.requireNonNull(separator, "separator must not be null");
+      var newConfig = this.config.withSeparator(separator);
+      if (newConfig == this.config) {
+        return this;
       }
 
-      return this;
+      return new FormatBuilder<>(this.enumAndIdsOps, newConfig);
     }
 
     /**
@@ -1129,7 +1176,8 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
      *     and transformed, and then {@link String#join(CharSequence, Iterable)}ed
      */
     public String join() {
-      return String.join(this.getSeparator(), toList());
+      return toStrings().collect(Collectors.joining(this.getSeparator()));
     }
   }
 }
+

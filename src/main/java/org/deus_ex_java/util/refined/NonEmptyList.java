@@ -139,5 +139,6 @@ public record NonEmptyList<T>(List<T> list) {
     invalidate(list).ifPresent(parametersValidationException -> {
       throw parametersValidationException;
     });
+    list = List.copyOf(list);
   }
 }

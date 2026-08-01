@@ -6,7 +6,7 @@
 
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.10.0</version>
+    <version>1.11.0-SNAPSHOT</version>
     <name>deus-ex-java</name>
     <description>A Java augmentation library to ease the incremental modernization of legacy Enterprise IT systems
     </description>
@@ -69,57 +69,107 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
             </plugin>
+            <!--
+              Maven itself runs on the latest LTS JDK (Java 25), but compilation and
+              tests must execute on a real Java 17 JDK so artifacts are validated against
+              their actual target runtime. The toolchains plugin selects the JDK declared
+              in ~/.m2/toolchains.xml (type: jdk, version: 17); maven-compiler-plugin and
+              maven-surefire-plugin then automatically fork against it.
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.6.3</version>
-                <configuration>
-                    <additionalOptions>-Xdoclint:none</additionalOptions>
-                </configuration>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>attach-javadocs</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>toolchain</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
-                <extensions>true</extensions>
                 <configuration>
-                    <publishingServerId>central</publishingServerId>
-                    <autoPublish>true</autoPublish>
+                    <toolchains>
+                        <jdk>
+                            <version>17</version>
+                            <vendor>temurin</vendor>
+                        </jdk>
+                    </toolchains>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!--
+          Release/publishing plugins live here so they run ONLY when publishing to
+          Maven Central (mvn deploy -Prelease). Keeping them out of the default build
+          means ordinary local builds and IDE "Rebuild Project" actions never invoke
+          GPG signing (which requires the gpg binary + a signing key) or the central
+          publisher (which requires credentials), and don't waste time generating
+          source/javadoc jars.
+        -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.6.3</version>
+                        <configuration>
+                            <additionalOptions>-Xdoclint:none</additionalOptions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.4.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

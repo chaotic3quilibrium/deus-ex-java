@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>
  **/
+@SuppressWarnings({"EqualsWithItself", "SimplifiableAssertion"})
 public class EitherTests {
 
   private void validateLeft(Integer leftValue, Either<Integer, String> eitherLeft) {
@@ -95,9 +96,7 @@ public class EitherTests {
   @Test
   public void testEquals() {
     Either<Integer, String> eitherFromRightA = Either.from(() -> 32, Optional.of("ThirtyOne"));
-    //noinspection EqualsWithItself
     assertEquals(eitherFromRightA, eitherFromRightA);
-    //noinspection SimplifiableAssertion
     assertFalse(eitherFromRightA.equals(new Object())); //cannot use assertNotEquals() as it never makes the call to Either.equals()
     Either<Integer, String> eitherFromRightB = Either.from(() -> 32, Optional.of("ThirtyOne"));
     assertEquals(eitherFromRightA, eitherFromRightB);
@@ -470,4 +469,42 @@ public class EitherTests {
     assertTrue(result.isRight());
     assertEquals(200, result.getRight());
   }
+
+  @Test
+  public void testPatternMatchingInstanceof() {
+    Either<Integer, String> left = Either.left(404);
+    Either<Integer, String> right = Either.right("Success");
+
+    // Pattern matching via instanceof (Java 17 standard feature)
+    if (left instanceof Either.Left<Integer, String> l) {
+      assertEquals(404, l.value());
+    } else {
+      fail("Expected Left variant");
+    }
+
+    if (right instanceof Either.Right<Integer, String> r) {
+      assertEquals("Success", r.value());
+    } else {
+      fail("Expected Right variant");
+    }
+  }
+
+  @Test
+  public void testNonNullInvariants() {
+    assertThrows(NullPointerException.class, () -> new Either.Left<>(null));
+    assertThrows(NullPointerException.class, () -> new Either.Right<>(null));
+    assertThrows(NullPointerException.class, () -> Either.left(null));
+    assertThrows(NullPointerException.class, () -> Either.right(null));
+  }
+
+  @Test
+  public void testFoldAlias() {
+    Either<Integer, String> left = Either.left(123);
+    Either<Integer, String> right = Either.right("Hello");
+
+    assertEquals("Left: 123", left.fold(l -> "Left: " + l, r -> "Right: " + r));
+    assertEquals("Right: Hello", right.fold(l -> "Left: " + l, r -> "Right: " + r));
+  }
 }
+
+

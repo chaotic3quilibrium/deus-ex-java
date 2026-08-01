@@ -7,10 +7,16 @@ import org.deus_ex_java.util.function.FunctionsOps;
 import org.deus_ex_java.util.function.FunctionsPrimitivesOps;
 import org.jspecify.annotations.NullMarked;
 
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.IdentityHashMap;
+import java.util.Set;
+
 /**
- * A utility class to detect ({@link #isFatalThrowable(Throwable)}) and support tunneling <em>fatal</em> throwable
- * exceptions through the various try/catch guard patterns; i.e., preventing these <em>fatal</em> exceptions from being
- * successfully "caught".
+ * A package-private utility class to detect ({@link #isFatalThrowable(Throwable)}) and support tunneling <em>fatal</em>
+ * throwable exceptions through the various try/catch guard patterns; i.e., preventing these <em>fatal</em> exceptions
+ * from being successfully "caught".
  * <p>
  * The primary value is captured in the unchecked exception method,
  * {@link #requireNonFatalThrowableOrElseThrowFatalThrowable(Throwable)}. This encapsulates the checked exception
@@ -31,43 +37,50 @@ import org.jspecify.annotations.NullMarked;
  * </ul>
  */
 @NullMarked
-public class ForcedFatalThrowable {
+final class ForcedFatalThrowable {
 
   private ForcedFatalThrowable() {
     throw new UnsupportedOperationException("suppressing class instantiation");
   }
 
   /**
-   * Returns {@code true} if the {@code throwable} matches an instance, or descendant, of:
-   * <ul>
-   * <li>{@link ControlBreakThrowable} - use for flow control</li>
-   * <li>{@link InterruptedException} - a <em>checked</em> exception</li>
-   * <li>{@link LinkageError}</li>
-   * <li>{@link ThreadDeath}</li>
-   * <li>{@link VirtualMachineError}</li>
-   * </ul>
+   * Returns {@code true} if the {@code throwable} (or any exception in its cause chain) matches an instance, or
+   * descendant, of any fatal exception type registered in {@link WrappedCheckedException#FATAL_THROWABLE_TYPES}.
+   * <p>
    * This strategy is inspired by the one used in Scala 2.13's <a
    * href="https://github.com/scala/scala/blob/v2.13.16/src/library/scala/util/control/NonFatal.scala#L17">NonFatal</a>
    * Object.
+   * <p>
+   * <b>Nullness Contract:</b> Under {@link NullMarked}, the {@code throwable} parameter is strictly non-null.
+   * Passing {@code null} as a {@link Throwable} represents an illegal caller state under VOP architecture principles;
+   * nullness validation must occur at caller boundaries rather than polluting core domain utilities with defensive
+   * null-checks.
    *
    * @param throwable instance of an exception against which to test for Fatal
-   * @return {@code true} if the {@code throwable} matches an instance, or descendant, of:
-   *     <ul>
-   *     <li>{@link ControlBreakThrowable}</li>
-   *     <li>{@link InterruptedException} - a <em>checked</em> exception</li>
-   *     <li>{@link LinkageError}</li>
-   *     <li>{@link ThreadDeath}</li>
-   *     <li>{@link VirtualMachineError}</li>
-   *     </ul>
+   * @return {@code true} if {@code throwable} or any cause in its cause chain matches a fatal type or descendant
    */
-  public static boolean isFatalThrowable(
+  static boolean isFatalThrowable(
       Throwable throwable
   ) {
-    return (throwable instanceof ControlBreakThrowable) ||
-        (throwable instanceof InterruptedException) ||
-        (throwable instanceof LinkageError) ||
-        (throwable instanceof ThreadDeath) ||
-        (throwable instanceof VirtualMachineError);
+    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    Deque<Throwable> stack = new ArrayDeque<>();
+    stack.push(throwable);
+    while (!stack.isEmpty()) {
+      Throwable current = stack.pop();
+      if (current != null && visited.add(current)) {
+        if (WrappedCheckedException.isFatalType(current.getClass())) {
+          return true;
+        }
+        if (current.getCause() != null) {
+          stack.push(current.getCause());
+        }
+        for (Throwable suppressed : current.getSuppressed()) {
+          stack.push(suppressed);
+        }
+      }
+    }
+
+    return false;
   }
 
   /**
@@ -80,7 +93,7 @@ public class ForcedFatalThrowable {
    *     {@link ForcedFatalThrowable#isFatalThrowable}, otherwise throws the throwable, even if it is a checked
    *     exception, because there is no {@code throws} clause in this method's signature
    */
-  public static Throwable requireNonFatalThrowableOrElseThrowFatalThrowable(Throwable throwable) {
+  static Throwable requireNonFatalThrowableOrElseThrowFatalThrowable(Throwable throwable) {
     if (isFatalThrowable(throwable)) {
       throwFatalThrowable(throwable);
     }
@@ -88,28 +101,59 @@ public class ForcedFatalThrowable {
     return throwable;
   }
 
-  private static boolean isInterruptedException(Throwable throwable) {
-    if (throwable instanceof InterruptedException) {
-
-      return true;
-    }
-    if (throwable.getCause() != null) {
-
-      return isInterruptedException(throwable.getCause());
+  /**
+   * Iteratively inspects the exception cause chain and suppressed exceptions to determine if an {@link InterruptedException}
+   * is present. Uses reference-equality set tracking via {@link IdentityHashMap} to prevent {@link StackOverflowError}
+   * on cyclic exception chains.
+   *
+   * @param throwable root throwable to inspect
+   * @return {@code true} if an {@link InterruptedException} is found within the cause or suppressed chains; {@code false} otherwise
+   */
+  private static boolean hasInterruptedException(Throwable throwable) {
+    Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    Deque<Throwable> stack = new ArrayDeque<>();
+    stack.push(throwable);
+    while (!stack.isEmpty()) {
+      Throwable current = stack.pop();
+      if (current != null && visited.add(current)) {
+        if (current instanceof InterruptedException) {
+          return true;
+        }
+        if (current.getCause() != null) {
+          stack.push(current.getCause());
+        }
+        for (Throwable suppressed : current.getSuppressed()) {
+          stack.push(suppressed);
+        }
+      }
     }
 
     return false;
   }
 
+  /**
+   * Internal sneaky throws primitive allowing fatal checked exceptions (e.g., {@link InterruptedException}) to be
+   * re-thrown without requiring declared {@code throws} clauses on surrounding method signatures.
+   * <p>
+   * <b>Architectural Rationale:</b> Sneaky throws is intentionally employed here specifically for fatal exception
+   * tunneling. Wrapping fatal checked exceptions in {@link RuntimeException} would allow generic catch blocks to
+   * accidentally catch and suppress fatal signals. Sneaky throws guarantees that raw fatal exceptions propagate
+   * unhindered to top-level thread boundaries.
+   *
+   * @param throwable fatal exception to rethrow
+   * @param <T>       implicit unchecked exception type parameter used for erasure casting
+   * @throws T the fatal throwable instance, rethrown without compile-time signature checks
+   */
   @SuppressWarnings("unchecked")
   private static <T extends Throwable> void throwFatalThrowableAsUncheckedException(
       Throwable throwable
   ) throws T {
+    // Rely on Java type erasure to bypass compiler checked exception enforcement
     throw (T) throwable;
   }
 
   private static void throwFatalThrowable(Throwable throwable) {
-    if (isInterruptedException(throwable)) {
+    if (hasInterruptedException(throwable)) {
       Thread.currentThread().interrupt();
     }
     throwFatalThrowableAsUncheckedException(throwable);

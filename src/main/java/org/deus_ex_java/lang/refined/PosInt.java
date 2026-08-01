@@ -17,7 +17,7 @@ import java.util.Optional;
  * @param value an {@code int} value greater than {@code 0}
  */
 @NullMarked
-public record PosInt(int value) implements Comparable<PosInt> {
+public record PosInt(Integer value) implements Refined<Integer>, Comparable<PosInt> {
 
   /**
    * Returns a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes

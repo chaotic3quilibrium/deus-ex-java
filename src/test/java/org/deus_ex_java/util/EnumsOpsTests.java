@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("AssertBetweenInconvertibleTypes")
 @NullMarked
 public class EnumsOpsTests {
 
@@ -88,7 +89,6 @@ public class EnumsOpsTests {
   public void testCache() {
     assertSame(ENUMS_OPS_TRAFFIC_LIGHT, EnumsOps.from(TrafficLight.class));
     assertSame(ENUMS_OPS_TRAFFIC_LIGHT, EnumsOps.from(ENUMS_OPS_TRAFFIC_LIGHT.getClassE()));
-    //noinspection AssertBetweenInconvertibleTypes
     assertNotSame(ENUMS_OPS_TRAFFIC_LIGHT, EnumsOps.from(TrafficLightBased.class));
     assertEquals(
         List.of(
@@ -98,7 +98,6 @@ public class EnumsOpsTests {
         ENUMS_OPS_TRAFFIC_LIGHT.toList());
     var tlbOps = TrafficLightBased.enumOps();
     assertSame(tlbOps, EnumsOps.from(TrafficLightBased.class));
-    //noinspection AssertBetweenInconvertibleTypes
     assertNotSame(ENUMS_OPS_TRAFFIC_LIGHT, tlbOps);
     assertEquals(
         List.of(
@@ -324,5 +323,71 @@ public class EnumsOpsTests {
                     trafficLightBased.toString()))
             .setSeparator("|")
             .join());
+  }
+
+  @Test
+  public void testFormatConfigNullInvariants() {
+    java.util.function.Predicate<TrafficLightBased> filter = e -> true;
+    java.util.Comparator<TrafficLightBased> sort = java.util.Comparator.comparingInt(Enum::ordinal);
+    java.util.function.Function<TrafficLightBased, String> reformat = Enum::name;
+    String sep = ", ";
+
+    assertThrows(NullPointerException.class, () -> new EnumsOps.FormatConfig<>(null, sort, reformat, sep));
+    assertThrows(NullPointerException.class, () -> new EnumsOps.FormatConfig<>(filter, null, reformat, sep));
+    assertThrows(NullPointerException.class, () -> new EnumsOps.FormatConfig<>(filter, sort, null, sep));
+    assertThrows(NullPointerException.class, () -> new EnumsOps.FormatConfig<>(filter, sort, reformat, null));
+
+    var config = new EnumsOps.FormatConfig<>(filter, sort, reformat, sep);
+    assertThrows(NullPointerException.class, () -> config.withFilter(null));
+    assertThrows(NullPointerException.class, () -> config.withSortStrategy(null));
+    assertThrows(NullPointerException.class, () -> config.withReformat(null));
+    assertThrows(NullPointerException.class, () -> config.withSeparator(null));
+  }
+
+  @Test
+  public void testFormatConfigWithers() {
+    java.util.function.Predicate<TrafficLightBased> filter1 = e -> true;
+    java.util.function.Predicate<TrafficLightBased> filter2 = e -> e.name().startsWith("G");
+    java.util.Comparator<TrafficLightBased> sort1 = java.util.Comparator.comparingInt(Enum::ordinal);
+    java.util.Comparator<TrafficLightBased> sort2 = sort1.reversed();
+    java.util.function.Function<TrafficLightBased, String> reformat1 = Enum::name;
+    java.util.function.Function<TrafficLightBased, String> reformat2 = TrafficLightBased::toString;
+    String sep1 = ", ";
+    String sep2 = "|";
+
+    var original = new EnumsOps.FormatConfig<>(filter1, sort1, reformat1, sep1);
+
+    var withFilter = original.withFilter(filter2);
+    assertNotEquals(original, withFilter);
+    assertEquals(filter2, withFilter.filter());
+    assertEquals(filter1, original.filter());
+
+    var withSort = original.withSortStrategy(sort2);
+    assertNotEquals(original, withSort);
+    assertEquals(sort2, withSort.sortStrategy());
+    assertEquals(sort1, original.sortStrategy());
+
+    var withReformat = original.withReformat(reformat2);
+    assertNotEquals(original, withReformat);
+    assertEquals(reformat2, withReformat.reformat());
+    assertEquals(reformat1, original.reformat());
+
+    var withSep = original.withSeparator(sep2);
+    assertNotEquals(original, withSep);
+    assertEquals(sep2, withSep.separator());
+    assertEquals(sep1, original.separator());
+
+    assertSame(original, original.withSeparator(", "));
+  }
+
+  @Test
+  public void testFormatBuilderNullInvariants() {
+    var builder = TrafficLightBased.enumOps().getFormatBuilder();
+    assertThrows(NullPointerException.class, () -> builder.setFilter((java.util.function.Predicate<TrafficLightBased>) null));
+    assertThrows(NullPointerException.class, () -> builder.setFilter((List<TrafficLightBased>) null));
+    assertThrows(NullPointerException.class, () -> builder.setFilter((Stream<TrafficLightBased>) null));
+    assertThrows(NullPointerException.class, () -> builder.setSortStrategy(null));
+    assertThrows(NullPointerException.class, () -> builder.setReformat(null));
+    assertThrows(NullPointerException.class, () -> builder.setSeparator(null));
   }
 }

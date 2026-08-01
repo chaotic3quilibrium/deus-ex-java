@@ -3,11 +3,11 @@ package org.deus_ex_java.util;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Utility class providing static methods to create and work with {@link Collection} instances.
+ * Utility class providing static methods to inspect and manipulate {@link Collection} and {@link Map} instances.
  */
 @NullMarked
 public final class CollectionsOps {
@@ -17,57 +17,50 @@ public final class CollectionsOps {
   }
 
   /**
-   * Returns {@code true} if the {@link Collection} is identified as unmodifiable via internal class type or behavioral
-   * probing.
+   * Returns {@code true} if the specified {@link Collection} is identified as unmodifiable or immutable.
    * <p>
-   * Behavior probing check to see if an {@link UnsupportedOperationException} is thrown when calling
-   * {@link Collection#addAll} with an {@link Collections#emptyList}, false otherwise.
+   * This method uses safe, non-mutating type inspection to verify unmodifiability without triggering side effects or
+   * {@link java.util.ConcurrentModificationException} on live collections.
+   * <p>
+   * <b>Nullness Contract:</b> Under {@link NullMarked}, the {@code collection} argument is strictly non-null.
+   * Passing {@code null} represents an illegal caller state in Value-Oriented Programming (VOP).
    *
-   * @param collection instance being tested for being unmodifiable
-   * @return {@code true} if the {@link Collection} throws an {@link UnsupportedOperationException} when calling
-   *     {@link Collection#addAll} with an {@link Collections#emptyList}, false otherwise
+   * @param collection non-null {@link Collection} instance to inspect
+   * @return {@code true} if the collection is unmodifiable; {@code false} otherwise
    */
   public static boolean isUnmodifiable(Collection<?> collection) {
-    // 1. Fast path: Check known JDK internal types (Java 17+)
-    var className = collection.getClass().getName();
-    if (className.contains("Unmodifiable") || className.contains("ImmutableCollections")) {
-      return true;
-    }
-
-    // 2. Slow path: Your existing behavioral probe
-    try {
-      collection.addAll(Collections.emptyList());
-
-      return false;
-    } catch (UnsupportedOperationException UnsupportedOperationException) {
-      return true;
-    }
+    return isUnmodifiableType(collection.getClass());
   }
 
   /**
-   * Returns {@code true} if the {@link Map} is identified as unmodifiable via internal class type or behavioral
-   * probing.
+   * Returns {@code true} if the specified {@link Map} is identified as unmodifiable or immutable.
    * <p>
-   * Behavior probing check to see if an {@link UnsupportedOperationException} is thrown when calling {@link Map#putAll}
-   * with an {@link Collections#emptyList}, false otherwise.
+   * This method uses safe, non-mutating type inspection to verify unmodifiability without triggering side effects or
+   * {@link java.util.ConcurrentModificationException} on live maps.
+   * <p>
+   * <b>Nullness Contract:</b> Under {@link NullMarked}, the {@code map} argument is strictly non-null.
+   * Passing {@code null} represents an illegal caller state in Value-Oriented Programming (VOP).
    *
-   * @param map instance being tested for being unmodifiable
-   * @return {@code true} if the {@link Map} is identified as unmodifiable via internal class type or behavioral probing
+   * @param map non-null {@link Map} instance to inspect
+   * @return {@code true} if the map is unmodifiable; {@code false} otherwise
    */
   public static boolean isUnmodifiable(Map<?, ?> map) {
-    // 1. Fast path: Check for known JDK immutable/unmodifiable types
-    var className = map.getClass().getName();
-    if (className.contains("Unmodifiable") || className.contains("ImmutableCollections")) {
-      return true;
-    }
+    return isUnmodifiableType(map.getClass());
+  }
 
-    // 2. Slow path: Behavioral probe for custom or unknown implementations
-    try {
-      map.putAll(Map.of());
+  private static final List<String> UNMODIFIABLE_CLASS_PREFIXES = List.of(
+      "java.util.ImmutableCollections$",
+      "java.util.Collections$Unmodifiable",
+      "java.util.Collections$Empty",
+      "java.util.Collections$Singleton"
+  );
 
-      return false;
-    } catch (UnsupportedOperationException UnsupportedOperationException) {
-      return true;
-    }
+  private static boolean isUnmodifiableType(Class<?> clazz) {
+    var className = clazz.getName();
+
+    return UNMODIFIABLE_CLASS_PREFIXES.stream().anyMatch(className::startsWith)
+        || className.contains("Unmodifiable")
+        || className.contains("Immutable");
   }
 }
+

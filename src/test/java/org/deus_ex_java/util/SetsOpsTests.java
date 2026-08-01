@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"rawtypes", "unchecked", "DataFlowIssue", "ConstantValue"})
 public class SetsOpsTests {
 
   @Test
@@ -27,9 +28,7 @@ public class SetsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawSet = (Set) checkedSet;
-          //noinspection unchecked
           rawSet.add("This should fail");
         });
   }
@@ -46,9 +45,7 @@ public class SetsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawSet = (Set) checkedSet;
-          //noinspection unchecked
           rawSet.add("This should fail");
         });
   }
@@ -138,11 +135,9 @@ public class SetsOpsTests {
     var setAddC = SetsOps.addSets(setAddB, Set.of(4, 5), setContainingNull);
     assertTrue(CollectionsOps.isUnmodifiable(setAddC));
     assertEquals(Set.of(1, 2, 3, 4, 5, 6), setAddC);
-    @SuppressWarnings("DataFlowIssue")
     var setAddD = SetsOps.addSets(Set.of(), null, Set.of());
     assertEquals(Set.of(), setAddD);
     var a = new Set[]{};
-    @SuppressWarnings("unchecked")
     var setAddE = SetsOps.addSets(a);
     assertEquals(Set.of(), setAddE);
   }
@@ -172,11 +167,9 @@ public class SetsOpsTests {
     var setAppendB = SetsOps.appendSets(setAppendA, Set.of(4), Set.of(5), setContainingNull);
     assertTrue(CollectionsOps.isUnmodifiable(setAppendB));
     assertEquals(List.of(1, 2, 3, 4, 5, 6), setAppendB.stream().toList());
-    @SuppressWarnings("DataFlowIssue")
     var setAddD = SetsOps.appendSets(Set.of(), null, Set.of());
     assertEquals(Set.of(), setAddD);
     var a = new Set[]{};
-    @SuppressWarnings("unchecked")
     var setAddE = SetsOps.appendSets(a);
     assertEquals(Set.of(), setAddE);
   }
@@ -323,7 +316,6 @@ public class SetsOpsTests {
     setContainingNull.add(null);
     setContainingNull.add(6);
 
-    @SuppressWarnings("DataFlowIssue")
     var setRemoveNulls = SetsOps.removeSets(initialSet, null, Set.of(1), setContainingNull);
     assertEquals(Set.of(2, 3, 4, 5), setRemoveNulls);
     assertTrue(CollectionsOps.isUnmodifiable(setRemoveNulls));
@@ -349,7 +341,6 @@ public class SetsOpsTests {
     setContainingNull.add(null);
     setContainingNull.add(6);
 
-    @SuppressWarnings("DataFlowIssue")
     var setRemoveNulls = SetsOps.removeSetsOrdered(initialSet, null, Set.of(1), setContainingNull);
     assertEquals(List.of(2, 3, 4, 5), setRemoveNulls.stream().toList(), "Encounter order should be preserved");
     assertTrue(CollectionsOps.isUnmodifiable(setRemoveNulls));
@@ -702,12 +693,67 @@ public class SetsOpsTests {
   }
 
   @Test
+  public void testSetPairImmutability() {
+    var setPair = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    var componentSets = List.of(
+        setPair.union(),
+        setPair.left(),
+        setPair.right(),
+        setPair.intersection(),
+        setPair.leftDifference(),
+        setPair.rightDifference(),
+        setPair.difference());
+    for (var set : componentSets) {
+      assertThrows(UnsupportedOperationException.class, () -> set.add(99));
+      assertThrows(UnsupportedOperationException.class, () -> set.remove(1));
+      assertThrows(UnsupportedOperationException.class, set::clear);
+    }
+  }
+
+  @Test
+  public void testSetPairRecordPatternMatching() {
+    Object obj = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    if (obj instanceof SetPair<?> pair) {
+      assertFalse(pair.isEqual());
+      assertEquals(Set.of(1, 2, 3), pair.union());
+      assertEquals(Set.of(1, 2), pair.left());
+      assertEquals(Set.of(2, 3), pair.right());
+      assertEquals(Set.of(2), pair.intersection());
+      assertEquals(Set.of(1), pair.leftDifference());
+      assertEquals(Set.of(3), pair.rightDifference());
+      assertEquals(Set.of(1, 3), pair.difference());
+    } else {
+      fail("Pattern matching failed to match SetPair record instance");
+    }
+  }
+
+  @Test
+  public void testSetPairRecordEqualsAndHashCode() {
+    var pair1 = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    var pair2 = SetPair.from(Set.of(1, 2), Set.of(2, 3));
+    var pair3 = SetPair.from(Set.of(1, 2), Set.of(3, 4));
+
+    assertEquals(pair1, pair2);
+    assertEquals(pair1.hashCode(), pair2.hashCode());
+    assertNotEquals(pair1, pair3);
+
+    var map1 = pair1.toMap();
+    assertEquals(7, map1.size());
+    assertEquals(Set.of(1, 2, 3), map1.get(SetPairViewKey.UNION));
+    assertEquals(Set.of(1, 2), map1.get(SetPairViewKey.LEFT));
+    assertEquals(Set.of(2, 3), map1.get(SetPairViewKey.RIGHT));
+    assertEquals(Set.of(2), map1.get(SetPairViewKey.INTERSECTION));
+    assertEquals(Set.of(1), map1.get(SetPairViewKey.LEFT_DIFFERENCE));
+    assertEquals(Set.of(3), map1.get(SetPairViewKey.RIGHT_DIFFERENCE));
+    assertEquals(Set.of(1, 3), map1.get(SetPairViewKey.DIFFERENCE));
+  }
+
+  @Test
   public void testOfOrdered() {
     var set = SetsOps.ofOrdered();
     assertNotNull(set);
     assertTrue(set.isEmpty());
     assertTrue(CollectionsOps.isUnmodifiable(set));
-    //noinspection DataFlowIssue
     assertEquals(Set.of(), SetsOps.ofOrdered(null, null, null));
     var set2 = new LinkedHashSet<Integer>();
     assertEquals(set2, set);
@@ -947,7 +993,6 @@ public class SetsOpsTests {
 
   @Test
   public void testOfOrderedNullSanitization() {
-    @SuppressWarnings("DataFlowIssue")
     var set = SetsOps.ofOrdered(1, null, 2, null, 3);
     assertNotNull(set);
     assertEquals(3, set.size(), "The resulting set should not include the null elements");
@@ -956,5 +1001,23 @@ public class SetsOpsTests {
         set.stream().toList(),
         "Nulls should be filtered out while preserving the encounter order of valid elements");
     assertTrue(CollectionsOps.isUnmodifiable(set));
+  }
+
+  @Test
+  public void testStreamPipelineImmutabilityContracts() {
+    var set1 = Set.of("a", "b");
+    var addedSet = SetsOps.addItem(set1, "c");
+    assertTrue(CollectionsOps.isUnmodifiable(addedSet));
+    assertThrows(UnsupportedOperationException.class, () -> addedSet.add("d"));
+
+    var removedSet = SetsOps.removeItem(set1, "a");
+    assertTrue(CollectionsOps.isUnmodifiable(removedSet));
+    assertThrows(UnsupportedOperationException.class, () -> removedSet.remove("b"));
+
+    var pair = SetsOps.SetPair.from(Set.of("a", "b"), Set.of("b", "c"));
+    assertTrue(CollectionsOps.isUnmodifiable(pair.union()));
+    assertTrue(CollectionsOps.isUnmodifiable(pair.intersection()));
+    assertTrue(CollectionsOps.isUnmodifiable(pair.leftDifference()));
+    assertThrows(UnsupportedOperationException.class, () -> pair.union().add("x"));
   }
 }

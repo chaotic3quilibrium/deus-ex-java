@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"rawtypes", "unchecked", "DataFlowIssue"})
 public class MapsOpsTests {
   @Test
   public void testNewHashMap() {
@@ -27,18 +28,14 @@ public class MapsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put("ValidKey", "InvalidValue");
         },
         "Checked map should reject invalid value types");
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put(123, 456);
         },
         "Checked map should reject invalid key types");
@@ -56,18 +53,14 @@ public class MapsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put("ValidKey", "InvalidValue");
         },
         "Checked map should reject invalid value types");
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put(123, 45.6);
         },
         "Checked map should reject invalid key types");
@@ -248,17 +241,6 @@ public class MapsOpsTests {
     return Collections.unmodifiableMap(mapNew);
   }
 
-  @NullMarked
-  private static <K, V> Map<@Nullable K, @Nullable V> addEntryWithNullableKeyAndValue(
-      Map<@Nullable K, @Nullable V> map,
-      Entry<@Nullable K, @Nullable V> entry
-  ) {
-    var mapNew = new HashMap<@Nullable K, @Nullable V>(map);
-    mapNew.put(entry.getKey(), entry.getValue());
-
-    return Collections.unmodifiableMap(mapNew);
-  }
-
   @Test
   public void testReturnExceptionOrValidatedEntry() {
     var entryNullAndNull = createEntryWithNullableKeyAndValue(null, null);
@@ -416,9 +398,7 @@ public class MapsOpsTests {
   @Test
   public void testAddMaps() {
     assertEquals(Map.of(), MapsOps.addMaps());
-    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.addMaps(null, Map.of(), null));
-    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "value"), MapsOps.addMaps(null, Map.of(), Map.of(1, "value"), Map.of(), null));
     var mapAddA = MapsOps.addMaps(Map.of(1, "x1", 2, "x2"), Map.of(2, "x2", 3, "x3"));
     assertTrue(CollectionsOps.isUnmodifiable(mapAddA));
@@ -451,9 +431,7 @@ public class MapsOpsTests {
   @Test
   public void testAppendMaps() {
     assertEquals(Map.of(), MapsOps.appendMaps());
-    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.appendMaps(null, Map.of(), null));
-    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "value"), MapsOps.appendMaps(null, Map.of(), Map.of(1, "value"), Map.of(), null));
     var mapAppendA = MapsOps.appendMaps(Map.of(1, "x1"), Map.of(2, "x2"), Map.of(3, "x3"));
     assertTrue(CollectionsOps.isUnmodifiable(mapAppendA));
@@ -869,9 +847,7 @@ public class MapsOpsTests {
   public void testOfEntriesOrdered() {
     var mapNoArg = MapsOps.ofEntriesOrdered();
     assertTrue(mapNoArg.isEmpty());
-    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.ofEntriesOrdered(null, ENTRY_NULL_NULL, null));
-    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "test"), MapsOps.ofEntriesOrdered(null, entry(1, "test"), ENTRY_NULL_NULL, null));
     var illegalArgumentException = assertThrows(
         IllegalArgumentException.class,
@@ -1112,5 +1088,22 @@ public class MapsOpsTests {
     map2.put(9, "x9");
     map2.put(10, "x10");
     assertEquals(map2, map);
+  }
+
+  @Test
+  public void testStreamPipelineImmutabilityContracts() {
+    var map1 = Map.of("a", 1, "b", 2);
+    var map2 = Map.of("c", 3, "d", 4);
+    var addedMap = MapsOps.addMaps(map1, map2);
+    assertTrue(CollectionsOps.isUnmodifiable(addedMap));
+    assertThrows(UnsupportedOperationException.class, () -> addedMap.put("e", 5));
+
+    var removedEntryMap = MapsOps.removeEntry(map1, "a");
+    assertTrue(CollectionsOps.isUnmodifiable(removedEntryMap));
+    assertThrows(UnsupportedOperationException.class, () -> removedEntryMap.remove("b"));
+
+    var swappedMap = MapsOps.swap(map1);
+    assertTrue(CollectionsOps.isUnmodifiable(swappedMap));
+    assertThrows(UnsupportedOperationException.class, swappedMap::clear);
   }
 }

@@ -16,7 +16,7 @@ import java.io.Serial;
  * <p>
  * Instances of {@code ControlBreakThrowable} should not normally be caught.
  * <p>
- * The method {@link ForcedFatalThrowable#isFatalThrowable(Throwable)} will match {@code ControlBreakThrowable} which
+ * The method {@link WrappedCheckedException#isFatal(Throwable)} will match {@code ControlBreakThrowable} which
  * means the TryCatchesOps methods are not able to filter/catch these instances; i.e. they tunnel through the fatal
  * exception pattern and must be explicitly caught with a try/catch statement.
  */

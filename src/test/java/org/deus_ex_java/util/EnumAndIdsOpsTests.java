@@ -38,6 +38,9 @@ public class EnumAndIdsOpsTests {
   @Test
   public void testOrdinal() {
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Integer.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Number.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, String.class).isEmpty());
     var enumAndIdsOpsAndIsCachingA = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdA.class);
     assertTrue(enumAndIdsOpsAndIsCachingA.isCaching());
     var enumAndIdsOpsAndIsCachingB = EnumAndIdsOps.fromAndIsCaching(TrafficLightWithIdA.class);
@@ -46,6 +49,9 @@ public class EnumAndIdsOpsTests {
     var tlwixoo = EnumAndIdsOps.from(TrafficLightWithIdA.class);
     assertSame(enumAndIdsOpsAndIsCachingA.enumAndIdsOps(), tlwixoo);
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class).isPresent());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Integer.class).isPresent());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, Number.class).isEmpty());
+    assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdA.class, String.class).isEmpty());
     assertEquals("SGREEN(0), SYELLOW(1), SRED(2)", tlwixoo.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdA.SGREEN), tlwixoo.get(0));
     assertEquals(Optional.of(entry(TrafficLightWithIdA.SGREEN, 0)), tlwixoo.valueOf("0"));
@@ -136,14 +142,14 @@ public class EnumAndIdsOpsTests {
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdC.class).isPresent());
     assertEquals("SGREEN(1), SYELLOW(2), SRED(5)", tlwix.getFormatBuilder().join());
     assertEquals(Optional.of(TrafficLightWithIdC.SGREEN), tlwix.get(1));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("1"));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SGREEN, 1)), tlwix.valueOf("sgreen"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SGREEN.asEntry()), tlwix.valueOf("1"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SGREEN.asEntry()), tlwix.valueOf("sgreen"));
     assertEquals(Optional.of(TrafficLightWithIdC.SYELLOW), tlwix.get(2));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SYELLOW, 2)), tlwix.valueOf("2"));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SYELLOW, 2)), tlwix.valueOf("sYeLlOw"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SYELLOW.asEntry()), tlwix.valueOf("2"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SYELLOW.asEntry()), tlwix.valueOf("sYeLlOw"));
     assertEquals(Optional.of(TrafficLightWithIdC.SRED), tlwix.get(5));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SRED, 5)), tlwix.valueOf("5"));
-    assertEquals(Optional.of(entry(TrafficLightWithIdC.SRED, 5)), tlwix.valueOf("SREd"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SRED.asEntry()), tlwix.valueOf("5"));
+    assertEquals(Optional.of(TrafficLightWithIdC.SRED.asEntry()), tlwix.valueOf("SREd"));
   }
 
   private enum TrafficLightWithIdD implements EquivalentInt {
@@ -213,7 +219,6 @@ public class EnumAndIdsOpsTests {
     }
   }
 
-  @SuppressWarnings("deprecation")
   @Test
   public void testTrafficLightWithIdX4() {
     assertTrue(EnumAndIdsOps.fromCacheOnly(TrafficLightWithIdE.class).isEmpty());
@@ -295,12 +300,6 @@ public class EnumAndIdsOpsTests {
     assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOfOrDefaultToFirst("2a"));
     assertEquals(entry(TrafficLightWithIdE.SRED, 5), tlwix.valueOfOrDefaultToFirst("5"));
     assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOfOrDefaultToFirst("5a"));
-    assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOf("1", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("1a", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2a", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SRED, 5), tlwix.valueOf("5", entry(TrafficLightWithIdE.SYELLOW, 2)));
-    assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("5a", entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SGREEN, 1), tlwix.valueOf("1").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("1a").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
     assertEquals(entry(TrafficLightWithIdE.SYELLOW, 2), tlwix.valueOf("2").orElse(entry(TrafficLightWithIdE.SYELLOW, 2)));
@@ -487,5 +486,71 @@ public class EnumAndIdsOpsTests {
                     trafficLightWithIdAAndId.getKey().toString()))
             .setSeparator("|")
             .join());
+  }
+
+  @Test
+  public void testFormatConfigNullInvariants() {
+    java.util.function.Predicate<Entry<TrafficLightWithIdFb, Integer>> filter = e -> true;
+    java.util.Comparator<Entry<TrafficLightWithIdFb, Integer>> sort = java.util.Comparator.comparingInt(e -> e.getKey().ordinal());
+    java.util.function.Function<Entry<TrafficLightWithIdFb, Integer>, String> reformat = EnumAndIdsOps.FormatBuilder::defaultReformat;
+    String sep = ", ";
+
+    assertThrows(NullPointerException.class, () -> new EnumAndIdsOps.FormatConfig<>(null, sort, reformat, sep));
+    assertThrows(NullPointerException.class, () -> new EnumAndIdsOps.FormatConfig<>(filter, null, reformat, sep));
+    assertThrows(NullPointerException.class, () -> new EnumAndIdsOps.FormatConfig<>(filter, sort, null, sep));
+    assertThrows(NullPointerException.class, () -> new EnumAndIdsOps.FormatConfig<>(filter, sort, reformat, null));
+
+    var config = new EnumAndIdsOps.FormatConfig<>(filter, sort, reformat, sep);
+    assertThrows(NullPointerException.class, () -> config.withFilter(null));
+    assertThrows(NullPointerException.class, () -> config.withSortStrategy(null));
+    assertThrows(NullPointerException.class, () -> config.withReformat(null));
+    assertThrows(NullPointerException.class, () -> config.withSeparator(null));
+  }
+
+  @Test
+  public void testFormatConfigWithers() {
+    java.util.function.Predicate<Entry<TrafficLightWithIdFb, Integer>> filter1 = e -> true;
+    java.util.function.Predicate<Entry<TrafficLightWithIdFb, Integer>> filter2 = e -> e.getValue() > 1;
+    java.util.Comparator<Entry<TrafficLightWithIdFb, Integer>> sort1 = java.util.Comparator.comparingInt(e -> e.getKey().ordinal());
+    java.util.Comparator<Entry<TrafficLightWithIdFb, Integer>> sort2 = sort1.reversed();
+    java.util.function.Function<Entry<TrafficLightWithIdFb, Integer>, String> reformat1 = EnumAndIdsOps.FormatBuilder::defaultReformat;
+    java.util.function.Function<Entry<TrafficLightWithIdFb, Integer>, String> reformat2 = e -> e.getKey().name();
+    String sep1 = ", ";
+    String sep2 = "|";
+
+    var original = new EnumAndIdsOps.FormatConfig<>(filter1, sort1, reformat1, sep1);
+
+    var withFilter = original.withFilter(filter2);
+    assertNotEquals(original, withFilter);
+    assertEquals(filter2, withFilter.filter());
+    assertEquals(filter1, original.filter());
+
+    var withSort = original.withSortStrategy(sort2);
+    assertNotEquals(original, withSort);
+    assertEquals(sort2, withSort.sortStrategy());
+    assertEquals(sort1, original.sortStrategy());
+
+    var withReformat = original.withReformat(reformat2);
+    assertNotEquals(original, withReformat);
+    assertEquals(reformat2, withReformat.reformat());
+    assertEquals(reformat1, original.reformat());
+
+    var withSep = original.withSeparator(sep2);
+    assertNotEquals(original, withSep);
+    assertEquals(sep2, withSep.separator());
+    assertEquals(sep1, original.separator());
+
+    assertSame(original, original.withSeparator(", "));
+  }
+
+  @Test
+  public void testFormatBuilderNullInvariants() {
+    var builder = EnumAndIdsOps.from(TrafficLightWithIdFb.class).getFormatBuilder();
+    assertThrows(NullPointerException.class, () -> builder.setFilter((java.util.function.Predicate<Entry<TrafficLightWithIdFb, Integer>>) null));
+    assertThrows(NullPointerException.class, () -> builder.setFilter((List<Entry<TrafficLightWithIdFb, Integer>>) null));
+    assertThrows(NullPointerException.class, () -> builder.setFilter((Stream<Entry<TrafficLightWithIdFb, Integer>>) null));
+    assertThrows(NullPointerException.class, () -> builder.setSortStrategy(null));
+    assertThrows(NullPointerException.class, () -> builder.setReformat(null));
+    assertThrows(NullPointerException.class, () -> builder.setSeparator(null));
   }
 }

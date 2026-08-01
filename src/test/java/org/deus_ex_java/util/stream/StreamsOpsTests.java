@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("DataFlowIssue")
 public class StreamsOpsTests {
 
   @Test
@@ -91,7 +92,6 @@ public class StreamsOpsTests {
 
   @Test
   void testFilterNullInput() {
-    //noinspection DataFlowIssue
     var resultList = StreamsOps.filter(String.class).apply(null).toList();
     assertTrue(resultList.isEmpty(), "Stream should be empty when evaluating a null input");
   }
@@ -99,7 +99,6 @@ public class StreamsOpsTests {
   @Test
   void testFilterNullClassType() {
     var input = "Test";
-    //noinspection DataFlowIssue
     assertThrows(
         NullPointerException.class,
         () -> StreamsOps.filter(null).apply(input),
@@ -145,17 +144,14 @@ public class StreamsOpsTests {
 
   @Test
   void testFilterNotNullInput() {
-    //noinspection DataFlowIssue
     var resultList = StreamsOps.filterNot(String.class).apply(null).toList();
     assertEquals(1, resultList.size(), "Stream should retain null as Class.isInstance(null) is false");
-    //noinspection DataFlowIssue
     assertNull(resultList.get(0), "Retained element should be null");
   }
 
   @Test
   void testFilterNotNullClassType() {
     var input = "Test";
-    //noinspection DataFlowIssue
     assertThrows(
         NullPointerException.class,
         () ->

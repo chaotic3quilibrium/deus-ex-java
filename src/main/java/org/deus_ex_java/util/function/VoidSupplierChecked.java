@@ -20,7 +20,7 @@ public interface VoidSupplierChecked<EX extends Exception> {
   /**
    * Computes an optionally side-effecting result, or throws a checked exception if unable to do so.
    *
-   * @throws E if unable to compute a side-effecting result
+   * @throws EX if unable to compute a side-effecting result
    */
   void execute() throws EX;
 }

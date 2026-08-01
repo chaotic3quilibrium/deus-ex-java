@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Set} instances.
  */
+@SuppressWarnings({"Convert2Diamond", "unchecked", "ConstantValue", "SimplifyStreamApiCallChains"})
 @NullMarked
 public final class SetsOps {
 
@@ -31,7 +32,6 @@ public final class SetsOps {
    * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link HashSet}{@code <T>}
    */
   public static <T> Set<T> newHashSet() {
-    //noinspection Convert2Diamond
     return new HashSet<T>();
   }
 
@@ -63,7 +63,6 @@ public final class SetsOps {
    * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}
    */
   public static <T> Set<T> newLinkedHashSet() {
-    //noinspection Convert2Diamond
     return new LinkedHashSet<T>();
   }
 
@@ -138,14 +137,8 @@ public final class SetsOps {
           : Set.copyOf(set);
     }
 
-    if (!set.isEmpty()) {
-      var result = new HashSet<>(set);
-      result.add(value);
-
-      return Collections.unmodifiableSet(result);
-    }
-
-    return Set.of(value);
+    return Stream.concat(set.stream(), Stream.of(value))
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   private static final Set<?> UNMODIFIABLE_LINKED_HASH_SET_EMPTY = Collections.unmodifiableSet(new LinkedHashSet<>());
@@ -167,7 +160,6 @@ public final class SetsOps {
     Objects.requireNonNull(set);
     if (set.isEmpty() && (value == null)) {
 
-      //noinspection unchecked
       return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
     var result = set.isEmpty()
@@ -222,7 +214,6 @@ public final class SetsOps {
     Objects.requireNonNull(sets);
     if (sets.length == 0) {
 
-      //noinspection unchecked
       return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
     var result = Arrays.stream(sets)
@@ -231,7 +222,6 @@ public final class SetsOps {
         .filter(Objects::nonNull)
         .collect(Collectors.toCollection(LinkedHashSet::new));
 
-    //noinspection unchecked
     return result.isEmpty()
         ? (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY
         : Collections.unmodifiableSet(result);
@@ -260,10 +250,9 @@ public final class SetsOps {
 
       return Set.copyOf(set);
     }
-    var result = new HashSet<>(set);
-    result.remove(value);
-
-    return Collections.unmodifiableSet(result);
+    return set.stream()
+        .filter(element -> !Objects.equals(element, value))
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   /**
@@ -283,7 +272,6 @@ public final class SetsOps {
     Objects.requireNonNull(set);
     if (set.isEmpty()) {
 
-      //noinspection unchecked
       return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
     var result = new LinkedHashSet<>(set);
@@ -338,6 +326,31 @@ public final class SetsOps {
         collection.stream());
   }
 
+  private static <T> Set<T> helperRemove(
+      Set<T> set,
+      Set<T> setEmpty,
+      Function<Set<T>, Set<T>> fSetConstructor,
+      Set<T> removalsAsSet
+  ) {
+    if (removalsAsSet.isEmpty()) {
+      var copy = fSetConstructor.apply(set);
+      return copy instanceof LinkedHashSet
+          ? Collections.unmodifiableSet(copy)
+          : Set.copyOf(set);
+    }
+    var filteredStream = set.stream()
+        .filter(t -> !removalsAsSet.contains(t));
+
+    if (setEmpty == UNMODIFIABLE_LINKED_HASH_SET_EMPTY) {
+      var result = filteredStream.collect(Collectors.toCollection(LinkedHashSet::new));
+      return result.isEmpty()
+          ? setEmpty
+          : Collections.unmodifiableSet(result);
+    }
+
+    return filteredStream.collect(Collectors.toUnmodifiableSet());
+  }
+
   private static <T> Set<T> helperRemoveAllStream(
       Set<T> set,
       Stream<T> stream,
@@ -352,12 +365,8 @@ public final class SetsOps {
     }
     var removalsAsSet = stream
         .collect(Collectors.toUnmodifiableSet());
-    var result = fSetConstructor.apply(set);
-    if (!removalsAsSet.isEmpty()) {
-      result.removeAll(removalsAsSet);
-    }
 
-    return Collections.unmodifiableSet(result);
+    return helperRemove(set, setEmpty, fSetConstructor, removalsAsSet);
   }
 
   /**
@@ -395,7 +404,6 @@ public final class SetsOps {
       Set<T> set,
       Stream<T> stream
   ) {
-    //noinspection unchecked
     return helperRemoveAllStream(
         set,
         stream,
@@ -413,30 +421,18 @@ public final class SetsOps {
     Objects.requireNonNull(set);
     Objects.requireNonNull(sets);
 
-    return TernaryOps.get(
-        set.isEmpty(),
-        () ->
-            setEmpty,
-        () -> {
-          var result = fSetConstructor.apply(set);
-          if (sets.length != 0) {
-            @SuppressWarnings("ConstantValue")
-            var removals = Arrays.stream(sets)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableSet());
-            if (!removals.isEmpty()) {
-              result.removeAll(removals);
-            }
+    if (set.isEmpty()) {
+      return setEmpty;
+    }
+    var removalsAsSet = sets.length == 0
+        ? Set.<T>of()
+        : Arrays.stream(sets)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableSet());
 
-            return result.isEmpty()
-                ? setEmpty
-                : Collections.unmodifiableSet(result);
-          }
-
-          return Collections.unmodifiableSet(result);
-        });
+    return helperRemove(set, setEmpty, fSetConstructor, removalsAsSet);
   }
 
   /**
@@ -476,7 +472,6 @@ public final class SetsOps {
       Set<T> set,
       Set<T>... sets
   ) {
-    //noinspection unchecked
     return helperRemoveSets(
         set,
         (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY,
@@ -851,12 +846,6 @@ public final class SetsOps {
     RIGHT_DIFFERENCE
   }
 
-  private static final int CONTRAST_SET_PAIR_INDEX_UNION = 0;
-  private static final int CONTRAST_SET_PAIR_INDEX_INTERSECTION = 1;
-  private static final int CONTRAST_SET_PAIR_INDEX_DIFFERENCE = 2;
-  private static final int CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE = 3;
-  private static final int CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE = 4;
-
   /**
    * Returns an {@link SetPair} of the contrast between the {@code left} and {@code right} defensively copied
    * {@link Set}s, where for each property, the value associated is an unmodifiable {@link Set} containing the relevant
@@ -868,35 +857,41 @@ public final class SetsOps {
    *
    * @param <T> the type of instances contained in the sets
    */
-  public static final class SetPair<T> {
-    private final boolean isEqual;
-    private final Set<T> union;
-    private final Set<T> left;
-    private final Set<T> right;
-    private final Set<T> intersection;
-    private final Set<T> leftDifference;
-    private final Set<T> rightDifference;
-    private final Set<T> difference;
+  public record SetPair<T>(
+      boolean isEqual,
+      Set<T> union,
+      Set<T> left,
+      Set<T> right,
+      Set<T> intersection,
+      Set<T> leftDifference,
+      Set<T> rightDifference,
+      Set<T> difference
+  ) {
+    public SetPair {
+      union = Set.copyOf(union);
+      left = Set.copyOf(left);
+      right = Set.copyOf(right);
+      intersection = Set.copyOf(intersection);
+      leftDifference = Set.copyOf(leftDifference);
+      rightDifference = Set.copyOf(rightDifference);
+      difference = Set.copyOf(difference);
+    }
 
-    // Private constructor absolutely prevents illegal states from being instantiated
-    private SetPair(
-        boolean isEqual,
+    private record SetPairAccumulator<T>(
         Set<T> union,
-        Set<T> left,
-        Set<T> right,
         Set<T> intersection,
+        Set<T> difference,
         Set<T> leftDifference,
-        Set<T> rightDifference,
-        Set<T> difference
+        Set<T> rightDifference
     ) {
-      this.isEqual = isEqual;
-      this.union = union;
-      this.left = left;
-      this.right = right;
-      this.intersection = intersection;
-      this.leftDifference = leftDifference;
-      this.rightDifference = rightDifference;
-      this.difference = difference;
+      SetPairAccumulator() {
+        this(
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>(),
+            new HashSet<>());
+      }
     }
 
     /**
@@ -908,37 +903,31 @@ public final class SetsOps {
      * @return an {@link SetPair} of the contrast between two defensively copied {@link Set}s
      * @throws NullPointerException if either {@code leftTs} or {@code rightTs} contains any {@code null}s
      */
-    @SuppressWarnings("unchecked")
     public static <T> SetPair<T> from(Set<T> leftTs, Set<T> rightTs) {
       if (!leftTs.isEmpty()) {
         var leftTsDefensiveCopy = Set.copyOf(leftTs);
         if (!rightTs.isEmpty()) {
           var rightTsDefensiveCopy = Set.copyOf(rightTs);
-          var accumulators = new Set[]{
-              new HashSet<T>(),  // union
-              new HashSet<T>(),  // intersection
-              new HashSet<T>(),  // difference
-              new HashSet<T>(),  // leftDifference
-              new HashSet<T>()}; // rightDifference
+          var setPairAccumulator = new SetPairAccumulator<T>();
           Stream.concat(
                   leftTsDefensiveCopy.stream(),
                   rightTsDefensiveCopy.stream())
               .forEachOrdered(t -> {
-                if (accumulators[CONTRAST_SET_PAIR_INDEX_UNION].add(t)) {
+                if (setPairAccumulator.union().add(t)) {
                   //can only get here if it hadn't been added in a prior iteration
                   var tInLeft = leftTsDefensiveCopy.contains(t);
                   var tInRight = rightTsDefensiveCopy.contains(t);
                   if (tInLeft) {
                     if (tInRight) {
-                      accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION].add(t);
+                      setPairAccumulator.intersection().add(t);
                     } else { //!tInRight
-                      accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE].add(t);
-                      accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE].add(t);
+                      setPairAccumulator.difference().add(t);
+                      setPairAccumulator.leftDifference().add(t);
                     }
                   } else { //!tInLeft
                     if (tInRight) {
-                      accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE].add(t);
-                      accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE].add(t);
+                      setPairAccumulator.difference().add(t);
+                      setPairAccumulator.rightDifference().add(t);
                     } else { //!tInRight
                       //given the contents of this was derived from the two defensive copies, this is
                       //  an unreachable, and therefore an insane, state
@@ -947,16 +936,16 @@ public final class SetsOps {
                   }
                 }
               });
-          var differenceSet = Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_DIFFERENCE]);
+          var differenceSet = Collections.unmodifiableSet(setPairAccumulator.difference());
 
           return new SetPair<T>(
               differenceSet.isEmpty(),
-              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_UNION]),
+              Collections.unmodifiableSet(setPairAccumulator.union()),
               leftTsDefensiveCopy,
               rightTsDefensiveCopy,
-              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_INTERSECTION]),
-              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE]),
-              Collections.unmodifiableSet(accumulators[CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE]),
+              Collections.unmodifiableSet(setPairAccumulator.intersection()),
+              Collections.unmodifiableSet(setPairAccumulator.leftDifference()),
+              Collections.unmodifiableSet(setPairAccumulator.rightDifference()),
               differenceSet);
         } else {
           //rightTs.isEmpty() is true
@@ -1012,66 +1001,6 @@ public final class SetsOps {
           SetPairViewKey.RIGHT_DIFFERENCE, rightDifference,
           SetPairViewKey.DIFFERENCE, difference);
     }
-
-    public boolean isEqual() {
-      return isEqual;
-    }
-
-    public Set<T> union() {
-      return union;
-    }
-
-    public Set<T> left() {
-      return left;
-    }
-
-    public Set<T> right() {
-      return right;
-    }
-
-    public Set<T> intersection() {
-      return intersection;
-    }
-
-    public Set<T> leftDifference() {
-      return leftDifference;
-    }
-
-    public Set<T> rightDifference() {
-      return rightDifference;
-    }
-
-    public Set<T> difference() {
-      return difference;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-      return ((this == object) ||
-          ((object instanceof SetPair<?> that) &&
-              left.equals(that.left) &&
-              right.equals(that.right)));
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(
-          left,
-          right);
-    }
-
-    @Override
-    public String toString() {
-      return "SetPair[" +
-          "isEqual=" + isEqual + ", " +
-          "union=" + union + ", " +
-          "left=" + left + ", " +
-          "right=" + right + ", " +
-          "intersection=" + intersection + ", " +
-          "leftDifference=" + leftDifference + ", " +
-          "rightDifference=" + rightDifference + ", " +
-          "difference=" + difference + ']';
-    }
   }
 
   /**
@@ -1095,7 +1024,6 @@ public final class SetsOps {
       if (!tsSansNulls.isEmpty()) {
         var result = new LinkedHashSet<T>();
         var duplicates = new ArrayList<T>();
-        //noinspection SimplifyStreamApiCallChains
         tsSansNulls
             .stream()
             .forEachOrdered(t -> {

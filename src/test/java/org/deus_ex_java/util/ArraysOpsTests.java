@@ -2,11 +2,13 @@ package org.deus_ex_java.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.function.ToIntFunction;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ArraysOpsTests {
 
@@ -62,6 +64,24 @@ public class ArraysOpsTests {
         256,
         1,
         new int[]{8});
+    testFindSetBitIndicesCase(
+        Integer.MIN_VALUE,
+        1,
+        new int[]{31});
+    testFindSetBitIndicesCase(
+        Integer.MAX_VALUE,
+        31,
+        IntStream.range(0, 31).toArray());
+    testFindSetBitIndicesCase(
+        -1,
+        32,
+        IntStream.range(0, 32).toArray());
+  }
+
+  @Test
+  public void testEmptyIntArraySingleton() {
+    assertSame(ArraysOps.EMPTY_INT_ARRAY, ArraysOps.findSetBitIndices(0));
+    assertEquals(0, ArraysOps.EMPTY_INT_ARRAY.length);
   }
 
   @Test
@@ -86,5 +106,15 @@ public class ArraysOpsTests {
         List.of("1", "3", "2", "6", "6", "5", "7", "8", "9", "4", "0", "1"),
         Integer::parseInt);
     assertArrayEquals(arrayExpected, arrayFromString);
+  }
+
+  @Test
+  public void testToDistinctSortedArrayIntNullChecks() {
+    assertThrows(NullPointerException.class, () -> ArraysOps.toDistinctSortedArrayInt((Collection<Integer>) null));
+    assertThrows(NullPointerException.class, () -> ArraysOps.toDistinctSortedArrayInt((Stream<Integer>) null));
+    assertThrows(NullPointerException.class, () -> ArraysOps.toDistinctSortedArrayInt((Collection<String>) null, Integer::parseInt));
+    assertThrows(NullPointerException.class, () -> ArraysOps.toDistinctSortedArrayInt(List.of("1"), (ToIntFunction<String>) null));
+    assertThrows(NullPointerException.class, () -> ArraysOps.toDistinctSortedArrayInt((Stream<String>) null, Integer::parseInt));
+    assertThrows(NullPointerException.class, () -> ArraysOps.toDistinctSortedArrayInt(Stream.of("1"), (ToIntFunction<String>) null));
   }
 }

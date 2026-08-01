@@ -31,6 +31,7 @@ import static java.util.Map.entry;
  *
  * @param <E> type of the {@link Enum}
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @NullMarked
 public final class EnumsOps<E extends Enum<E>> {
 
@@ -42,7 +43,6 @@ public final class EnumsOps<E extends Enum<E>> {
         throw new IllegalArgumentException("classE [%s] must be an enum".formatted(classE.getName()));
       }
 
-      //noinspection rawtypes,unchecked
       return new EnumsOps(classE);
     }
   };
@@ -61,7 +61,6 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class
    */
   public static <E extends Enum<E>> EnumsOps<E> from(Class<E> classE) {
-    //noinspection unchecked
     return (EnumsOps<E>) ENUMS_OPS_CLASS_VALUE_CACHE.get(classE);
   }
 
@@ -85,7 +84,7 @@ public final class EnumsOps<E extends Enum<E>> {
     var nameLowerCaseAndEnumValueCollisions =
         nameLowerCaseAndEnumValues
             .stream()
-            .collect(Collectors.groupingBy(Map.Entry::getKey))
+            .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.toUnmodifiableList()))
             .values()
             .stream()
             .filter(es ->
@@ -117,7 +116,7 @@ public final class EnumsOps<E extends Enum<E>> {
     this.enumsSet = Collections.unmodifiableSet(EnumSet.allOf(this.classE));
     this.enumValueByNameLowerCase = nameLowerCaseAndEnumValues
         .stream()
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   /**
@@ -166,10 +165,12 @@ public final class EnumsOps<E extends Enum<E>> {
    *     is the {@link Enum#name()}, and the enum constant itself is the value
    */
   public Map<String, E> toOrderedMapByName() {
-    return MapsOps.toMapOrdered(
-        stream(),
-        (e) ->
-            Optional.of(entry(e.name(), e)));
+    return Collections.unmodifiableMap(
+        stream().collect(Collectors.toMap(
+            Enum::name,
+            Function.identity(),
+            (vOld, vNew) -> vOld,
+            LinkedHashMap::new)));
   }
 
   /**
@@ -268,6 +269,52 @@ public final class EnumsOps<E extends Enum<E>> {
   }
 
   /**
+   * Represents the immutable configuration state for formatting an {@link EnumsOps} collection.
+   *
+   * @param filter       a {@link Predicate} used to filter enum values
+   * @param sortStrategy a {@link Comparator} used to sort filtered enum values
+   * @param reformat     a {@link Function} used to transform an enum value into a String representation
+   * @param separator    a {@link String} delimiter used when joining formatted enum representations
+   * @param <E>          the type of the {@link Enum}
+   */
+  public record FormatConfig<E extends Enum<E>>(
+      Predicate<E> filter,
+      Comparator<E> sortStrategy,
+      Function<E, String> reformat,
+      String separator
+  ) {
+    public FormatConfig {
+      Objects.requireNonNull(filter, "filter must not be null");
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      Objects.requireNonNull(separator, "separator must not be null");
+    }
+
+    public FormatConfig<E> withFilter(Predicate<E> filter) {
+      Objects.requireNonNull(filter, "filter must not be null");
+      return new FormatConfig<>(filter, this.sortStrategy, this.reformat, this.separator);
+    }
+
+    public FormatConfig<E> withSortStrategy(Comparator<E> sortStrategy) {
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      return new FormatConfig<>(this.filter, sortStrategy, this.reformat, this.separator);
+    }
+
+    public FormatConfig<E> withReformat(Function<E, String> reformat) {
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      return new FormatConfig<>(this.filter, this.sortStrategy, reformat, this.separator);
+    }
+
+    public FormatConfig<E> withSeparator(String separator) {
+      Objects.requireNonNull(separator, "separator must not be null");
+      if (this.separator.equals(separator)) {
+        return this;
+      }
+      return new FormatConfig<>(this.filter, this.sortStrategy, this.reformat, separator);
+    }
+  }
+
+  /**
    * Defines a format builder to assist with String encodings of this collection.
    *
    * @param <E> the type of the {@link Enum} being enhanced
@@ -276,10 +323,15 @@ public final class EnumsOps<E extends Enum<E>> {
     public static final String DEFAULT_SEPARATOR = ", ";
 
     private final EnumsOps<E> enumsOps;
-    private final Predicate<E> filter;
-    private final Comparator<E> sortStrategy;
-    private final Function<E, String> reformat;
-    private final String separator;
+    private final FormatConfig<E> config;
+
+    private FormatBuilder(
+        EnumsOps<E> enumsOps,
+        FormatConfig<E> config
+    ) {
+      this.enumsOps = Objects.requireNonNull(enumsOps, "enumsOps must not be null");
+      this.config = Objects.requireNonNull(config, "config must not be null");
+    }
 
     private FormatBuilder(
         EnumsOps<E> enumsOps,
@@ -288,11 +340,7 @@ public final class EnumsOps<E extends Enum<E>> {
         Function<E, String> reformat,
         String separator
     ) {
-      this.enumsOps = enumsOps;
-      this.filter = filter;
-      this.sortStrategy = sortStrategy;
-      this.reformat = reformat;
-      this.separator = separator;
+      this(enumsOps, new FormatConfig<>(filter, sortStrategy, reformat, separator));
     }
 
     /**
@@ -334,6 +382,15 @@ public final class EnumsOps<E extends Enum<E>> {
     }
 
     /**
+     * Returns the {@link FormatConfig} containing the immutable formatting configuration.
+     *
+     * @return the {@link FormatConfig} containing the immutable formatting configuration
+     */
+    public FormatConfig<E> getConfig() {
+      return this.config;
+    }
+
+    /**
      * Returns the {@code filter} {@link Predicate} property this {@link FormatBuilder} instance is using to
      * include/exclude {@link Enum} values.
      * <p>
@@ -343,7 +400,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     include/exclude {@link Enum} values
      */
     public Predicate<E> getFilter() {
-      return this.filter;
+      return this.config.filter();
     }
 
     /**
@@ -355,12 +412,8 @@ public final class EnumsOps<E extends Enum<E>> {
      *     to include/exclude {@link Enum} values
      */
     public FormatBuilder<E> setFilter(Predicate<E> filter) {
-      return new FormatBuilder<>(
-          this.enumsOps,
-          filter,
-          this.sortStrategy,
-          this.reformat,
-          this.separator);
+      Objects.requireNonNull(filter, "filter must not be null");
+      return new FormatBuilder<>(this.enumsOps, this.config.withFilter(filter));
     }
 
     /**
@@ -373,6 +426,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     to include/exclude {@link Enum} values based their presence within a source
      */
     public FormatBuilder<E> setFilter(Collection<E> collection) {
+      Objects.requireNonNull(collection, "collection must not be null");
       return setFilter(collection.stream());
     }
 
@@ -386,6 +440,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     to include/exclude {@link Enum} values based their presence within a source
      */
     public FormatBuilder<E> setFilter(Stream<E> stream) {
+      Objects.requireNonNull(stream, "stream must not be null");
       var defensiveCopy = stream.collect(Collectors.toUnmodifiableSet());
 
       return setFilter(defensiveCopy::contains);
@@ -402,7 +457,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     reorder the filtered {@link Enum} values
      */
     public Comparator<E> getSortStrategy() {
-      return this.sortStrategy;
+      return this.config.sortStrategy();
     }
 
     /**
@@ -414,12 +469,8 @@ public final class EnumsOps<E extends Enum<E>> {
      *     defines how to reorder the filtered {@link Enum} values
      */
     public FormatBuilder<E> setSortStrategy(Comparator<E> sortStrategy) {
-      return new FormatBuilder<>(
-          this.enumsOps,
-          this.filter,
-          sortStrategy,
-          this.reformat,
-          this.separator);
+      Objects.requireNonNull(sortStrategy, "sortStrategy must not be null");
+      return new FormatBuilder<>(this.enumsOps, this.config.withSortStrategy(sortStrategy));
     }
 
     /**
@@ -432,7 +483,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     each {@link Enum} value
      */
     public Function<E, String> getReformat() {
-      return this.reformat;
+      return this.config.reformat();
     }
 
     /**
@@ -444,12 +495,8 @@ public final class EnumsOps<E extends Enum<E>> {
      *     to display each {@link Enum} value
      */
     public FormatBuilder<E> setReformat(Function<E, String> reformat) {
-      return new FormatBuilder<>(
-          this.enumsOps,
-          this.filter,
-          this.sortStrategy,
-          reformat,
-          this.separator);
+      Objects.requireNonNull(reformat, "reformat must not be null");
+      return new FormatBuilder<>(this.enumsOps, this.config.withReformat(reformat));
     }
 
     /**
@@ -463,29 +510,26 @@ public final class EnumsOps<E extends Enum<E>> {
      *     display the filtered and reordered {@link Enum} values
      */
     public String getSeparator() {
-      return this.separator;
+      return this.config.separator();
     }
 
     /**
      * Returns a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
      * separate and display the filtered and reordered {@link Enum} values.
      *
-     * @param separator a {@link Function} that defines how to separate and display the filtered and reordered
+     * @param separator a {@link String} that defines how to separate and display the filtered and reordered
      *                  {@link Enum} values
      * @return a copy of the {@link FormatBuilder} with the {@code separator} String property that defines how to
      *     separate and display the filtered and reordered {@link Enum} values
      */
     public FormatBuilder<E> setSeparator(String separator) {
-      if (!this.separator.equals(separator)) {
-        return new FormatBuilder<>(
-            this.enumsOps,
-            this.filter,
-            this.sortStrategy,
-            this.reformat,
-            separator);
+      Objects.requireNonNull(separator, "separator must not be null");
+      var newConfig = this.config.withSeparator(separator);
+      if (newConfig == this.config) {
+        return this;
       }
 
-      return this;
+      return new FormatBuilder<>(this.enumsOps, newConfig);
     }
 
     /**
@@ -527,7 +571,7 @@ public final class EnumsOps<E extends Enum<E>> {
      *     and then String joined
      */
     public String join() {
-      return String.join(this.getSeparator(), toList());
+      return toStrings().collect(Collectors.joining(this.getSeparator()));
     }
   }
 }

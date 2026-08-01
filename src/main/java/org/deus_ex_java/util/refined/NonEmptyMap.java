@@ -140,5 +140,6 @@ public record NonEmptyMap<K, V>(Map<K, V> map) {
     invalidate(map).ifPresent(parametersValidationException -> {
       throw parametersValidationException;
     });
+    map = Map.copyOf(map);
   }
 }

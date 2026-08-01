@@ -22,6 +22,9 @@ public final class IntegersOps {
 
   /**
    * Return an unmodifiable <u><i>ordered</i></u> {@link Set} containing the index for each bit set in {@code bits}.
+   * <p>
+   * This implementation is blazingly fast because of how the method it is forwarded to is translated into native CPU
+   * hardware instructions.
    *
    * @param bits the value from which to extract the list of indexes
    * @return a {@link Set} containing the index for each bit set in {@code bits}
@@ -31,7 +34,8 @@ public final class IntegersOps {
       return Set.of();
     }
 
-    return SetsOps.toSetOrdered(Arrays.stream(ArraysOps.findSetBitIndices(bits)).boxed());
+    return SetsOps.toSetOrdered(
+        Arrays.stream(ArraysOps.findSetBitIndices(bits)).boxed());
   }
 
   /**
@@ -42,23 +46,21 @@ public final class IntegersOps {
    *
    * @param possibleInteger the string value to be parsed
    * @return an {@link Optional} containing the {@link Integer} value of the successfully parsed
-   * {@code String possibleInteger}, otherwise {@link Optional#empty()}
+   *     {@code String possibleInteger}, otherwise {@link Optional#empty()}
    */
   public static Optional<Integer> parseOptional(String possibleInteger) {
     return parseEither(possibleInteger).toOptional();
   }
 
   /**
-   * Return an {@link Either#right(Object)} containing the {@link Integer} value of the successfully
-   * parsed {@code String possibleInteger}, otherwise {@link Either#left(Object)} containing the
-   * parsing exception.
+   * Return an {@link Either#right(Object)} containing the {@link Integer} value of the successfully parsed
+   * {@code String possibleInteger}, otherwise {@link Either#left(Object)} containing the parsing exception.
    * <p>
    * Convenience function to reify any parsing failure into an {@link Either#left(Object)}.
    *
    * @param possibleInteger the string value to be parsed
-   * @return an {@link Either#right(Object)} containing the {@link Integer} value of the
-   * successfully parsed {@code String possibleInteger}, otherwise {@link Either#left(Object)}
-   * containing the parsing exception
+   * @return an {@link Either#right(Object)} containing the {@link Integer} value of the successfully parsed
+   *     {@code String possibleInteger}, otherwise {@link Either#left(Object)} containing the parsing exception
    */
   public static Either<NumberFormatException, Integer> parseEither(
       String possibleInteger

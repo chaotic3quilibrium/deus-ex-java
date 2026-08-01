@@ -1,0 +1,38 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test - Prompt for name (Maven)" type="MavenRunConfiguration" factoryName="Maven">
+    <!--
+      Prompts for the Surefire test selector each run. Enter e.g.:
+        EnumAndIdsOpsTests
+        EnumAndIdsOpsTests#testTrafficLightWithIdX2
+        *OpsTests
+      $Prompt$ is an IntelliJ macro that shows an input dialog at launch time.
+    -->
+    <MavenSettings>
+      <option name="myGeneralSettings" />
+      <option name="myRunnerSettings" />
+      <option name="myRunnerParameters">
+        <MavenRunnerParameters>
+          <option name="profiles">
+            <set />
+          </option>
+          <option name="goals">
+            <list>
+              <option value="test" />
+              <option value="-Dtest=$Prompt$" />
+            </list>
+          </option>
+          <option name="pomFileName" value="pom.xml" />
+          <option name="profilesMap">
+            <map />
+          </option>
+          <option name="projectsCmdOptionValues">
+            <list />
+          </option>
+          <option name="resolveToWorkspace" value="false" />
+          <option name="workingDirPath" value="$PROJECT_DIR$" />
+        </MavenRunnerParameters>
+      </option>
+    </MavenSettings>
+    <method v="2" />
+  </configuration>
+</component>

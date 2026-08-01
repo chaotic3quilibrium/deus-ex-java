@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Map} instances.
  */
+@SuppressWarnings({"Convert2Diamond", "NullableProblems", "unchecked", "ConstantValue"})
 @NullMarked
 public final class MapsOps {
 
@@ -33,7 +34,6 @@ public final class MapsOps {
    * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link HashMap}{@code <K, V>}
    */
   public static <K, V> Map<K, V> newHashMap() {
-    //noinspection Convert2Diamond
     return new HashMap<K, V>();
   }
 
@@ -70,7 +70,6 @@ public final class MapsOps {
    * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link LinkedHashMap}{@code <K, V>}
    */
   public static <K, V> Map<K, V> newLinkedHashMap() {
-    //noinspection Convert2Diamond
     return new LinkedHashMap<K, V>();
   }
 
@@ -244,7 +243,6 @@ public final class MapsOps {
       @Nullable K key,
       @Nullable V value
   ) {
-    //noinspection NullableProblems
     return invalidate(key, value)
         .<Either<ParametersValidationException, Entry<K, V>>>map(Either::left)
         .orElseGet(() ->
@@ -268,7 +266,6 @@ public final class MapsOps {
   public static <K, V> Either<ParametersValidationException, Entry<K, V>> returnExceptionOrValidatedEntry(
       Entry<@Nullable K, @Nullable V> entry
   ) {
-    //noinspection NullableProblems
     return invalidate(entry.getKey(), entry.getValue())
         .<Either<ParametersValidationException, Entry<K, V>>>map(Either::left)
         .orElseGet(() ->
@@ -433,7 +430,6 @@ public final class MapsOps {
     Objects.requireNonNull(map);
     if (map.isEmpty() && (entry == null)) {
 
-      //noinspection unchecked
       return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
     if (entry == null) {
@@ -486,7 +482,6 @@ public final class MapsOps {
    * @return an unmodifiable unordered {@link Map} consisting of each {@link Map}, filtered to non-null in both the keys
    *     and the values, from maps added together
    */
-  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <K, V> Map<K, V> addMaps(
       Map<K, V>... maps
@@ -495,20 +490,16 @@ public final class MapsOps {
     if (maps.length == 0) {
       return Map.of();
     }
-    var result = Arrays.stream(maps)
+    return Arrays.stream(maps)
         .filter(Objects::nonNull)
         .flatMap(map ->
             map.entrySet().stream())
         .filter(MapsOps::isNonNulls)
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getKey,
             Entry::getValue,
             (vOld, vNew) ->
                 vNew)); //last-wins: later maps overwrite earlier maps
-
-    return result.isEmpty()
-        ? Map.of()
-        : Collections.unmodifiableMap(result);
   }
 
   /**
@@ -521,7 +512,6 @@ public final class MapsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of each {@link Map}, filtered to non-null in
    *     both the keys and the values, from maps appended together
    */
-  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <K, V> Map<K, V> appendMaps(
       Map<K, V>... maps
@@ -529,7 +519,6 @@ public final class MapsOps {
     Objects.requireNonNull(maps);
     if (maps.length == 0) {
 
-      //noinspection unchecked
       return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
     var result = Arrays.stream(maps)
@@ -545,7 +534,6 @@ public final class MapsOps {
             LinkedHashMap::new
         ));
 
-    //noinspection unchecked
     return result.isEmpty()
         ? (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY
         : Collections.unmodifiableMap(result);
@@ -575,11 +563,13 @@ public final class MapsOps {
 
       return Map.copyOf(map);
     }
-    var result = new HashMap<>(map);
-    result.remove(key);
-
-    return Collections.unmodifiableMap(result);
-
+    return map.entrySet()
+        .stream()
+        .filter(entry ->
+            !Objects.equals(entry.getKey(), key))
+        .collect(Collectors.toUnmodifiableMap(
+            Entry::getKey,
+            Entry::getValue));
   }
 
   /**
@@ -600,7 +590,6 @@ public final class MapsOps {
     Objects.requireNonNull(map);
     if (map.isEmpty()) {
 
-      //noinspection unchecked
       return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
     var result = new LinkedHashMap<>(map);
@@ -652,6 +641,35 @@ public final class MapsOps {
         collection.stream());
   }
 
+  private static <K, V> Map<K, V> helperRemove(
+      Map<K, V> map,
+      Map<K, V> mapEmpty,
+      Function<Map<K, V>, Map<K, V>> fMapConstructor,
+      Set<K> removalsAsSet
+  ) {
+    if (removalsAsSet.isEmpty()) {
+      var copy = fMapConstructor.apply(map);
+      return copy instanceof LinkedHashMap
+          ? Collections.unmodifiableMap(copy)
+          : Map.copyOf(map);
+    }
+    var filteredStream = map.entrySet().stream()
+        .filter(entry -> !removalsAsSet.contains(entry.getKey()));
+
+    if (mapEmpty == UNMODIFIABLE_LINKED_HASH_MAP_EMPTY) {
+      var result = filteredStream.collect(Collectors.toMap(
+          Entry::getKey,
+          Entry::getValue,
+          (v1, v2) -> v1,
+          LinkedHashMap::new));
+      return result.isEmpty()
+          ? mapEmpty
+          : Collections.unmodifiableMap(result);
+    }
+
+    return filteredStream.collect(Collectors.toUnmodifiableMap(Entry::getKey, Entry::getValue));
+  }
+
   private static <K, V> Map<K, V> helperRemoveAllStream(
       Map<K, V> map,
       Stream<K> stream,
@@ -666,12 +684,8 @@ public final class MapsOps {
     }
     var removalsAsSet = stream
         .collect(Collectors.toUnmodifiableSet());
-    var result = fMapConstructor.apply(map);
-    if (!removalsAsSet.isEmpty()) {
-      removalsAsSet.forEach(result::remove);
-    }
 
-    return Collections.unmodifiableMap(result);
+    return helperRemove(map, mapEmpty, fMapConstructor, removalsAsSet);
   }
 
   /**
@@ -711,7 +725,6 @@ public final class MapsOps {
       Map<K, V> map,
       Stream<K> stream
   ) {
-    //noinspection unchecked
     return helperRemoveAllStream(
         map,
         stream,
@@ -729,30 +742,18 @@ public final class MapsOps {
     Objects.requireNonNull(map);
     Objects.requireNonNull(keySets);
 
-    return TernaryOps.get(
-        map.isEmpty(),
-        () ->
-            mapEmpty,
-        () -> {
-          var result = fMapConstructor.apply(map);
-          if (keySets.length != 0) {
-            @SuppressWarnings("ConstantValue")
-            var removalsAsSet = Arrays.stream(keySets)
-                .filter(Objects::nonNull)
-                .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toUnmodifiableSet());
-            if (!removalsAsSet.isEmpty()) {
-              removalsAsSet.forEach(result::remove);
-            }
+    if (map.isEmpty()) {
+      return mapEmpty;
+    }
+    var removalsAsSet = keySets.length == 0
+        ? Set.<K>of()
+        : Arrays.stream(keySets)
+            .filter(Objects::nonNull)
+            .flatMap(Collection::stream)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toUnmodifiableSet());
 
-            return result.isEmpty()
-                ? mapEmpty
-                : Collections.unmodifiableMap(result);
-          }
-
-          return Collections.unmodifiableMap(result);
-        });
+    return helperRemove(map, mapEmpty, fMapConstructor, removalsAsSet);
   }
 
   /**
@@ -794,7 +795,6 @@ public final class MapsOps {
       Map<K, V> map,
       Set<K>... keySets
   ) {
-    //noinspection unchecked
     return helperRemoveMaps(
         map,
         (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY,
@@ -883,22 +883,18 @@ public final class MapsOps {
   ) {
     Objects.requireNonNull(ts);
     Objects.requireNonNull(fTtoOptionalEntry);
-    var map = ts
+    return ts
         .filter(Objects::nonNull)
         .flatMap(t ->
             fTtoOptionalEntry
                 .apply(t)
                 .filter(MapsOps::isNonNulls)
                 .stream())
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getKey,
             Entry::getValue,
             (vOld, vNew) ->
                 vOld));
-
-    return !map.isEmpty()
-        ? Collections.unmodifiableMap(map)
-        : Map.of();
   }
 
   /**
@@ -1026,19 +1022,17 @@ public final class MapsOps {
 
       return Map.of();
     }
-    var result = map.entrySet()
+    return map.entrySet()
         .stream()
         .peek(entry ->
             invalidate(entry).ifPresent(parametersValidationException -> {
               throw parametersValidationException;
             }))
-        .collect(Collectors.toMap(
+        .collect(Collectors.toUnmodifiableMap(
             Entry::getValue,
             Entry::getKey,
             (kOld, kNew) ->
                 kOld)); //first-wins collision resolution
-
-    return Collections.unmodifiableMap(result);
   }
 
   /**

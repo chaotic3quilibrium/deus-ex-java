@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"rawtypes", "DataFlowIssue", "NullableProblems", "SpellCheckingInspection", "unchecked"})
 public class ListsOpsTests {
   @Test
   public void testNewArrayList() {
@@ -22,9 +23,7 @@ public class ListsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawList = (List) checkedList;
-          //noinspection unchecked
           rawList.add("This should fail");
         });
   }
@@ -42,9 +41,7 @@ public class ListsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawList = (List) checkedList;
-          //noinspection unchecked
           rawList.add("This should fail");
         });
   }
@@ -121,11 +118,9 @@ public class ListsOpsTests {
     var listAppendB = ListsOps.appendLists(listAppendA, List.of(4, 5, 6), listContainingNull);
     assertTrue(CollectionsOps.isUnmodifiable(listAppendB));
     assertEquals(List.of(1, 2, 3, 4, 4, 5, 6, 7), listAppendB);
-    @SuppressWarnings("DataFlowIssue")
     var listAppendC = ListsOps.appendLists(List.of(), null, List.of());
     assertEquals(List.of(), listAppendC);
     var a = new List[]{};
-    @SuppressWarnings("unchecked")
     var listAppendD = ListsOps.appendLists(a);
     assertEquals(List.of(), listAppendD);
   }
@@ -258,7 +253,6 @@ public class ListsOpsTests {
     listContainingNull.add(null);
     listContainingNull.add(6);
 
-    @SuppressWarnings("DataFlowIssue")
     var listRemoveNulls = ListsOps.removeLists(initialList, null, List.of(1), listContainingNull);
     assertEquals(List.of(2, 3, 2, 4, 5), listRemoveNulls);
     assertTrue(CollectionsOps.isUnmodifiable(listRemoveNulls));
@@ -284,7 +278,6 @@ public class ListsOpsTests {
     listContainingNull.add(null);
     listContainingNull.add(6);
 
-    @SuppressWarnings("DataFlowIssue")
     var listEliminateNulls = ListsOps.eliminateLists(initialList, null, List.of(1), listContainingNull);
     assertEquals(List.of(2, 3, 2, 4, 5), listEliminateNulls);
     assertTrue(CollectionsOps.isUnmodifiable(listEliminateNulls));
@@ -305,7 +298,6 @@ public class ListsOpsTests {
     var expectedList = List.of(1, 2, 3);
     var nullContainingList = Arrays.asList(null, 1, null, 2, null, 3, null);
     assertEquals(7, nullContainingList.size());
-    @SuppressWarnings("NullableProblems")
     var actualList = ListsOps.nullSanitize(nullContainingList);
     assertEquals(expectedList, actualList);
     assertTrue(CollectionsOps.isUnmodifiable(actualList));
@@ -404,7 +396,6 @@ public class ListsOpsTests {
   @Test
   public void testToDistinctSortedListFiltersNulls() {
     var streamWithNulls = Stream.of(5, null, 1, 5, 2, null, 1);
-    @SuppressWarnings("NullableProblems")
     var result = ListsOps.toDistinctSortedList(streamWithNulls);
     assertEquals(
         List.of(1, 2, 5),
@@ -451,7 +442,6 @@ public class ListsOpsTests {
                 Optional.empty())));
   }
 
-  @SuppressWarnings("SpellCheckingInspection")
   @Test
   public void testUnzipEithers() {
     var eithersStream = Stream.<Either<String, Integer>>of(
@@ -473,7 +463,6 @@ public class ListsOpsTests {
   }
 
   @Test
-  @SuppressWarnings("SpellCheckingInspection")
   public void testUnzipAndFlattenEithers() {
     var eithersStream = Stream.<Either<String, Integer>>of(
         Either.right(1),
@@ -544,9 +533,9 @@ public class ListsOpsTests {
             stringAndInteger._1().equals("c")
                 ? Optional.empty()
                 : stringAndInteger._2() == 4
-                  ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
+                    ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
                     : stringAndInteger._1().equals("a")
-                      ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
+                        ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
                         : Optional.of(new Tuple2<>(Optional.empty(), Optional.of(stringAndInteger._2()))));
     assertEquals(List.of("a", "d"), tuple2Stream._1());
     assertEquals(List.of(2, 4), tuple2Stream._2());
@@ -569,9 +558,9 @@ public class ListsOpsTests {
             stringAndInteger._1().equals("c")
                 ? Optional.empty()
                 : stringAndInteger._2() == 4
-                  ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
+                    ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.of(stringAndInteger._2())))
                     : stringAndInteger._1().equals("a")
-                      ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
+                        ? Optional.of(new Tuple2<>(Optional.of(stringAndInteger._1()), Optional.empty()))
                         : Optional.of(new Tuple2<>(Optional.empty(), Optional.of(stringAndInteger._2()))));
     assertEquals(List.of("a", "d"), tuple2List._1());
     assertEquals(List.of(2, 4), tuple2List._2());
@@ -618,9 +607,9 @@ public class ListsOpsTests {
             stringAndIntegerAndDouble._1().equals("c")
                 ? Optional.empty()
                 : stringAndIntegerAndDouble._2() == 4
-                  ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.of(stringAndIntegerAndDouble._2()), Optional.of(stringAndIntegerAndDouble._3())))
+                    ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.of(stringAndIntegerAndDouble._2()), Optional.of(stringAndIntegerAndDouble._3())))
                     : stringAndIntegerAndDouble._1().equals("a")
-                      ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.empty(), Optional.of(stringAndIntegerAndDouble._3())))
+                        ? Optional.of(new Tuple3<>(Optional.of(stringAndIntegerAndDouble._1()), Optional.empty(), Optional.of(stringAndIntegerAndDouble._3())))
                         : Optional.of(new Tuple3<>(Optional.empty(), Optional.of(stringAndIntegerAndDouble._2()), Optional.empty())));
     assertEquals(List.of("a", "d"), tuple3._1());
     assertEquals(List.of(2, 4), tuple3._2());
@@ -1256,9 +1245,36 @@ public class ListsOpsTests {
         new Tuple2<>("a", 1),
         null,
         new Tuple2<>("b", 2));
-    @SuppressWarnings("NullableProblems")
     var result = ListsOps.unzip(tuple2sStreamWithNulls);
     assertEquals(List.of("a", "b"), result._1());
     assertEquals(List.of(1, 2), result._2());
+    assertTrue(CollectionsOps.isUnmodifiable(result._1()));
+    assertTrue(CollectionsOps.isUnmodifiable(result._2()));
+  }
+
+  @Test
+  public void testModernizedPipelinesImmutabilityAndEdgeCases() {
+    // appendItem
+    var listAppended = ListsOps.appendItem(List.of("x", "y"), "z");
+    assertEquals(List.of("x", "y", "z"), listAppended);
+    assertTrue(CollectionsOps.isUnmodifiable(listAppended));
+    assertThrows(UnsupportedOperationException.class, () -> listAppended.add("fail"));
+
+    // removeItem first match
+    var listRemoved = ListsOps.removeItem(List.of("a", "b", "a", "c"), "a");
+    assertEquals(List.of("b", "a", "c"), listRemoved);
+    assertTrue(CollectionsOps.isUnmodifiable(listRemoved));
+
+    // removeAll frequency count
+    var initialList = List.of(1, 2, 2, 3, 2, 4);
+    var resultRemoveAll = ListsOps.removeAll(initialList, Stream.of(2, 2));
+    assertEquals(List.of(1, 3, 2, 4), resultRemoveAll);
+    assertTrue(CollectionsOps.isUnmodifiable(resultRemoveAll));
+
+    // reverse
+    var reversedList = ListsOps.reverse(Stream.of("first", "second", "third"));
+    assertEquals(List.of("third", "second", "first"), reversedList);
+    assertTrue(CollectionsOps.isUnmodifiable(reversedList));
+    assertThrows(UnsupportedOperationException.class, () -> reversedList.remove(0));
   }
 }

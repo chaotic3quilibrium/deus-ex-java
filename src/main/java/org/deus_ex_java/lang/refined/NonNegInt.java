@@ -17,7 +17,7 @@ import java.util.Optional;
  * @param value an {@code int} value greater than or equal to {@code 0}
  */
 @NullMarked
-public record NonNegInt(int value) implements Comparable<NonNegInt> {
+public record NonNegInt(Integer value) implements Refined<Integer>, Comparable<NonNegInt> {
 
   /**
    * Returns a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
