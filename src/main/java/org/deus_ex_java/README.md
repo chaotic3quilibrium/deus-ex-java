@@ -65,7 +65,7 @@ Rather than teaching Value-Oriented Programming (VOP) through dry synthetic snip
 
 Each showcase walks through our **7 Core VOP Patterns**:
 
-1. **Error-by-Returned-Value** (Functional flow over thrown exceptions)
+1. **Error-by-Returned-Value** (Functional flow preferred versus thrown exceptions)
 2. **Smart Constructors & Invariants** (Making illegal states unrepresentable)
 3. **Staged Assembly** (Validating builders and tuple staging)
 4. **Reified Boundary Parsing** (Non-throwing enum and string lookups)
@@ -75,9 +75,7 @@ Each showcase walks through our **7 Core VOP Patterns**:
 
 #### 🎮 Available Domain Showcases
 
-* **[D&D / RPG Combat Engine Showcase](https://www.google.com/search?q=docs/showcases/DND_COMBAT_ENGINE_VOP_SHOWCASE.md):** Learn VOP by building a spellcasting, character creation, and combat auditing engine for tabletop RPG mechanics.
-* **[Enterprise Order & Payment Pipeline Showcase](docs/showcases/ENTERPRISE_ORDER_PIPELINE_VOP_SHOWCASE.md):** Refactor real-world corporate payment gateways, cart staging, and invoice exports to VOP.
-* *(More domain showcases coming soon...)*
+* *(Domain showcases coming soon...)*
 
 # Philosophy
 
@@ -105,39 +103,76 @@ High level overview:
 - Tactically improve Java code by preferring/biasing...
     - `Optional<T>` over any sort of meaningful `null`
     - Referential transparency over allowing side effects (including throwing an `Exception`)
-    - Error-by-Returned-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
     - Type inference (Ex: `var`) over explicitly specifying types
     - Instantiating only valid states over ambiguous and non-deterministic valid+invalid states
     - DRY (Don't Repeat Yourself) over copy/pasting (a.k.a. copy-pasta)
     - Expressions (functional) over statements (imperative)
     - Entirely avoiding implementing insecure and fragile Java Serialization, prefer any of the other [well-designed alternatives](https://www.baeldung.com/java-serialization-approaches)
     - Unmodifiable collections over mutable collections
-    - Error-by-Returned-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
-        - With explicit default coverage for Fatal Exceptions
-        - [Exception Flow Chart Diagram](https://mermaid.live/edit#pako:eNqlVV1P2zAU_SuWkShIIaPNB22Y2AMUCWnbQ2GaNrIHk9w0Fokd2TcCVvW_zzFJS6N0D5An-_rec-7J8ceKJjIFGtGskE9JzhSSu6tYxYKY7xbN_Og-pjeiqpFUTLESEJSOPj-oTxe3dVUVHNRhgeeLwyWeOzZ8lyv5xB4K0K7rxvTPMTk5uSDzZ0hqhFVM29EOhLsEPDqO6bqh7ujbRFNORgp0XeCIcE0qJdM6gbSB7VJtt3WSgNYLvsxt0wvAWgky55gbAmXDHc5x09cAz6Z3MjJkCatNUZ_nMofk8ZohKzbZqxttC5ggXGhkIgEiM6twN_HLjsABpKaJX6D7nHORzpWSajf56N5obCbExo2QBCrkUmy17aH4LgdVba1bXXOlkZQMk9xIseq46Pk7oGa72NBcy1qkZGRRRnv8-gqZtUvt2FU00bZwx6wBlh8iszxDiha1QF7C5s90TnU2tS710waU9VMGnWr96Odujeqv9IQNkfS9suJ_KlZVkNoiSN8Q2VXCyJ4EogGRiyXhqJv9rYEw-0deG-lYNL6YjWLPP8l4UUQH2SxzNCr5CNGB53nt-OSJp5hHk-rZSWQhVXTg-34P5M2xbLFm2exDWM2W-SjU8InaiH0n6h7_Pwr7P8vfj00dulQ8pRGqGhxagipZM6WrZj2m5iCWENPIDFPImLk3YxqLtSmrmPgtZdlVKmnuSRplrNBmVlcpQ7jibGmei01UgUhBXZqDijTyPYtBoxV9ptF07Ib-eDLzz_zZNPTC0KEvNPImbjA5DcLp6dQLx96Zt3boX0t66s6CaTA20bNgHASh71BIOUr17fUpsy_a-h_Cw0jV)
-        ```mermaid
-        flowchart TD
-        Start(["Input parameters:<br/>Supplier&lt;R&gt;,<br/>Throwables..."]) --> Execute{"Execute<br/>Supplier.get()"}
-        
-            Execute -- 'result' is produced --> SuccessRight(["Return Either.right('result')"])
-            Execute -- Throwable 't' caught --> CheckFatalThrowable{Is 't' an instance of<br/>FatalThrowable?}
-        
-            CheckFatalThrowable -- Yes --> EndErrorFatalThrowable([Rethrow Fatal Exception])
-            CheckFatalThrowable -- No --> CheckThrowables{First match of 't' in<br/>Throwables?}
-        
-            CheckThrowables -- Found 'match' --> SuccessLeft(["return Either.left('match')"])
-            CheckThrowables -- Unfound --> CheckRuntimeException{Is 't' instanceof<br/>RuntimeException?}
-        
-            CheckRuntimeException -- Yes --> RethrowRuntimeException([Rethrow RuntimeException])
-            CheckRuntimeException -- No --> ThrowWrappedCheckedException([Throw a WrappedCheckedException setting its cause as 't'])
-        
-            style Start fill:#f9f,stroke:#333,stroke-width:2px,color:#444
-            style SuccessRight fill:#9f9,stroke:#333,stroke-width:2px,color:#444
-            style SuccessLeft fill:#9f9,stroke:#333,stroke-width:2px,color:#444
-            style EndErrorFatalThrowable fill:#f99,stroke:#333,stroke-width:2px,color:#444
-            style RethrowRuntimeException fill:#f99,stroke:#333,stroke-width:2px,color:#444
-            style ThrowWrappedCheckedException fill:#f99,stroke:#333,stroke-width:2px,color:#444
-        ```
+    - Error-by-Returned-Value over Error-by-Thrown-Exception
+        1. `Either<RuntimeException, T>` or `Either<WrappedCheckedException, T>`
+            - With explicit default handling for Fatal Exceptions
+            - [Exception Flow Chart Diagram](https://mermaid.live/edit#pako:eNqlVV1P2zAU_SuWkShIIaPNB22Y2AMUCWnbQ2GaNrIHk9w0Fokd2TcCVvW_zzFJS6N0D5An-_rec-7J8ceKJjIFGtGskE9JzhSSu6tYxYKY7xbN_Og-pjeiqpFUTLESEJSOPj-oTxe3dVUVHNRhgeeLwyWeOzZ8lyv5xB4K0K7rxvTPMTk5uSDzZ0hqhFVM29EOhLsEPDqO6bqh7ujbRFNORgp0XeCIcE0qJdM6gbSB7VJtt3WSgNYLvsxt0wvAWgky55gbAmXDHc5x09cAz6Z3MjJkCatNUZ_nMofk8ZohKzbZqxttC5ggXGhkIgEiM6twN_HLjsABpKaJX6D7nHORzpWSajf56N5obCbExo2QBCrkUmy17aH4LgdVba1bXXOlkZQMk9xIseq46Pk7oGa72NBcy1qkZGRRRnv8-gqZtUvt2FU00bZwx6wBlh8iszxDiha1QF7C5s90TnU2tS710waU9VMGnWr96Odujeqv9IQNkfS9suJ_KlZVkNoiSN8Q2VXCyJ4EogGRiyXhqJv9rYEw-0deG-lYNL6YjWLPP8l4UUQH2SxzNCr5CNGB53nt-OSJp5hHk-rZSWQhVXTg-34P5M2xbLFm2exDWM2W-SjU8InaiH0n6h7_Pwr7P8vfj00dulQ8pRGqGhxagipZM6WrZj2m5iCWENPIDFPImLk3YxqLtSmrmPgtZdlVKmnuSRplrNBmVlcpQ7jibGmei01UgUhBXZqDijTyPYtBoxV9ptF07Ib-eDLzz_zZNPTC0KEvNPImbjA5DcLp6dQLx96Zt3boX0t66s6CaTA20bNgHASh71BIOUr17fUpsy_a-h_Cw0jV)
+            ```mermaid
+            flowchart TD
+            Start(["Input parameters:<br/>Supplier&lt;R&gt;,<br/>Throwables..."]) --> Execute{"Execute<br/>Supplier.get()"}
+            
+                Execute -- 'result' is produced --> SuccessRight(["Return Either.right('result')"])
+                Execute -- Throwable 't' caught --> CheckFatalThrowable{Is 't' an instance of<br/>FatalThrowable?}
+            
+                CheckFatalThrowable -- Yes --> EndErrorFatalThrowable([Rethrow Fatal Exception])
+                CheckFatalThrowable -- No --> CheckThrowables{First match of 't' in<br/>Throwables?}
+            
+                CheckThrowables -- Found 'match' --> SuccessLeft(["return Either.left('match')"])
+                CheckThrowables -- Unfound --> CheckRuntimeException{Is 't' instanceof<br/>RuntimeException?}
+            
+                CheckRuntimeException -- Yes --> RethrowRuntimeException([Rethrow RuntimeException])
+                CheckRuntimeException -- No --> ThrowWrappedCheckedException([Throw a WrappedCheckedException setting its cause as 't'])
+            
+                style Start fill:#f9f,stroke:#333,stroke-width:2px,color:#444
+                style SuccessRight fill:#9f9,stroke:#333,stroke-width:2px,color:#444
+                style SuccessLeft fill:#9f9,stroke:#333,stroke-width:2px,color:#444
+                style EndErrorFatalThrowable fill:#f99,stroke:#333,stroke-width:2px,color:#444
+                style RethrowRuntimeException fill:#f99,stroke:#333,stroke-width:2px,color:#444
+                style ThrowWrappedCheckedException fill:#f99,stroke:#333,stroke-width:2px,color:#444
+            ```
+        2. `TrinaryValue`
+            - [Trinary Value State Diagram](https://mermaid.live/edit#pako:eNqVlE2PmzAQhv-K5ZOpCCJAIPGhEm3TCmlXjaKoh5Ye3GWcIAGmjom6TfPfawwkafPRLlLk8TDvzPhh4j1-EhlgireKKXiXs7Vk5WjnpTKtkH6yXMKTykWFHpatb_B_efUVjUav0ULCFipFUd0ZZMeKBqy_w-JvXRQzK7l4n1Ral2cU5Z1BQEohrfOKpsGhHtoP7j-bXL059w_ZH1lNUclqwi106plwsrOsa_HvC6aMhndGr1vJvGLy-VN7wquyvFAgtcqsRBPJbLRt6vq8Kvo1HPZaipWY52oDckGR6k1yzNDtnWW-3mjO1zsXRaa1XC-EL2zEY_1LjJovzjSHS7LdJ3oZ2CV8b3SI_m6yt07d9qc0DnKd80c5L7bwAfRgiME8JeiEt0HHR9KO4xhFd4R7XOM7XB-Aq3vdtmzjG2xjcg9tj-LFQztv_wRmco3Vj-EAlhOw7uBJLvD8x9wl_-IDN9EkN9AkZ5oDtvFa5hmmSjZg4xJkydot3rcBKdaFSkgx1WYGnDWFSnFatbKaVZ-FKAelFM16gylnemps3NTZ6fY6eiVUGci3oqkUpmN3PDNZMN3jH3rvzxw3DMaziRt4UeT7Exs_Y-q5Uyec-qE386aRO_Mn0cHGP01h1wkDP5wGkRcFoed6QWBjyHIl5GN3hZqb9PAbByaTUw)
+            ```mermaid
+            stateDiagram-v2
+              direction LR
+            
+              [*] --> Present: present(value)
+              [*] --> Absent: absent()
+              [*] --> Invalid: invalid(error)
+            
+              state Present {
+                  direction TB
+                  [*] --> Map: map(f) -> Present(f(v))
+                  [*] --> FlatMap: flatMap(f) -> TrinaryValue
+                  [*] --> Filter: filter(pred, supp) -> Present | Invalid
+                  [*] --> ToEitherP: toEither(supp) -> Either.Right(v)
+                  [*] --> FoldP: fold(fP, fA, fI) -> fP(v)
+              }
+            
+              state Absent {
+                  direction TB
+                  [*] --> Required: required(supp) -> Invalid(supp())
+                  [*] --> OrElseGet: orElseGet(supp) -> supp()
+                  [*] --> FilterA: filter(...) -> Absent
+                  [*] --> ToEitherA: toEither(supp) -> Either.Left(supp())
+                  [*] --> FoldA: fold(fP, fA, fI) -> fA()
+              }
+            
+              state Invalid {
+                  direction TB
+                  [*] --> MapError: mapError(f) -> Invalid(f(e))
+                  [*] --> FilterI: filter(...) -> Invalid
+                  [*] --> ToEitherI: toEither(supp) -> Either.Left(e)
+                  [*] --> FoldI: fold(fP, fA, fI) -> fI(e)
+              }           
+            ```
+
 - This is NOT an FP library
     - please use https://vavr.io if aiming more closely for FP purity
     - it IS a library which could allow an easier transition towards FP purity
