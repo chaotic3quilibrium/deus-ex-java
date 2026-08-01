@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("EqualsWithItself")
 public class NonEmptyStringTests {
   @Test
   public void testDefaultConstructor() {
@@ -34,7 +35,6 @@ public class NonEmptyStringTests {
     var nonEmptyStringA1 = new NonEmptyString("a");
     var nonEmptyStringA2 = new NonEmptyString("a");
     var nonEmptyStringB = new NonEmptyString("b");
-    //noinspection EqualsWithItself
     assertEquals(0, nonEmptyStringA1.compareTo(nonEmptyStringA1));
     assertEquals(0, nonEmptyStringA1.compareTo(nonEmptyStringA2));
     assertEquals(0, nonEmptyStringA2.compareTo(nonEmptyStringA1));

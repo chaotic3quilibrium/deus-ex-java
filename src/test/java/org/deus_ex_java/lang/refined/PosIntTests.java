@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("EqualsWithItself")
 public class PosIntTests {
   @Test
   public void testDefaultConstructor() {
@@ -41,7 +42,6 @@ public class PosIntTests {
     var PosIntA1 = new PosInt(1);
     var PosIntA2 = new PosInt(1);
     var PosIntB = new PosInt(2);
-    //noinspection EqualsWithItself
     assertEquals(0, PosIntA1.compareTo(PosIntA1));
     assertEquals(0, PosIntA1.compareTo(PosIntA2));
     assertEquals(0, PosIntA2.compareTo(PosIntA1));

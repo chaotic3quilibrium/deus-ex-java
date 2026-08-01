@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link List} instances.
  */
+@SuppressWarnings({"RedundantCast", "ConstantValue", "Convert2Diamond"})
 @NullMarked
 public final class ListsOps {
 
@@ -32,7 +33,6 @@ public final class ListsOps {
    * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link ArrayList}{@code <T>}
    */
   public static <T> List<T> newArrayList() {
-    //noinspection Convert2Diamond
     return new ArrayList<T>();
   }
 
@@ -64,7 +64,6 @@ public final class ListsOps {
    * @return a {@link List}{@code <T>} backed by an empty and modifiable {@link LinkedList}{@code <T>}
    */
   public static <T> List<T> newLinkedList() {
-    //noinspection Convert2Diamond
     return new LinkedList<T>();
   }
 
@@ -427,7 +426,6 @@ public final class ListsOps {
   public static <T> List<T> nullSanitize(
       Stream<@Nullable T> stream
   ) {
-    //noinspection RedundantCast
     return stream
         .filter(Objects::nonNull)
         .map(t ->
@@ -961,7 +959,6 @@ public final class ListsOps {
   ) {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple2 ->
@@ -1014,7 +1011,6 @@ public final class ListsOps {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple3 -> {
@@ -1080,7 +1076,6 @@ public final class ListsOps {
     var listA = new ArrayList<A>();
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple3 ->
@@ -1140,7 +1135,6 @@ public final class ListsOps {
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple4 -> {
@@ -1212,7 +1206,6 @@ public final class ListsOps {
     var listB = new ArrayList<B>();
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple4 ->
@@ -1271,7 +1264,6 @@ public final class ListsOps {
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
    *     {@code null}s
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5(
       Stream<Tuple5<A, B, C, D, E>> stream
   ) {
@@ -1280,7 +1272,6 @@ public final class ListsOps {
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple5 -> {
@@ -1347,7 +1338,6 @@ public final class ListsOps {
    * @return a {@link Tuple5} containing the {@link List}s extracted from a source of {@link Tuple5}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E> Tuple5<List<A>, List<B>, List<C>, List<D>, List<E>> unzip5AndFlatten(
       Stream<Tuple5<A, B, C, D, E>> stream,
       Function<
@@ -1359,7 +1349,6 @@ public final class ListsOps {
     var listC = new ArrayList<C>();
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple5 ->
@@ -1424,7 +1413,6 @@ public final class ListsOps {
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
    *     {@code null}s
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6(
       Stream<Tuple6<A, B, C, D, E, F>> stream
   ) {
@@ -1434,7 +1422,6 @@ public final class ListsOps {
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple6 -> {
@@ -1506,7 +1493,6 @@ public final class ListsOps {
    * @return a {@link Tuple6} containing the {@link List}s extracted from a source of {@link Tuple6}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F> Tuple6<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>> unzip6AndFlatten(
       Stream<Tuple6<A, B, C, D, E, F>> stream,
       Function<
@@ -1519,7 +1505,6 @@ public final class ListsOps {
     var listD = new ArrayList<D>();
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple6 ->
@@ -1590,7 +1575,6 @@ public final class ListsOps {
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
    *     {@code null}s
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7(
       Stream<Tuple7<A, B, C, D, E, F, G>> stream
   ) {
@@ -1601,7 +1585,6 @@ public final class ListsOps {
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple7 -> {
@@ -1678,7 +1661,6 @@ public final class ListsOps {
    * @return a {@link Tuple7} containing the {@link List}s extracted from a source of {@link Tuple7}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G> Tuple7<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>> unzip7AndFlatten(
       Stream<Tuple7<A, B, C, D, E, F, G>> stream,
       Function<
@@ -1692,7 +1674,6 @@ public final class ListsOps {
     var listE = new ArrayList<E>();
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple7 ->
@@ -1769,7 +1750,6 @@ public final class ListsOps {
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
    *     {@code null}s
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8(
       Stream<Tuple8<A, B, C, D, E, F, G, H>> stream
   ) {
@@ -1781,7 +1761,6 @@ public final class ListsOps {
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple8 -> {
@@ -1863,7 +1842,6 @@ public final class ListsOps {
    * @return a {@link Tuple8} containing the {@link List}s extracted from a source of {@link Tuple8}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H> Tuple8<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>> unzip8AndFlatten(
       Stream<Tuple8<A, B, C, D, E, F, G, H>> stream,
       Function<
@@ -1878,7 +1856,6 @@ public final class ListsOps {
     var listF = new ArrayList<F>();
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple8 ->
@@ -1961,7 +1938,6 @@ public final class ListsOps {
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
    *     {@code null}s
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9(
       Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream
   ) {
@@ -1974,7 +1950,6 @@ public final class ListsOps {
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple9 -> {
@@ -2061,7 +2036,6 @@ public final class ListsOps {
    * @return a {@link Tuple9} containing the {@link List}s extracted from a source of {@link Tuple9}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I> Tuple9<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>> unzip9AndFlatten(
       Stream<Tuple9<A, B, C, D, E, F, G, H, I>> stream,
       Function<
@@ -2077,7 +2051,6 @@ public final class ListsOps {
     var listG = new ArrayList<G>();
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple9 ->
@@ -2166,7 +2139,6 @@ public final class ListsOps {
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
    *     {@code null}s
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10(
       Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream
   ) {
@@ -2180,7 +2152,6 @@ public final class ListsOps {
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
     var listJ = new ArrayList<J>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple10 -> {
@@ -2272,7 +2243,6 @@ public final class ListsOps {
    * @return a {@link Tuple10} containing the {@link List}s extracted from a source of {@link Tuple10}s filtered of
    *     {@code null}s, and then filtered and transformed by the {@code fMapper} function
    */
-  @SuppressWarnings("DuplicatedCode")
   public static <A, B, C, D, E, F, G, H, I, J> Tuple10<List<A>, List<B>, List<C>, List<D>, List<E>, List<F>, List<G>, List<H>, List<I>, List<J>> unzip10AndFlatten(
       Stream<Tuple10<A, B, C, D, E, F, G, H, I, J>> stream,
       Function<
@@ -2289,7 +2259,6 @@ public final class ListsOps {
     var listH = new ArrayList<H>();
     var listI = new ArrayList<I>();
     var listJ = new ArrayList<J>();
-    //noinspection ConstantValue
     stream
         .filter(Objects::nonNull)
         .forEachOrdered(tuple10 ->

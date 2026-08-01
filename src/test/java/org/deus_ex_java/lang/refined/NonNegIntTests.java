@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("EqualsWithItself")
 public class NonNegIntTests {
   @Test
   public void testDefaultConstructor() {
@@ -35,7 +36,6 @@ public class NonNegIntTests {
     var NonNegIntA1 = new NonNegInt(0);
     var NonNegIntA2 = new NonNegInt(0);
     var NonNegIntB = new NonNegInt(1);
-    //noinspection EqualsWithItself
     assertEquals(0, NonNegIntA1.compareTo(NonNegIntA1));
     assertEquals(0, NonNegIntA1.compareTo(NonNegIntA2));
     assertEquals(0, NonNegIntA2.compareTo(NonNegIntA1));

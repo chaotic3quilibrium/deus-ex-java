@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("EqualsWithItself")
 public class NonBlankStringTests {
   private Stream<String> generateStrings() {
     return Stream.of("", " ", "  ");
@@ -46,7 +47,6 @@ public class NonBlankStringTests {
     var nonBlankStringA1 = new NonBlankString("a");
     var nonBlankStringA2 = new NonBlankString("a");
     var nonBlankStringB = new NonBlankString("b");
-    //noinspection EqualsWithItself
     assertEquals(0, nonBlankStringA1.compareTo(nonBlankStringA1));
     assertEquals(0, nonBlankStringA1.compareTo(nonBlankStringA2));
     assertEquals(0, nonBlankStringA2.compareTo(nonBlankStringA1));

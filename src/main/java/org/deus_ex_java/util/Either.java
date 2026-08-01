@@ -356,7 +356,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
       Function<? super L, ? extends Either<? extends T, ? extends R>> leftFunction
   ) {
     if (this instanceof Left<L, R> left) {
-      //noinspection unchecked
+
       return (Either<T, R>) Objects.requireNonNull(leftFunction.apply(left.value()));
     }
 
@@ -375,7 +375,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
       Function<? super R, ? extends Either<? extends L, ? extends T>> rightFunction
   ) {
     if (this instanceof Right<L, R> right) {
-      //noinspection unchecked
+
       return (Either<L, T>) Objects.requireNonNull(rightFunction.apply(right.value()));
     }
 
