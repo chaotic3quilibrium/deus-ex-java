@@ -1,50 +1,49 @@
-<a href="https://github.com/chaotic3quilibrium/deus-ex-java" target="_blank"><span style="font-family:default; font-size:2.35em; color:#5FA845">
-deus-ex-java</span></a>
+<a href="https://github.com/chaotic3quilibrium/deus-ex-java" target="_blank"><span style="font-family:default; font-size:2.35em; color:#5FA845">deus-ex-java</span></a>
 
 - Copyright (C) 2026 [Jim O'Flaherty, Jr.](jim.oflaherty.jr+dejrmh1@gmail.com)
 
-- [`v1.10.0`](#v1100)
+- [`v1.11.0`](#v1110)
 
 ---
 
 # Table of Contents <!-- omit in toc -->
 
 <!-- TOC -->
-
 * [Table of Contents <!-- omit in toc -->](#table-of-contents----omit-in-toc---)
 * [Welcome](#welcome)
-    * [Installation](#installation)
-        * [Maven Coordinates:](#maven-coordinates)
-        * [QuickStart Introduction](#quickstart-introduction)
+  * [Installation](#installation)
+    * [Maven Coordinates:](#maven-coordinates)
+    * [QuickStart Introduction](#quickstart-introduction)
+      * [🎮 Available Domain Showcases](#-available-domain-showcases)
 * [Philosophy](#philosophy)
-    * [Why Use deus-ex-java?](#why-use-deus-ex-java)
+  * [Why Use deus-ex-java?](#why-use-deus-ex-java)
 * [Support](#support)
 * [Legal](#legal)
-    * [License](#license)
-        * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
-        * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
-        * [FYI, I'd prefer to move deus-ex-java to an Apache 2.0 license](#fyi-id-prefer-to-move-deus-ex-java-to-an-apache-20-license)
+  * [License](#license)
+    * [GNU AFFERO GENERAL PUBLIC LICENSE](#gnu-affero-general-public-license)
+    * [REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?](#really-hate-the-gnu-affero-general-public-license-aka-agplv3)
+    * [FYI, I'd prefer to move deus-ex-java to an Apache 2.0 license](#fyi-id-prefer-to-move-deus-ex-java-to-an-apache-20-license)
+    * [I'm not looking to win the lottery, I just don't want to work for free](#im-not-looking-to-win-the-lottery-i-just-dont-want-to-work-for-free)
 * [Version History](#version-history)
-    * [v1.10.0](#v1100)
-    * [v1.9.0](#v190)
-    * [v1.8.0](#v180)
-    * [v1.7.0](#v170)
-    * [v1.6.0](#v160)
-    * [v1.5.0](#v150)
-    * [v1.4.0](#v140)
-    * [v1.3.0](#v130)
-    * [v1.2.0](#v120)
-    * [v1.1.0](#v110)
-    * [v1.0.0](#v100)
-
+  * [v1.11.0](#v1110)
+  * [v1.10.0](#v1100)
+  * [v1.9.0](#v190)
+  * [v1.8.0](#v180)
+  * [v1.7.0](#v170)
+  * [v1.6.0](#v160)
+  * [v1.5.0](#v150)
+  * [v1.4.0](#v140)
+  * [v1.3.0](#v130)
+  * [v1.2.0](#v120)
+  * [v1.1.0](#v110)
+  * [v1.0.0](#v100)
 <!-- TOC -->
 
 ---
 
 # Welcome
 
-As a library targeting Java 17, deus-ex-java is an augmentation to ease the incremental modernization of legacy
-Enterprise IT systems via a series of continuous improvements via micro-transformations
+As a library targeting Java 17, deus-ex-java is an augmentation to ease the incremental modernization of legacy Enterprise IT systems via a series of continuous improvements via micro-transformations
 
 - [Java Janitor Jim](https://javajanitorjim.substack.com) [Guiding Motivations](https://javajanitorjim.substack.com/p/java-janitor-jim-the-rewarding-journey)
 
@@ -56,7 +55,7 @@ Enterprise IT systems via a series of continuous improvements via micro-transfor
   <dependency>
     <groupId>io.github.chaotic3quilibrium</groupId>
     <artifactId>deus-ex-java</artifactId>
-    <version>1.9.0</version>
+    <version>1.11.0</version>
   </dependency>
 ```
 
@@ -84,20 +83,14 @@ Each showcase walks through our **7 Core VOP Patterns**:
 
 ## Why Use deus-ex-java?
 
-As detailed in
-this [Java Janitor Jim Substack](https://javajanitorjim.substack.com) [article](https://javajanitorjim.substack.com/p/java-janitor-jim-the-rewarding-journey),
-the purpose is to help take legacy enterprise IT Java codebases, and gently refactor them towards later versions of Java
-and better software engineering practices.
+As detailed in this [Java Janitor Jim Substack](https://javajanitorjim.substack.com) [article](https://javajanitorjim.substack.com/p/java-janitor-jim-the-rewarding-journey), the purpose is to help take legacy enterprise IT Java codebases, and gently refactor them towards later versions of Java and better software engineering practices.
 
 > "Java is a blue collar language. It's not PhD thesis material, but a language for a job."
 > - James Gosling at the 1996 OOPSLA
 
-If one of the compelling motivations of Java is to design and biased towards "Integrity by Default" (excellent JavaOne
-2025 [talk/video](https://www.youtube.com/watch?v=uTPRTkny7kQ)), deus-ex-java builds atop that with "integrity by
-design".
+If one of the compelling motivations of Java is to design and biased towards "Integrity by Default" (excellent JavaOne 2025 [talk/video](https://www.youtube.com/watch?v=uTPRTkny7kQ)), deus-ex-java builds atop that with "integrity by design".
 
-The fundamental idea is to move towards complex systems composed emergently of simpler systems. Hence, the deep bias on
-preventing invalid states from being instantiate-able, or even representable.
+The fundamental idea is to move towards complex systems composed emergently of simpler systems. Hence, the deep bias on preventing invalid states from being instantiate-able, or even representable.
 
 High level overview:
 
@@ -117,8 +110,7 @@ High level overview:
     - Instantiating only valid states over ambiguous and non-deterministic valid+invalid states
     - DRY (Don't Repeat Yourself) over copy/pasting (a.k.a. copy-pasta)
     - Expressions (functional) over statements (imperative)
-    - Entirely avoiding implementing insecure and fragile Java Serialization, prefer any of the
-      other [well-designed alternatives](https://www.baeldung.com/java-serialization-approaches)
+    - Entirely avoiding implementing insecure and fragile Java Serialization, prefer any of the other [well-designed alternatives](https://www.baeldung.com/java-serialization-approaches)
     - Unmodifiable collections over mutable collections
     - Error-by-Returned-Value (Ex: `Either<RuntimeException, T>`) over Error-by-Thrown-Exception
         - With explicit default coverage for Fatal Exceptions
@@ -156,20 +148,15 @@ High level overview:
         - always attempts to produce deeply immutable instances
         - preferring the use of a tuple or a builder for moving through "partial" states prior to instantiation
     - reducing the use of `null`
-        - no other meaning for `null` is allowed other than a reference has not-yet-initialized; i.e. it never means
-          "default"
+        - no other meaning for `null` is allowed other than a reference has not-yet-initialized; i.e. it never means "default"
         - `null` is filtered out (typically as a `flatMap`) everywhere it is encountered
-        - `null` is considered a compile-time type hole, and is biased towards producing run-time errors, as opposed to
-          the more desirable compile-time errors
+        - `null` is considered a compile-time type hole, and is biased towards producing run-time errors, as opposed to the more desirable compile-time errors
         - use `Optional`, `Either`, or `FunctionOps.ifThenElse*` to handle alternatives at compile time
-        - to prefer the use of a permissive perimeter where null is transformed and then eliminated from the internal
-          system
+        - to prefer the use of a permissive perimeter where null is transformed and then eliminated from the internal system
     - encapsulating checked exceptions with a runtime exception
         - biases to error-by-returned-value (via an `Either` or `Optional`), as opposed to error-by-thrown-exception
-        - all error functionality is assumed to be `RuntimeException`; i.e. no checked exception signatures, or must
-          wrap those outside of one's control
-        - use `TryCatchesOps.wrapCheckedException` to easily wrap all checked exceptions with a well-known runtime
-          exception
+        - all error functionality is assumed to be `RuntimeException`; i.e. no checked exception signatures, or must wrap those outside of one's control
+        - use `TryCatchesOps.wrapCheckedException` to easily wrap all checked exceptions with a well-known runtime exception
     - using expressions, as opposed to statements
         - encapsulates iteration statements into `Stream` patterns
         - encapsulates exception handling `try`/`catch` statements into the `TryCatchesOps.wrap*` patterns
@@ -177,8 +164,7 @@ High level overview:
         - encapsulates `if` statements into ADTs, `Optional`, `Either`, `FunctionOps.ifThenElse*`, etc.
     - offering two types of immutable "instantiation" factory methods
         - `unsafeFrom` which throws an exception if its preconditions fail
-        - `from` which returns an `Either` where the right returns the successful obtaining of the value, otherwise the
-          left contains the `Exception` that would have been thrown when the precondition fails
+        - `from` which returns an `Either` where the right returns the successful obtaining of the value, otherwise the left contains the `Exception` that would have been thrown when the precondition fails
 
 ---
 
@@ -200,37 +186,40 @@ High level overview:
 
 ### [GNU AFFERO GENERAL PUBLIC LICENSE](https://github.com/chaotic3quilibrium/deus-ex-java/blob/main/LICENSE.md)
 
-The deus-ex-java files are free software: you can redistribute it and/or modify it under the terms of the GNU Affero
-General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
-option) any later version.
+The deus-ex-java files are free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
-details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
 
-You should have received a copy of
-the [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html) along with this program. If not,
-see <https://www.gnu.org/licenses/>.
+You should have received a copy of the [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html) along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ---
 
 ### REALLY HATE the GNU AFFERO GENERAL PUBLIC LICENSE, a.k.a. AGPLv3?
 
-- It was chosen entirely because of Amazon's/AWS's (and many other wealthy corporations) historic abuses and
-  exploitation of FOSS (Free Open Source Software)
+- It was chosen entirely because of Amazon's/AWS's (and many other wealthy corporations) historic abuses and exploitation of FOSS (Free Open Source Software)
 - No Worries, I'd love to work with you directly to negotiate an ad-hoc license.
 
-So, if the AGPLv3 doesn't work for you, we would LOVE to work with you to generate a
-**custom/different/commercial/non-profit/government license** for deus-ex-java.
+So, if the AGPLv3 doesn't work for you, we would LOVE to work with you to generate a **custom/different/commercial/non-profit/government license** for deus-ex-java.
 
-Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would preferm, as I am happy to
-discuss this with you.
+Please email: <jim.oflaherty.jr+dejrml@gmail.com>, letting us know what license you would prefer, as I am happy to discuss this with you.
+
+---
 
 ### FYI, I'd prefer to move deus-ex-java to an Apache 2.0 license
 
 ---
 
+### I'm not looking to win the lottery, I just don't want to work for free
+
+---
+
 # Version History
+
+## v1.11.0
+
+- 2026.07.31
+- Updated the pom.xml and IntelliJ to ensure all building and testing routed through the same pathway in the Maven plugin
+- Extensive hardening across the entire set of files as a result of using Gemini 3.6 Flash-Extended and Antigravity 2
 
 ## v1.10.0
 
@@ -239,12 +228,10 @@ discuss this with you.
 - Renamed to `invalidate` (from `validate`) in all the refined classes
 - Reworded to use Error-by-Returned-Value and Error-by-Thrown-Exception consistently
 - Fixed CollectionsOps.isUnmodifiable (Map<>) class name matches
-- Added @Nullable pathways in MapsOps for both Key/Value and Entry to ease use at conversion boundaries, and related
-  validation tests
+- Added @Nullable pathways in MapsOps for both Key/Value and Entry to ease use at conversion boundaries, and related validation tests
 - Updated README.md
     - Remove the soft word-wrapping
-    - Added Mermaid Flow Chart Diagram (URL link and embedded) covering how the cascade logic for (explicitly Fatal)
-      exceptions works
+    - Added Mermaid Flow Chart Diagram (URL link and embedded) covering how the cascade logic for (explicitly Fatal) exceptions works
 - Tweaked licensing details and wording
 
 ## v1.9.0
@@ -256,19 +243,14 @@ discuss this with you.
 ## v1.8.0
 
 - 2026.05.01
-- Fixed latent issue in Either with the .flatMapLeft and .flatMapRight methods, and added test coverage specifically for
-  the changes
+- Fixed latent issue in Either with the .flatMapLeft and .flatMapRight methods, and added test coverage specifically for the changes
 - Added parse* methods to IntegersOps
 - Made ListsOps.toDistinctSortedListInteger generic as toDistinctSortedList
 - Enhanced the CollectionsOps.isUnmodifiable implementations
 - Added filter/filterNot by class methods to StreamsOps
-- Added static factories returning the appropriate interface type for class specific implementations of ArrayList,
-  LinkedList, HashSet, LinkedHashSet, HashMap, and LinkedHashMap to enable use in functions where the interface is
-  returned, not the implementation class type
-- Refactored the SetsOps.SetPair implementation off of a Java record and into a final class, and remove the deprecated
-  method contrastSetPair
-- Refactored the refined NonEmpty* collection types to gracefully handle null, even though the class is using the
-  @NullMarked annotation
+- Added static factories returning the appropriate interface type for class specific implementations of ArrayList, LinkedList, HashSet, LinkedHashSet, HashMap, and LinkedHashMap to enable use in functions where the interface is returned, not the implementation class type
+- Refactored the SetsOps.SetPair implementation off of a Java record and into a final class, and remove the deprecated method contrastSetPair
+- Refactored the refined NonEmpty* collection types to gracefully handle null, even though the class is using the @NullMarked annotation
 - Expanded test coverage
 
 ## v1.7.0
@@ -276,16 +258,14 @@ discuss this with you.
 - 2026.01.17
 - Added TernaryOps, a utility class reifying the if statement and ?: (a.k.a. ternary) operator
 - Refactored EnumAndIdsOps to surface caching status, and expanded tests to cover additional surface area
-- Added to StringsOps the String.regionMatches versions of ignore case for indexOf, lastIndexOf, and equals to better
-  handle Unicode comparison issues, especially around other languages like the Turkish
+- Added to StringsOps the String.regionMatches versions of ignore case for indexOf, lastIndexOf, and equals to better handle Unicode comparison issues, especially around other languages like the Turkish
 - Refactored Enum*sOps to use ClassValue as caching, and entirely removed the Memoizer dependency
 
 ## v1.6.0
 
 - 2025.12.25
 - deprecated SetsOps.contrastSetPair, and added ADT record SetPair<T> with toMap method
-- replaced Enum *sOps.FormatBuilder's filter parameter to Predicate<*> from Function<Stream<*>, Stream<*>> and added two
-  collection/stream helpers
+- replaced Enum*sOps.FormatBuilder's filter parameter to Predicate<*> from Function<Stream<*>, Stream<*>> and added two collection/stream helpers
 
 ## v1.5.0
 
@@ -294,8 +274,7 @@ discuss this with you.
 - Transitioned Enum*Ops to a FormatBuilder and off of the join method permutations
 - Refactored TryCachesOps to more consistently implement all the various "sneaky" checked exception throwing pathways
 - Completed full test coverage for TryCatchesOps, including for new ControlBreakThrowable
-- Added ControlBreakThrowable as "fatal error tunnel" for future implementation of Break mode based on Scala's pattern
-  of the same name
+- Added ControlBreakThrowable as "fatal error tunnel" for future implementation of Break mode based on Scala's pattern of the same name
 - Updated SetsOps.toDistinctAndDupes* to be threadsafe
 - Added collection/stream elements comparisons for both left-to-right and right-to-left scanning
 
@@ -303,8 +282,7 @@ discuss this with you.
 
 - 2025.11.30
 - Added SetsOps x4 methods, toDistinctAndDupes () and toDistinctAndDupesOrdered ()
-- Completely refactored away FatalThrowable, and replaced with ForcedFatalThrowable to ensure fatal exceptions
-  (including checked exceptions, like InterruptedException) flow by unhindered by library encapsulation and guards
+- Completely refactored away FatalThrowable, and replaced with ForcedFatalThrowable to ensure fatal exceptions (including checked exceptions, like InterruptedException) flow by unhindered by library encapsulation and guards
 - Refactored remaining try/catch statements to use TryCatchesOps to ensure correct handling using ForcedFatalThrowable
 - Tidied up Javadocs for ForcedFatalThrowable and WrappedCheckedException
 
@@ -315,10 +293,8 @@ discuss this with you.
 - Enhanced the refined collection classes
 - Expanded the testing coverage for the Collection helpers
 - Added SetsOps.containsAny
-- Enhanced multiple places allowing for a Collection to be passed, and it is the forwards to the method overload taking
-  a Stream
-- Added a RuntimeException of FatalThrowable to differentiate from WrappedCheckedException to enable local encapsulation
-  of all checked exceptions, and allowing simple catch near the thread root to re-throw the wrapped fatal exception
+- Enhanced multiple places allowing for a Collection to be passed, and it is the forwards to the method overload taking a Stream
+- Added a RuntimeException of FatalThrowable to differentiate from WrappedCheckedException to enable local encapsulation of all checked exceptions, and allowing simple catch near the thread root to re-throw the wrapped fatal exception
 
 ## v1.2.0
 
