@@ -14,7 +14,7 @@ public class NonBlankStringTests {
 
   @Test
   public void testDefaultConstructor() {
-    assertEquals("x", new NonBlankString("x").string());
+    assertEquals("x", new NonBlankString("x").value());
     generateStrings()
         .forEach(string ->
             assertThrows(
@@ -35,7 +35,7 @@ public class NonBlankStringTests {
   public void testFrom() {
     var errorOrValue = NonBlankString.from("x");
     assertTrue(errorOrValue.isRight());
-    assertEquals("x", errorOrValue.getRight().string());
+    assertEquals("x", errorOrValue.getRight().value());
     generateStrings()
         .forEach(string ->
             assertTrue(NonBlankString.from(string).isLeft()));

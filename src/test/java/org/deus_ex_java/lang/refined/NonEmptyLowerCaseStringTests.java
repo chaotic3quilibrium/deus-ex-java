@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NonEmptyLowerCaseStringTests {
   @Test
   public void testDefaultConstructor() {
-    assertEquals("x", new NonEmptyLowerCaseString("x").string());
+    assertEquals("x", new NonEmptyLowerCaseString("x").value());
     var parametersValidationExceptionEmpty = assertThrows(
         ParametersValidationException.class,
         () ->
@@ -36,16 +36,16 @@ public class NonEmptyLowerCaseStringTests {
   public void testFrom() {
     var errorOrValue = NonEmptyLowerCaseString.from("x");
     assertTrue(errorOrValue.isRight());
-    assertEquals("x", errorOrValue.getRight().string());
+    assertEquals("x", errorOrValue.getRight().value());
     assertTrue(NonEmptyLowerCaseString.from("").isLeft());
   }
 
+  @SuppressWarnings("EqualsWithItself")
   @Test
   public void testCompareTo() {
     var nonEmptyLowerCaseStringA1 = new NonEmptyLowerCaseString("a");
     var nonEmptyLowerCaseStringA2 = new NonEmptyLowerCaseString("a");
     var nonEmptyLowerCaseStringB = new NonEmptyLowerCaseString("b");
-    //noinspection EqualsWithItself
     assertEquals(0, nonEmptyLowerCaseStringA1.compareTo(nonEmptyLowerCaseStringA1));
     assertEquals(0, nonEmptyLowerCaseStringA1.compareTo(nonEmptyLowerCaseStringA2));
     assertEquals(0, nonEmptyLowerCaseStringA2.compareTo(nonEmptyLowerCaseStringA1));

@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Map} instances.
  */
+@SuppressWarnings({"Convert2Diamond", "NullableProblems", "unchecked", "ConstantValue"})
 @NullMarked
 public final class MapsOps {
 
@@ -33,7 +34,6 @@ public final class MapsOps {
    * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link HashMap}{@code <K, V>}
    */
   public static <K, V> Map<K, V> newHashMap() {
-    //noinspection Convert2Diamond
     return new HashMap<K, V>();
   }
 
@@ -70,7 +70,6 @@ public final class MapsOps {
    * @return a {@link Map}{@code <K, V>} backed by an empty and modifiable {@link LinkedHashMap}{@code <K, V>}
    */
   public static <K, V> Map<K, V> newLinkedHashMap() {
-    //noinspection Convert2Diamond
     return new LinkedHashMap<K, V>();
   }
 
@@ -244,7 +243,6 @@ public final class MapsOps {
       @Nullable K key,
       @Nullable V value
   ) {
-    //noinspection NullableProblems
     return invalidate(key, value)
         .<Either<ParametersValidationException, Entry<K, V>>>map(Either::left)
         .orElseGet(() ->
@@ -268,7 +266,6 @@ public final class MapsOps {
   public static <K, V> Either<ParametersValidationException, Entry<K, V>> returnExceptionOrValidatedEntry(
       Entry<@Nullable K, @Nullable V> entry
   ) {
-    //noinspection NullableProblems
     return invalidate(entry.getKey(), entry.getValue())
         .<Either<ParametersValidationException, Entry<K, V>>>map(Either::left)
         .orElseGet(() ->
@@ -433,7 +430,6 @@ public final class MapsOps {
     Objects.requireNonNull(map);
     if (map.isEmpty() && (entry == null)) {
 
-      //noinspection unchecked
       return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
     if (entry == null) {
@@ -486,7 +482,6 @@ public final class MapsOps {
    * @return an unmodifiable unordered {@link Map} consisting of each {@link Map}, filtered to non-null in both the keys
    *     and the values, from maps added together
    */
-  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <K, V> Map<K, V> addMaps(
       Map<K, V>... maps
@@ -517,7 +512,6 @@ public final class MapsOps {
    * @return an unmodifiable <u><i>ordered</i></u> {@link Map} consisting of each {@link Map}, filtered to non-null in
    *     both the keys and the values, from maps appended together
    */
-  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   public static <K, V> Map<K, V> appendMaps(
       Map<K, V>... maps
@@ -525,7 +519,6 @@ public final class MapsOps {
     Objects.requireNonNull(maps);
     if (maps.length == 0) {
 
-      //noinspection unchecked
       return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
     var result = Arrays.stream(maps)
@@ -541,7 +534,6 @@ public final class MapsOps {
             LinkedHashMap::new
         ));
 
-    //noinspection unchecked
     return result.isEmpty()
         ? (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY
         : Collections.unmodifiableMap(result);
@@ -598,7 +590,6 @@ public final class MapsOps {
     Objects.requireNonNull(map);
     if (map.isEmpty()) {
 
-      //noinspection unchecked
       return (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY;
     }
     var result = new LinkedHashMap<>(map);
@@ -734,7 +725,6 @@ public final class MapsOps {
       Map<K, V> map,
       Stream<K> stream
   ) {
-    //noinspection unchecked
     return helperRemoveAllStream(
         map,
         stream,
@@ -742,7 +732,6 @@ public final class MapsOps {
         LinkedHashMap::new);
   }
 
-  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   private static <K, V> Map<K, V> helperRemoveMaps(
       Map<K, V> map,
@@ -806,7 +795,6 @@ public final class MapsOps {
       Map<K, V> map,
       Set<K>... keySets
   ) {
-    //noinspection unchecked
     return helperRemoveMaps(
         map,
         (Map<K, V>) UNMODIFIABLE_LINKED_HASH_MAP_EMPTY,

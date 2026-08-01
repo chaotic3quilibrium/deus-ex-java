@@ -22,17 +22,6 @@ public record NonEmptyString(
 ) implements Refined<String>, Comparable<NonEmptyString> {
 
   /**
-   * Delegate accessor maintaining source compatibility for existing callers.
-   *
-   * @return the underlying string value
-   * @deprecated Use the primary property via {@link #value()}
-   */
-  @Deprecated
-  public String string() {
-    return value;
-  }
-
-  /**
    * Returns a non-empty {@link Optional} containing an instance of {@link ParametersValidationException} that itemizes
    * the validation preconditions which failed preventing the wrapping, otherwise an {@link Optional#empty()}.
    * <p>

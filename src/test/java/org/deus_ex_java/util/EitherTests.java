@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>
  **/
+@SuppressWarnings({"EqualsWithItself", "SimplifiableAssertion"})
 public class EitherTests {
 
   private void validateLeft(Integer leftValue, Either<Integer, String> eitherLeft) {
@@ -95,9 +96,7 @@ public class EitherTests {
   @Test
   public void testEquals() {
     Either<Integer, String> eitherFromRightA = Either.from(() -> 32, Optional.of("ThirtyOne"));
-    //noinspection EqualsWithItself
     assertEquals(eitherFromRightA, eitherFromRightA);
-    //noinspection SimplifiableAssertion
     assertFalse(eitherFromRightA.equals(new Object())); //cannot use assertNotEquals() as it never makes the call to Either.equals()
     Either<Integer, String> eitherFromRightB = Either.from(() -> 32, Optional.of("ThirtyOne"));
     assertEquals(eitherFromRightA, eitherFromRightB);

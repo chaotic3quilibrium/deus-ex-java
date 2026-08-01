@@ -69,19 +69,6 @@ public class RefinedTests {
     assertEquals("lowercase", nonEmptyLowerCaseString.value());
   }
 
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testStringCompatibilityAccessor() {
-    var nonEmptyString = new NonEmptyString("valid");
-    assertEquals(nonEmptyString.value(), nonEmptyString.string());
-
-    var nonBlankString = new NonBlankString("valid");
-    assertEquals(nonBlankString.value(), nonBlankString.string());
-
-    var nonEmptyLowerCaseString = new NonEmptyLowerCaseString("valid");
-    assertEquals(nonEmptyLowerCaseString.value(), nonEmptyLowerCaseString.string());
-  }
-
   @Test
   public void testPureValidationFlowWithTryCatchesWrap() {
     // Invalid inputs -> Either.Left containing ParametersValidationException

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NonEmptyStringTests {
   @Test
   public void testDefaultConstructor() {
-    assertEquals("x", new NonEmptyString("x").string());
+    assertEquals("x", new NonEmptyString("x").value());
     assertThrows(
         ParametersValidationException.class,
         () ->
@@ -25,7 +25,7 @@ public class NonEmptyStringTests {
   public void testFrom() {
     var errorOrValue = NonEmptyString.from("x");
     assertTrue(errorOrValue.isRight());
-    assertEquals("x", errorOrValue.getRight().string());
+    assertEquals("x", errorOrValue.getRight().value());
     assertTrue(NonEmptyString.from("").isLeft());
   }
 

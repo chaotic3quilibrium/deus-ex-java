@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 /**
  * Utility class providing static methods to create {@link Set} instances.
  */
+@SuppressWarnings({"Convert2Diamond", "unchecked", "ConstantValue", "SimplifyStreamApiCallChains"})
 @NullMarked
 public final class SetsOps {
 
@@ -31,7 +32,6 @@ public final class SetsOps {
    * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link HashSet}{@code <T>}
    */
   public static <T> Set<T> newHashSet() {
-    //noinspection Convert2Diamond
     return new HashSet<T>();
   }
 
@@ -63,7 +63,6 @@ public final class SetsOps {
    * @return a {@link Set}{@code <T>} backed by an empty and modifiable {@link LinkedHashSet}{@code <T>}
    */
   public static <T> Set<T> newLinkedHashSet() {
-    //noinspection Convert2Diamond
     return new LinkedHashSet<T>();
   }
 
@@ -161,7 +160,6 @@ public final class SetsOps {
     Objects.requireNonNull(set);
     if (set.isEmpty() && (value == null)) {
 
-      //noinspection unchecked
       return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
     var result = set.isEmpty()
@@ -216,7 +214,6 @@ public final class SetsOps {
     Objects.requireNonNull(sets);
     if (sets.length == 0) {
 
-      //noinspection unchecked
       return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
     var result = Arrays.stream(sets)
@@ -225,7 +222,6 @@ public final class SetsOps {
         .filter(Objects::nonNull)
         .collect(Collectors.toCollection(LinkedHashSet::new));
 
-    //noinspection unchecked
     return result.isEmpty()
         ? (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY
         : Collections.unmodifiableSet(result);
@@ -276,7 +272,6 @@ public final class SetsOps {
     Objects.requireNonNull(set);
     if (set.isEmpty()) {
 
-      //noinspection unchecked
       return (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY;
     }
     var result = new LinkedHashSet<>(set);
@@ -409,7 +404,6 @@ public final class SetsOps {
       Set<T> set,
       Stream<T> stream
   ) {
-    //noinspection unchecked
     return helperRemoveAllStream(
         set,
         stream,
@@ -417,7 +411,6 @@ public final class SetsOps {
         LinkedHashSet::new);
   }
 
-  @SuppressWarnings("ConstantValue")
   @SafeVarargs
   private static <T> Set<T> helperRemoveSets(
       Set<T> set,
@@ -479,7 +472,6 @@ public final class SetsOps {
       Set<T> set,
       Set<T>... sets
   ) {
-    //noinspection unchecked
     return helperRemoveSets(
         set,
         (Set<T>) UNMODIFIABLE_LINKED_HASH_SET_EMPTY,
@@ -854,12 +846,6 @@ public final class SetsOps {
     RIGHT_DIFFERENCE
   }
 
-  private static final int CONTRAST_SET_PAIR_INDEX_UNION = 0;
-  private static final int CONTRAST_SET_PAIR_INDEX_INTERSECTION = 1;
-  private static final int CONTRAST_SET_PAIR_INDEX_DIFFERENCE = 2;
-  private static final int CONTRAST_SET_PAIR_INDEX_LEFT_DIFFERENCE = 3;
-  private static final int CONTRAST_SET_PAIR_INDEX_RIGHT_DIFFERENCE = 4;
-
   /**
    * Returns an {@link SetPair} of the contrast between the {@code left} and {@code right} defensively copied
    * {@link Set}s, where for each property, the value associated is an unmodifiable {@link Set} containing the relevant
@@ -871,7 +857,7 @@ public final class SetsOps {
    *
    * @param <T> the type of instances contained in the sets
    */
-  public static record SetPair<T>(
+  public record SetPair<T>(
       boolean isEqual,
       Set<T> union,
       Set<T> left,
@@ -1038,7 +1024,6 @@ public final class SetsOps {
       if (!tsSansNulls.isEmpty()) {
         var result = new LinkedHashSet<T>();
         var duplicates = new ArrayList<T>();
-        //noinspection SimplifyStreamApiCallChains
         tsSansNulls
             .stream()
             .forEachOrdered(t -> {

@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"unchecked", "unused", "ConstantValue", "DataFlowIssue", "resource", "SpellCheckingInspection"})
 public class TryCatchesOpsTests {
-  @SuppressWarnings("unchecked")
   private static <T extends Throwable> void throwStrippedCheckedException(
       Throwable throwable
   ) throws T {
@@ -20,9 +20,7 @@ public class TryCatchesOpsTests {
   public void testVoidSupplier() {
     //Optional empty returned because no exception was thrown
     var optionalIsEmpty = TryCatchesOps.wrap(() -> {
-      //noinspection ConstantValue
       if (true) {
-        @SuppressWarnings("unused")
         var x = 1; //NO OP
       }
     });
@@ -30,9 +28,7 @@ public class TryCatchesOpsTests {
     //nothing returned and no exception was thrown
     assertDoesNotThrow(() ->
         TryCatchesOps.wrapOrThrow(() -> {
-          //noinspection ConstantValue
           if (true) {
-            @SuppressWarnings("unused")
             var x = 1; //NO OP
           }
         }));
@@ -40,7 +36,6 @@ public class TryCatchesOpsTests {
     var fatalThrowableLinkageErrorWrap = assertThrows(
         LinkageError.class,
         () -> TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrap");
           }
@@ -50,7 +45,6 @@ public class TryCatchesOpsTests {
     var fatalThrowableLinkageErrorWrapOrThrow = assertThrows(
         LinkageError.class,
         () -> TryCatchesOps.wrapOrThrow(() -> {
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrapOrThrow");
           }
@@ -58,7 +52,6 @@ public class TryCatchesOpsTests {
     assertEquals("testyWrapOrThrow", fatalThrowableLinkageErrorWrapOrThrow.getMessage());
     //Optional runtime exception returned for the RuntimeException descendant
     var optionalIllegalArgumentException = TryCatchesOps.wrap(() -> {
-      //noinspection ConstantValue
       if (true) {
         throw new IllegalArgumentException("testyWrap");
       }
@@ -71,7 +64,6 @@ public class TryCatchesOpsTests {
         IllegalArgumentException.class,
         () ->
             TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalArgumentException("testyWrapOrThrow");
               }
@@ -79,7 +71,6 @@ public class TryCatchesOpsTests {
     assertEquals("testyWrapOrThrow", illegalArgumentExceptionRuntimeDescendant.getMessage());
     //optional exception returned on being explicitly found within the passed list of exceptions
     var optionalRuntimeExceptionFoundInList = TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
             throw new IllegalStateException("testyWrap");
           }
@@ -94,7 +85,6 @@ public class TryCatchesOpsTests {
         IllegalStateException.class,
         () ->
             TryCatchesOps.wrapOrThrow(() -> {
-                  //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("testyWrapOrThrow");
                   }
@@ -107,7 +97,6 @@ public class TryCatchesOpsTests {
         IllegalStateException.class,
         () ->
             TryCatchesOps.wrap(() -> {
-                  //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("testyWrap");
                   }
@@ -120,7 +109,6 @@ public class TryCatchesOpsTests {
         IllegalStateException.class,
         () ->
             TryCatchesOps.wrapOrThrow(() -> {
-                  //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("testyWrapOrThrow");
                   }
@@ -130,7 +118,6 @@ public class TryCatchesOpsTests {
     assertEquals("testyWrapOrThrow", illegalRuntimeExceptionNotFoundInListWrapOrThrow.getMessage());
     //Optional checked exception returned with wrap on being explicitly sneaky with a checked exception within list of exceptions
     var optionalCheckedExceptionFoundInList = TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
             throwStrippedCheckedException(new IOException("optional sneaky checked exception"));
           }
@@ -145,7 +132,6 @@ public class TryCatchesOpsTests {
         WrappedCheckedException.class,
         () ->
             TryCatchesOps.wrapOrThrow(() -> {
-                  //noinspection ConstantValue
                   if (true) {
                     throwStrippedCheckedException(new IOException("wrapped sneaky wrapOrThrow checked exception"));
                   }
@@ -158,7 +144,6 @@ public class TryCatchesOpsTests {
         WrappedCheckedException.class,
         () ->
             TryCatchesOps.wrap(() -> {
-                  //noinspection ConstantValue
                   if (true) {
                     throwStrippedCheckedException(new IOException("wrapped sneaky wrap checked exception"));
                   }
@@ -172,7 +157,6 @@ public class TryCatchesOpsTests {
         WrappedCheckedException.class,
         () ->
             TryCatchesOps.wrapOrThrow(() -> {
-                  //noinspection ConstantValue
                   if (true) {
                     throwStrippedCheckedException(new IOException("wrapped sneaky wrapOrThrow checked exception"));
                   }
@@ -187,9 +171,7 @@ public class TryCatchesOpsTests {
   public void testSupplier() {
     //Either right returned with wrap because no exception was thrown
     var eitherRight = TryCatchesOps.wrap(() -> {
-      //noinspection ConstantValue
       if (true) {
-        @SuppressWarnings("unused")
         var x = 1; //NO OP
       }
 
@@ -200,9 +182,7 @@ public class TryCatchesOpsTests {
     //result returned with wrapAndThrow because no exception was thrown
     var integer = assertDoesNotThrow(() ->
         TryCatchesOps.wrapOrThrow(() -> {
-          //noinspection ConstantValue
           if (true) {
-            @SuppressWarnings("unused")
             var x = 1; //NO OP
           }
 
@@ -211,9 +191,7 @@ public class TryCatchesOpsTests {
     assertEquals(1, integer);
     //Either right returned with wrap because no exception was thrown
     var eitherRightWithList = TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
-            @SuppressWarnings("unused")
             var x = 1; //NO OP
           }
 
@@ -226,9 +204,7 @@ public class TryCatchesOpsTests {
     //result returned with wrapAndThrow because no exception was thrown
     var integerWithList = assertDoesNotThrow(() ->
         TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
-                @SuppressWarnings("unused")
                 var x = 1; //NO OP
               }
 
@@ -241,7 +217,6 @@ public class TryCatchesOpsTests {
     var fatalThrowableLinkageErrorWrap = assertThrows(
         LinkageError.class,
         () -> TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrap");
           }
@@ -253,7 +228,6 @@ public class TryCatchesOpsTests {
     var fatalThrowableLinkageErrorWrapOrThrow = assertThrows(
         LinkageError.class,
         () -> TryCatchesOps.wrapOrThrow(() -> {
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrapOrThrow");
           }
@@ -263,7 +237,6 @@ public class TryCatchesOpsTests {
     assertEquals("testyWrapOrThrow", fatalThrowableLinkageErrorWrapOrThrow.getMessage());
     //Either left exception returned for RuntimeException descendant
     var eitherLeft = TryCatchesOps.wrap(() -> {
-      //noinspection ConstantValue
       if (true) {
         throw new IllegalArgumentException("testyWrap");
       }
@@ -278,7 +251,6 @@ public class TryCatchesOpsTests {
         IllegalArgumentException.class,
         () ->
             TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalArgumentException("testyWrapOrThrow");
               }
@@ -288,7 +260,6 @@ public class TryCatchesOpsTests {
     assertEquals("testyWrapOrThrow", illegalArgumentExceptionRuntimeExceptionDescendant.getMessage());
     //Either left exception returned on being explicitly found within the passed list of exceptions
     var eitherLeftFoundInList = TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
             throw new IllegalStateException("testyWrap");
           }
@@ -304,7 +275,6 @@ public class TryCatchesOpsTests {
     var illegalStateExceptionFoundInList = assertThrows(
         IllegalStateException.class,
         () -> TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalStateException("testyWrapOrThrow");
               }
@@ -318,7 +288,6 @@ public class TryCatchesOpsTests {
     var illegalStateExceptionNotFoundInListWrap = assertThrows(
         IllegalStateException.class,
         () -> TryCatchesOps.wrap(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalStateException("testyWrap");
               }
@@ -332,7 +301,6 @@ public class TryCatchesOpsTests {
     var illegalStateExceptionNotFoundInListWrapOrThrow = assertThrows(
         IllegalStateException.class,
         () -> TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalStateException("testyWrapOrThrow");
               }
@@ -344,7 +312,6 @@ public class TryCatchesOpsTests {
     assertEquals("testyWrapOrThrow", illegalStateExceptionNotFoundInListWrapOrThrow.getMessage());
     //Either left checked exception returned with wrap on being explicitly sneaky with a checked exception within list of exceptions
     var eitherLeftCheckedException = TryCatchesOps.wrap(() -> {
-          //noinspection ConstantValue
           if (true) {
             throwStrippedCheckedException(new IOException("optional sneaky wrap checked exception"));
           }
@@ -360,7 +327,6 @@ public class TryCatchesOpsTests {
     var wrappedCheckedExceptionFoundInList = assertThrows(
         WrappedCheckedException.class,
         () -> TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throwStrippedCheckedException(new IOException("optional sneaky wrapOrThrow checked exception"));
               }
@@ -375,7 +341,6 @@ public class TryCatchesOpsTests {
     var wrappedCheckedExceptionNotFoundInListWrap = assertThrows(
         WrappedCheckedException.class,
         () -> TryCatchesOps.wrap(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throwStrippedCheckedException(new IOException("optional sneaky wrap checked exception"));
               }
@@ -389,7 +354,6 @@ public class TryCatchesOpsTests {
     var wrappedCheckedExceptionNotFoundInListWrapOrThrow = assertThrows(
         WrappedCheckedException.class,
         () -> TryCatchesOps.wrapOrThrow(() -> {
-              //noinspection ConstantValue
               if (true) {
                 throwStrippedCheckedException(new IOException("optional sneaky wrapOrThrow checked exception"));
               }
@@ -403,9 +367,7 @@ public class TryCatchesOpsTests {
   }
 
   private void voidFunctionWithCheckedException() throws Exception {
-    //noinspection ConstantValue
     if (false) {
-      //noinspection resource
       InputStreamReader.nullReader().reset();
     }
   }
@@ -415,9 +377,7 @@ public class TryCatchesOpsTests {
     //Optional empty returned because no exception was thrown
     var optionalIsEmpty = TryCatchesOps.wrapCheckedException(() -> {
       voidFunctionWithCheckedException();
-      //noinspection ConstantValue
       if (true) {
-        @SuppressWarnings("unused")
         var x = 1; //NO OP
       }
     });
@@ -426,9 +386,7 @@ public class TryCatchesOpsTests {
     assertDoesNotThrow(() ->
         TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
-            @SuppressWarnings("unused")
             var x = 1; //NO OP
           }
         }));
@@ -437,7 +395,6 @@ public class TryCatchesOpsTests {
         LinkageError.class,
         () -> TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrap");
           }
@@ -448,7 +405,6 @@ public class TryCatchesOpsTests {
         LinkageError.class,
         () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrapOrThrow");
           }
@@ -457,7 +413,6 @@ public class TryCatchesOpsTests {
     //Optional runtime exception returned for the RuntimeException descendant
     var optionalIllegalArgumentException = TryCatchesOps.wrapCheckedException(() -> {
       voidFunctionWithCheckedException();
-      //noinspection ConstantValue
       if (true) {
         throw new IllegalArgumentException("testyWrap");
       }
@@ -471,7 +426,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalArgumentException("testyWrapOrThrow");
               }
@@ -480,7 +434,6 @@ public class TryCatchesOpsTests {
     //optional exception returned on being explicitly found within the passed list of exceptions
     var optionalRuntimeExceptionFoundInList = TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throw new IllegalStateException("testyWrap");
           }
@@ -496,7 +449,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
                   voidFunctionWithCheckedException();
-                  //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("testyWrapOrThrow");
                   }
@@ -510,7 +462,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedException(() -> {
                   voidFunctionWithCheckedException();
-                  //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("testyWrap");
                   }
@@ -524,7 +475,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
                   voidFunctionWithCheckedException();
-                  //noinspection ConstantValue
                   if (true) {
                     throw new IllegalStateException("testyWrapOrThrow");
                   }
@@ -535,7 +485,6 @@ public class TryCatchesOpsTests {
     //Optional checked exception returned with wrap on being explicitly sneaky with a checked exception within list of exceptions
     var optionalCheckedExceptionFoundInList = TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throwStrippedCheckedException(new IOException("optional sneaky checked exception"));
           }
@@ -551,7 +500,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
                   voidFunctionWithCheckedException();
-                  //noinspection ConstantValue
                   if (true) {
                     throwStrippedCheckedException(new IOException("wrapped sneaky wrapOrThrow checked exception"));
                   }
@@ -565,7 +513,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedException(() -> {
                   voidFunctionWithCheckedException();
-                  //noinspection ConstantValue
                   if (true) {
                     throwStrippedCheckedException(new IOException("wrapped sneaky wrap checked exception"));
                   }
@@ -580,7 +527,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
                   voidFunctionWithCheckedException();
-                  //noinspection ConstantValue
                   if (true) {
                     throwStrippedCheckedException(new IOException("wrapped sneaky wrapOrThrow checked exception"));
                   }
@@ -596,9 +542,7 @@ public class TryCatchesOpsTests {
     //Either right returned with wrap because no exception was thrown
     var eitherRight = TryCatchesOps.wrapCheckedException(() -> {
       voidFunctionWithCheckedException();
-      //noinspection ConstantValue
       if (true) {
-        @SuppressWarnings("unused")
         var x = 1; //NO OP
       }
 
@@ -610,9 +554,7 @@ public class TryCatchesOpsTests {
     var integer = assertDoesNotThrow(() ->
         TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
-            @SuppressWarnings("unused")
             var x = 1; //NO OP
           }
 
@@ -622,9 +564,7 @@ public class TryCatchesOpsTests {
     //Either right returned with wrap because no exception was thrown
     var eitherRightWithList = TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
-            @SuppressWarnings("unused")
             var x = 1; //NO OP
           }
 
@@ -638,9 +578,7 @@ public class TryCatchesOpsTests {
     var integerWithList = assertDoesNotThrow(() ->
         TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
-                @SuppressWarnings("unused")
                 var x = 1; //NO OP
               }
 
@@ -654,7 +592,6 @@ public class TryCatchesOpsTests {
         LinkageError.class,
         () -> TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrap");
           }
@@ -667,7 +604,6 @@ public class TryCatchesOpsTests {
         LinkageError.class,
         () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throw new LinkageError("testyWrapOrThrow");
           }
@@ -678,7 +614,6 @@ public class TryCatchesOpsTests {
     //Either left exception returned for RuntimeException descendant
     var eitherLeft = TryCatchesOps.wrapCheckedException(() -> {
       voidFunctionWithCheckedException();
-      //noinspection ConstantValue
       if (true) {
         throw new IllegalArgumentException("testyWrap");
       }
@@ -694,7 +629,6 @@ public class TryCatchesOpsTests {
         () ->
             TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalArgumentException("testyWrapOrThrow");
               }
@@ -705,7 +639,6 @@ public class TryCatchesOpsTests {
     //Either left exception returned on being explicitly found within the passed list of exceptions
     var eitherLeftFoundInList = TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throw new IllegalStateException("testyWrap");
           }
@@ -722,7 +655,6 @@ public class TryCatchesOpsTests {
         IllegalStateException.class,
         () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalStateException("testyWrapOrThrow");
               }
@@ -737,7 +669,6 @@ public class TryCatchesOpsTests {
         IllegalStateException.class,
         () -> TryCatchesOps.wrapCheckedException(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalStateException("testyWrap");
               }
@@ -752,7 +683,6 @@ public class TryCatchesOpsTests {
         IllegalStateException.class,
         () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throw new IllegalStateException("testyWrapOrThrow");
               }
@@ -765,7 +695,6 @@ public class TryCatchesOpsTests {
     //Either left checked exception returned with wrap on being explicitly sneaky with a checked exception within list of exceptions
     var eitherLeftCheckedException = TryCatchesOps.wrapCheckedException(() -> {
           voidFunctionWithCheckedException();
-          //noinspection ConstantValue
           if (true) {
             throwStrippedCheckedException(new IOException("optional sneaky wrap checked exception"));
           }
@@ -782,7 +711,6 @@ public class TryCatchesOpsTests {
         WrappedCheckedException.class,
         () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throwStrippedCheckedException(new IOException("optional sneaky wrapOrThrow checked exception"));
               }
@@ -798,7 +726,6 @@ public class TryCatchesOpsTests {
         WrappedCheckedException.class,
         () -> TryCatchesOps.wrapCheckedException(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throwStrippedCheckedException(new IOException("optional sneaky wrap checked exception"));
               }
@@ -813,7 +740,6 @@ public class TryCatchesOpsTests {
         WrappedCheckedException.class,
         () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> {
               voidFunctionWithCheckedException();
-              //noinspection ConstantValue
               if (true) {
                 throwStrippedCheckedException(new IOException("optional sneaky wrapOrThrow checked exception"));
               }
@@ -829,12 +755,8 @@ public class TryCatchesOpsTests {
   @Test
   public void testFatalThrowablesPropagation() {
     // 1. InterruptedException across all 4 supplier categories
-    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrap(() -> {
-      throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
-    }));
-    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapOrThrow(() -> {
-      throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
-    }));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrap(() -> throwStrippedCheckedException(new InterruptedException("fatal interrupt"))));
+    assertThrows(InterruptedException.class, () -> TryCatchesOps.wrapOrThrow(() -> throwStrippedCheckedException(new InterruptedException("fatal interrupt"))));
     assertThrows(InterruptedException.class, () -> TryCatchesOps.wrap(() -> {
       throwStrippedCheckedException(new InterruptedException("fatal interrupt"));
       return 1;
@@ -889,18 +811,14 @@ public class TryCatchesOpsTests {
     }));
 
     // 3. ControlBreakThrowable
-    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrap(() -> {
-      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
-    }));
-    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapOrThrow(() -> {
-      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
-    }));
-    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapCheckedException((org.deus_ex_java.util.function.VoidSupplierCheckedException) () -> {
-      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
-    }));
-    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow((org.deus_ex_java.util.function.VoidSupplierCheckedException) () -> {
-      throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {});
-    }));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrap(() -> throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {
+    })));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapOrThrow(() -> throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {
+    })));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapCheckedException(() -> throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {
+    })));
+    assertThrows(org.deus_ex_java.lang.ControlBreakThrowable.class, () -> TryCatchesOps.wrapCheckedExceptionOrThrow(() -> throwStrippedCheckedException(new org.deus_ex_java.lang.ControlBreakThrowable("fatal control break") {
+    })));
 
     // 4. LinkageError
     assertThrows(LinkageError.class, () -> TryCatchesOps.wrap(() -> {
@@ -908,7 +826,6 @@ public class TryCatchesOpsTests {
     }));
 
     // 5. ThreadDeath
-    @SuppressWarnings("deprecation")
     var threadDeath = new ThreadDeath();
     assertThrows(ThreadDeath.class, () -> TryCatchesOps.wrap(() -> {
       throw threadDeath;
@@ -917,16 +834,11 @@ public class TryCatchesOpsTests {
 
   @Test
   public void testNullParameterValidation() {
-    //noinspection DataFlowIssue
     assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap((org.deus_ex_java.util.function.VoidSupplier) null));
-    //noinspection DataFlowIssue
-    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap(() -> {}, (Class<? extends Throwable>[]) null));
-    //noinspection DataFlowIssue
+    assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap(() -> {
+    }, (Class<? extends Throwable>[]) null));
     assertThrows(NullPointerException.class, () -> TryCatchesOps.wrap((java.util.function.Supplier<Object>) null));
-    //noinspection DataFlowIssue
     assertThrows(NullPointerException.class, () -> TryCatchesOps.wrapCheckedException((org.deus_ex_java.util.function.VoidSupplierCheckedException) null));
-    //noinspection DataFlowIssue
     assertThrows(NullPointerException.class, () -> TryCatchesOps.wrapCheckedException((org.deus_ex_java.util.function.SupplierCheckedException<Object>) null));
   }
 }
-

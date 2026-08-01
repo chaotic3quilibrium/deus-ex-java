@@ -5,7 +5,6 @@ import org.jspecify.annotations.NullMarked;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.ToIntFunction;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -25,6 +24,8 @@ public final class ArraysOps {
 
   /**
    * Return an array containing the index for each bit set in {@code bits}.
+   * <p>
+   * This implementation is blazingly fast because of how it is translated into native CPU hardware instructions.
    *
    * @param bits the value from which to extract the array of indexes
    * @return an array containing the index for each bit set in {@code bits}
@@ -34,9 +35,17 @@ public final class ArraysOps {
       return ArraysOps.EMPTY_INT_ARRAY;
     }
 
-    return IntStream.range(0, Integer.SIZE)
-        .filter(i -> (bits & (1 << i)) != 0)
-        .toArray();
+    int count = Integer.bitCount(bits);
+    int[] result = new int[count];
+
+    int index = 0;
+    while (bits != 0) {
+      int c = bits & -bits;
+      result[index++] = Integer.numberOfTrailingZeros(c);
+      bits ^= c;
+    }
+
+    return result;
   }
 
   /**

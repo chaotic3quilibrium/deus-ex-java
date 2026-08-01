@@ -31,6 +31,7 @@ import static java.util.Map.entry;
  *
  * @param <E> type of the {@link Enum}
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @NullMarked
 public final class EnumsOps<E extends Enum<E>> {
 
@@ -42,7 +43,6 @@ public final class EnumsOps<E extends Enum<E>> {
         throw new IllegalArgumentException("classE [%s] must be an enum".formatted(classE.getName()));
       }
 
-      //noinspection rawtypes,unchecked
       return new EnumsOps(classE);
     }
   };
@@ -61,7 +61,6 @@ public final class EnumsOps<E extends Enum<E>> {
    * @return an {@link EnumsOps} <i>singleton</i> for the provided {@link Enum}'s class
    */
   public static <E extends Enum<E>> EnumsOps<E> from(Class<E> classE) {
-    //noinspection unchecked
     return (EnumsOps<E>) ENUMS_OPS_CLASS_VALUE_CACHE.get(classE);
   }
 

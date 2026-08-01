@@ -22,6 +22,7 @@ import java.util.function.Supplier;
  * <p>
  * Within this framework, if a <b><em>fatal</em></b> exception is thrown, it will explicitly not be caught.
  */
+@SuppressWarnings("DataFlowIssue")
 @NullMarked
 public final class TryCatchesOps {
 
@@ -38,26 +39,24 @@ public final class TryCatchesOps {
     throw new WrappedCheckedException(throwable);
   }
 
+  @SuppressWarnings({"ThrowableNotThrown", "unchecked"})
   @SafeVarargs
   private static <T extends Throwable> T resolveCatchThrowableWrappedCheckedException(
       Throwable throwable,
       Class<? extends T>... throwableClasses
   ) {
-    //noinspection ThrowableNotThrown
     WrappedCheckedException.requireNonFatal(throwable);
     if (Arrays.stream(throwableClasses)
         .anyMatch(throwableClass ->
             throwableClass.isInstance(throwable))
     ) {
 
-      //noinspection unchecked
       return (T) throwable;
     }
 
     throwRuntimeExceptionOrWrappedCheckedException(throwable);
 
     //this is never reached because the prior method call always throws a RuntimeException
-    //noinspection DataFlowIssue
     return null;
   }
 

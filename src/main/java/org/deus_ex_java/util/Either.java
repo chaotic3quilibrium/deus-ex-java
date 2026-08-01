@@ -13,9 +13,9 @@ import java.util.stream.Stream;
 
 /**
  * Represents an immutable value of one of two possible types (a <a
- * href="https://en.wikipedia.org/wiki/Disjoint_union">disjoint union</a>). An instance of {@link Either} is
- * guaranteed to be well-defined for either the left side or the right side, and the contained value is guaranteed
- * to be non-{@code null}.
+ * href="https://en.wikipedia.org/wiki/Disjoint_union">disjoint union</a>). An instance of {@link Either} is guaranteed
+ * to be well-defined for either the left side or the right side, and the contained value is guaranteed to be
+ * non-{@code null}.
  * <p>
  * As a Java 17+ sealed interface permitting nested records {@link Either.Left} and {@link Either.Right}, {@link Either}
  * supports exhaustive pattern matching and record destructuring in {@code switch} expressions without requiring a
@@ -36,6 +36,7 @@ import java.util.stream.Stream;
  * @param <L> the type of the left value
  * @param <R> the type of the right value
  **/
+@SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "unchecked"})
 @NullMarked
 public sealed interface Either<L, R> permits Either.Left, Either.Right {
 
@@ -138,7 +139,6 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
    * @return a well-defined instance of {@link Either}
    * @throws IllegalArgumentException if both return the same value for {@link Optional#isEmpty}
    */
-  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   static <L, R> Either<L, R> from(
       Optional<L> leftOptional,
       Optional<R> rightOptional
@@ -147,9 +147,10 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
       throw new IllegalArgumentException("leftOptional.isEmpty() must not be equal to rightOptional.isEmpty()");
     }
 
-    return rightOptional.isPresent()
-        ? right(rightOptional.get())
-        : left(leftOptional.get());
+    return rightOptional
+        .<Either<L, R>>map(Either::right)
+        .orElseGet(() ->
+            left(leftOptional.get()));
   }
 
   /**
@@ -191,7 +192,6 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
    * @throws NullPointerException if leftSupplier, the value returned if called, rightOptional, or the value returned if
    *                              extracted, is {@code null}
    */
-  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   static <L, R> Either<L, R> from(
       Supplier<L> leftSupplier,
       Optional<R> rightOptional
@@ -324,7 +324,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
     if (this instanceof Left<L, R> left) {
       return Either.left(Objects.requireNonNull(leftFunction.apply(left.value())));
     }
-    //noinspection unchecked
+
     return (Either<T, R>) this;
   }
 
@@ -340,7 +340,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
     if (this instanceof Right<L, R> right) {
       return Either.right(Objects.requireNonNull(rightFunction.apply(right.value())));
     }
-    //noinspection unchecked
+
     return (Either<L, T>) this;
   }
 
@@ -359,7 +359,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
       //noinspection unchecked
       return (Either<T, R>) Objects.requireNonNull(leftFunction.apply(left.value()));
     }
-    //noinspection unchecked
+
     return (Either<T, R>) this;
   }
 
@@ -378,7 +378,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
       //noinspection unchecked
       return (Either<L, T>) Objects.requireNonNull(rightFunction.apply(right.value()));
     }
-    //noinspection unchecked
+
     return (Either<L, T>) this;
   }
 
@@ -391,8 +391,8 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
    * @param rightFunction given function which is only applied if {@link Either#isLeft} is {@code true} and
    *                      {@code retainingLeft} returns {@code false}
    * @return {@link Either#right} when {@link Either#isRight} is {@code true}, or returns {@link Either#left} when
-   * {@link Either#isLeft} is {@code true} and {@code retainingLeft} returns {@code true}, or returns the value
-   * returned by {@code rightFunction} within {@link Either#right}
+   *     {@link Either#isLeft} is {@code true} and {@code retainingLeft} returns {@code true}, or returns the value
+   *     returned by {@code rightFunction} within {@link Either#right}
    */
   default Either<L, R> filterOrElseLeft(
       Predicate<L> retainingLeft,
@@ -415,7 +415,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
    * @param leftFunction   given function which is only applied if {@link Either#isRight} is {@code true} and
    *                       {@code retainingRight} returns {@code false}
    * @return {@link Either#left} when {@link Either#isLeft} is {@code true}, or returns {@link Either#right} when
-   * {@link Either#isRight} is {@code true} and {@code retainingRight} returns {@code true}
+   *     {@link Either#isRight} is {@code true} and {@code retainingRight} returns {@code true}
    */
   default Either<L, R> filterOrElseRight(
       Predicate<R> retainingRight,
@@ -434,7 +434,7 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
    * {@link Either#right} or vice versa.
    *
    * @return reversed type such that if this is a {@link Either#left}, then return the {@link Either#left} value in
-   * {@link Either#right} or vice versa
+   *     {@link Either#right} or vice versa
    */
   default Either<R, L> swap() {
     if (this instanceof Left<L, R> left) {
@@ -490,7 +490,6 @@ public sealed interface Either<L, R> permits Either.Left, Either.Right {
    * @param <T> type of the returned instance
    * @return an instance of T
    */
-  @SuppressWarnings("unchecked")
   default <T> T converge() {
     return (T) converge(this);
   }

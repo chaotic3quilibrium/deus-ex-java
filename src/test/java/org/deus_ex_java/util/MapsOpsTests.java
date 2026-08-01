@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"rawtypes", "unchecked", "DataFlowIssue"})
 public class MapsOpsTests {
   @Test
   public void testNewHashMap() {
@@ -27,18 +28,14 @@ public class MapsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put("ValidKey", "InvalidValue");
         },
         "Checked map should reject invalid value types");
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put(123, 456);
         },
         "Checked map should reject invalid key types");
@@ -56,18 +53,14 @@ public class MapsOpsTests {
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put("ValidKey", "InvalidValue");
         },
         "Checked map should reject invalid value types");
     assertThrows(
         ClassCastException.class,
         () -> {
-          @SuppressWarnings("rawtypes")
           var rawMap = (Map) checkedMap;
-          //noinspection unchecked
           rawMap.put(123, 45.6);
         },
         "Checked map should reject invalid key types");
@@ -405,9 +398,7 @@ public class MapsOpsTests {
   @Test
   public void testAddMaps() {
     assertEquals(Map.of(), MapsOps.addMaps());
-    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.addMaps(null, Map.of(), null));
-    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "value"), MapsOps.addMaps(null, Map.of(), Map.of(1, "value"), Map.of(), null));
     var mapAddA = MapsOps.addMaps(Map.of(1, "x1", 2, "x2"), Map.of(2, "x2", 3, "x3"));
     assertTrue(CollectionsOps.isUnmodifiable(mapAddA));
@@ -440,9 +431,7 @@ public class MapsOpsTests {
   @Test
   public void testAppendMaps() {
     assertEquals(Map.of(), MapsOps.appendMaps());
-    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.appendMaps(null, Map.of(), null));
-    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "value"), MapsOps.appendMaps(null, Map.of(), Map.of(1, "value"), Map.of(), null));
     var mapAppendA = MapsOps.appendMaps(Map.of(1, "x1"), Map.of(2, "x2"), Map.of(3, "x3"));
     assertTrue(CollectionsOps.isUnmodifiable(mapAppendA));
@@ -858,9 +847,7 @@ public class MapsOpsTests {
   public void testOfEntriesOrdered() {
     var mapNoArg = MapsOps.ofEntriesOrdered();
     assertTrue(mapNoArg.isEmpty());
-    //noinspection DataFlowIssue
     assertEquals(Map.of(), MapsOps.ofEntriesOrdered(null, ENTRY_NULL_NULL, null));
-    //noinspection DataFlowIssue
     assertEquals(Map.of(1, "test"), MapsOps.ofEntriesOrdered(null, entry(1, "test"), ENTRY_NULL_NULL, null));
     var illegalArgumentException = assertThrows(
         IllegalArgumentException.class,

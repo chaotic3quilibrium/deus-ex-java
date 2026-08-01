@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("AssertBetweenInconvertibleTypes")
 @NullMarked
 public class EnumsOpsTests {
 
@@ -88,7 +89,6 @@ public class EnumsOpsTests {
   public void testCache() {
     assertSame(ENUMS_OPS_TRAFFIC_LIGHT, EnumsOps.from(TrafficLight.class));
     assertSame(ENUMS_OPS_TRAFFIC_LIGHT, EnumsOps.from(ENUMS_OPS_TRAFFIC_LIGHT.getClassE()));
-    //noinspection AssertBetweenInconvertibleTypes
     assertNotSame(ENUMS_OPS_TRAFFIC_LIGHT, EnumsOps.from(TrafficLightBased.class));
     assertEquals(
         List.of(
@@ -98,7 +98,6 @@ public class EnumsOpsTests {
         ENUMS_OPS_TRAFFIC_LIGHT.toList());
     var tlbOps = TrafficLightBased.enumOps();
     assertSame(tlbOps, EnumsOps.from(TrafficLightBased.class));
-    //noinspection AssertBetweenInconvertibleTypes
     assertNotSame(ENUMS_OPS_TRAFFIC_LIGHT, tlbOps);
     assertEquals(
         List.of(

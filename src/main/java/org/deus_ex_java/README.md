@@ -62,7 +62,23 @@ Enterprise IT systems via a series of continuous improvements via micro-transfor
 
 ### QuickStart Introduction
 
-TODO: Fill this in
+Rather than teaching Value-Oriented Programming (VOP) through dry synthetic snippets, `deus-ex-java` provides real-world domain showcases demonstrating how to transition from traditional imperative Java to VOP.
+
+Each showcase walks through our **7 Core VOP Patterns**:
+
+1. **Error-by-Returned-Value** (Functional flow over thrown exceptions)
+2. **Smart Constructors & Invariants** (Making illegal states unrepresentable)
+3. **Staged Assembly** (Validating builders and tuple staging)
+4. **Reified Boundary Parsing** (Non-throwing enum and string lookups)
+5. **Expressions Over Statements** (Reified ternary and branch execution)
+6. **Immutability & Null Perimeter Defense** (True unmodifiable collections and `@NullMarked` bounds)
+7. **Safe Lifetimes & Fatal Exception Isolation** (Resource scoping with immediate fatal JVM throwable propagation)
+
+#### 🎮 Available Domain Showcases
+
+* **[D&D / RPG Combat Engine Showcase](https://www.google.com/search?q=docs/showcases/DND_COMBAT_ENGINE_VOP_SHOWCASE.md):** Learn VOP by building a spellcasting, character creation, and combat auditing engine for tabletop RPG mechanics.
+* **[Enterprise Order & Payment Pipeline Showcase](docs/showcases/ENTERPRISE_ORDER_PIPELINE_VOP_SHOWCASE.md):** Refactor real-world corporate payment gateways, cart staging, and invoice exports to VOP.
+* *(More domain showcases coming soon...)*
 
 # Philosophy
 

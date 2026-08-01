@@ -58,6 +58,7 @@ import static java.util.Map.entry;
  * @param <E>  the type of the {@link Enum} values being enhanced
  * @param <ID> type of each {@link Enum} value's associated {@code ID}
  */
+@SuppressWarnings({"rawtypes", "unchecked", "OptionalUsedAsFieldOrParameterType"})
 @NullMarked
 public final class EnumAndIdsOps<E extends Enum<E>, ID> {
 
@@ -82,7 +83,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
               new IllegalStateException("EXTENDED_CONTEXT_BY_CLASS_E did not contain key [%s]".formatted(
                   classE.getName())));
 
-      //noinspection rawtypes,unchecked
       return new EnumAndIdsOps(
           classE,
           extendedContext);
@@ -99,7 +99,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @return an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
    *     {@code classE}, otherwise {@link Optional#empty}
    */
-  @SuppressWarnings("unchecked")
   public static <E extends Enum<E>, ID> Optional<EnumAndIdsOps<E, ID>> fromCacheOnly(
       Class<E> classE
   ) {
@@ -126,7 +125,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
    * @return an {@link Optional} containing the cached {@link EnumAndIdsOps} instance already associated with
    *     {@code classE} and {@code classId}, otherwise {@link Optional#empty}
    */
-  @SuppressWarnings("unchecked")
   public static <E extends Enum<E>, ID> Optional<EnumAndIdsOps<E, ID>> fromCacheOnly(
       Class<E> classE,
       Class<ID> classId
@@ -541,7 +539,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         Optional.of(fEAndIdToNonEmptyLowerCaseStrings));
   }
 
-  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   private static <E extends Enum<E>, ID> EnumAndIdsOpsAndIsCaching<E, ID> fromHelperAndIsCaching(
       Class<E> classE,
       Function<E, ID> fEToId,
@@ -559,7 +556,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                 optionalFEAndIdToNonEmptyLowerCaseStrings));
       }
 
-      //noinspection unchecked
       return new EnumAndIdsOpsAndIsCaching<>(
           (EnumAndIdsOps<E, ID>) ENUM_AND_IDS_OPS_CLASS_VALUE_CACHE.get(classE),
           isCaching);
@@ -611,7 +607,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
         .stream()
         .map(enumValueAndId ->
             entry(
-                fEAndIdToNonEmptyLowerCaseString.apply(enumValueAndId).string(),
+                fEAndIdToNonEmptyLowerCaseString.apply(enumValueAndId).value(),
                 entry(enumValueAndId.getKey(), CollisionSource.ID_VALUE)))
         .toList();
     var alternateStringAndEnumValueAndCollisionSources = optionalFEAndIdToNonEmptyLowerCaseStrings
@@ -624,7 +620,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                         .stream()
                         .map(nonEmptyLowerCaseString ->
                             entry(
-                                nonEmptyLowerCaseString.string(),
+                                nonEmptyLowerCaseString.value(),
                                 entry(enumValueAndId.getKey(), CollisionSource.ALTERNATE_STRING_VALUE))))
                 .toList())
         .orElse(List.of());
@@ -678,7 +674,6 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
                       .toList())));
     }
     var classWildcard = orderedMapIdByEnumValue.values().iterator().next().getClass();
-    //noinspection unchecked
     var classId = ClassesOps.narrow(() ->
             (Class<ID>) classWildcard)
         .orElseThrow(() ->
@@ -929,7 +924,7 @@ public final class EnumAndIdsOps<E extends Enum<E>, ID> {
     /**
      * Returns a {@link String} formatted as {@code ENUM_VALUE(ID)} for an {@code enumValueAndId} entry.
      * <p>
-     * This method is used as the default for {@link FormatBuilder#reformat FormatBuilder.getReformat()} property.
+     * This method is used as the default for {@link FormatBuilder#getReformat FormatBuilder.getReformat()} property.
      *
      * @param enumValueAndId the entry from which to produce a formatted String
      * @param <E>            the type of the {@link Enum} values being enhanced
